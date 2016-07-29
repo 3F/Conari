@@ -1,0 +1,41 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{F23EF90C-E980-4827-8107-6FAC6F1B24EF}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		.version = .version
+		build.bat = build.bat
+		changelog.txt = changelog.txt
+		Conari.nuspec = Conari.nuspec
+		gnt.core = gnt.core
+		LICENSE = LICENSE
+		packages.config = packages.config
+		Readme.md = Readme.md
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Conari", "Conari\Conari.csproj", "{27152FD4-7B94-4AF0-A7ED-BE7E7A196D57}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConariTest", "ConariTest\ConariTest.csproj", "{0AEEC49E-07A5-4A55-9673-9346C3A7BC03}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{27152FD4-7B94-4AF0-A7ED-BE7E7A196D57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27152FD4-7B94-4AF0-A7ED-BE7E7A196D57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27152FD4-7B94-4AF0-A7ED-BE7E7A196D57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27152FD4-7B94-4AF0-A7ED-BE7E7A196D57}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0AEEC49E-07A5-4A55-9673-9346C3A7BC03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0AEEC49E-07A5-4A55-9673-9346C3A7BC03}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0AEEC49E-07A5-4A55-9673-9346C3A7BC03}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0AEEC49E-07A5-4A55-9673-9346C3A7BC03}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

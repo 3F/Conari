@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>Conari</id>
+    <version>0.0.1</version>
+    <title>[ Conari ] Binder of Unmanaged code for .NET</title>
+    <authors>github.com/3F/Conari</authors>
+    <owners>reg</owners>
+    <licenseUrl>https://github.com/3F/Conari/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/3F/Conari</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/3F/Conari/master/Conari/Resources/Conari_v1.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>
+    
+        Binder of Unmanaged code for .NET
+        Conari represents a flexible platform to work ...TODO
+        _ _ _ _ _ _
+        Source code and all details here: https://github.com/3F/Conari
+        
+        ~~~~~~~~
+        Alternative to get it:
+        ==========================================
+        msbuild gnt.core /p:ngpackages="Conari/0.0.1"
+        ==========================================
+        * https://github.com/3F/GetNuTool         
+        
+    </description>
+    <summary>Conari represents a flexible platform to work with ... TODO :: Source code and all details here: https://github.com/3F/Conari</summary>
+    <tags>c-func dll API unmanaged-function exported-c-function Conari</tags>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright (c) 2016  Denis Kuzmin [entry.reg@gmail.com] </copyright>
+    <references>
+      <reference file="Conari.dll" />
+    </references>
+  </metadata>
+</package>

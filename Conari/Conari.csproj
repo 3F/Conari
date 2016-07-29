@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{27152FD4-7B94-4AF0-A7ED-BE7E7A196D57}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>net.r_eg.Conari</RootNamespace>
+    <AssemblyName>Conari</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\Conari.XML</DocumentationFile>
+    <NoWarn>CS1591</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="IConari.cs" />
+    <Compile Include="Core\IBinder.cs" />
+    <Compile Include="Core\IProvider.cs" />
+    <Compile Include="Core\Link.cs" />
+    <Compile Include="Core\Config.cs" />
+    <Compile Include="ConariVersion.cs" />
+    <Compile Include="Core\Provider.cs" />
+    <Compile Include="Exceptions\LoaderException.cs" />
+    <Compile Include="Exceptions\LoadLibException.cs" />
+    <Compile Include="Exceptions\WinFuncFailException.cs" />
+    <Compile Include="Exceptions\CommonException.cs" />
+    <Compile Include="Core\ILoader.cs" />
+    <Compile Include="Core\Loader.cs" />
+    <Compile Include="ConariL.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Types\ActionOut.cs" />
+    <Compile Include="Types\FuncOut.cs" />
+    <Compile Include="Types\CharPtr.cs" />
+    <Compile Include="Types\int_t.cs" />
+    <Compile Include="Types\ptrdiff_t.cs" />
+    <Compile Include="Types\uint_t.cs" />
+    <Compile Include="Types\size_t.cs" />
+    <Compile Include="Types\float_t.cs" />
+    <Compile Include="WinAPI\NativeMethods.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="key.snk" />
+    <None Include="Resources\License.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\Conari_v1.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

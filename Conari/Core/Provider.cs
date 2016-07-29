@@ -1,0 +1,159 @@
+﻿/*
+ * The MIT License (MIT)
+ * 
+ * Copyright (c) 2016  Denis Kuzmin <entry.reg@gmail.com>
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+*/
+
+using System;
+using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
+using System.Runtime.InteropServices;
+using net.r_eg.Conari.Exceptions;
+using net.r_eg.Conari.WinAPI;
+
+namespace net.r_eg.Conari.Core
+{
+    public abstract class Provider: Loader, ILoader, IProvider
+    {
+        /// <summary>
+        /// Prefix for exported functions.
+        /// </summary>
+        public abstract string Prefix { get; set; }
+
+        /// <summary>
+        /// How should call methods implemented in unmanaged code.
+        /// </summary>
+        public abstract CallingConvention Convention { get; set; }
+
+        /// <summary>
+        /// Binds the exported function.
+        /// </summary>
+        /// <typeparam name="T">Type of delegate.</typeparam>
+        /// <param name="lpProcName">The full name of exported function.</param>
+        /// <returns>Delegate of exported function.</returns>
+        public T bindFunc<T>(string lpProcName) where T : class
+        {
+            return getDelegate<T>(lpProcName);
+        }
+
+        /// <summary>
+        /// Binds the exported C API Function.
+        /// </summary>
+        /// <typeparam name="T">Type of delegate.</typeparam>
+        /// <param name="func">The name of exported C API function.</param>
+        /// <returns>Delegate of exported function.</returns>
+        public T bind<T>(string func) where T : class
+        {
+            return bindFunc<T>(funcName(func));
+        }
+
+        /// <summary>
+        /// Returns full name of exported function.
+        /// </summary>
+        /// <param name="name">short function name.</param>
+        public virtual string funcName(string name)
+        {
+            if(String.IsNullOrWhiteSpace(name)) {
+                throw new ArgumentException("The function name cannot be empty or null.");
+            }
+            return $"{Prefix}{name}";
+        }
+
+        /// <param name="lpProcName">The name of exported function.</param>
+        /// <returns>The address of the exported function.</returns>
+        protected IntPtr getProcAddress(string lpProcName)
+        {
+            if(!Library.IsActive && !load()) {
+                throw new LoaderException($"The handle of library is zero. Last loaded library: '{Library.LibName}'");
+            }
+
+            IntPtr pAddr = NativeMethods.GetProcAddress(Library.Handle, lpProcName);
+            if(pAddr == IntPtr.Zero) {
+                throw new WinFuncFailException($"The entry point '{lpProcName}' was not found.", true);
+            }
+
+            return pAddr;
+        }
+
+        protected T getDelegate<T>(string lpProcName) where T : class
+        {
+            return getDelegate<T>(getProcAddress(lpProcName));
+        }
+
+        protected T getDelegate<T>(IntPtr ptr) where T : class
+        {
+            return getDelegate<T>(ptr, Convention);
+        }
+
+        protected T getDelegate<T>(IntPtr ptr, CallingConvention type) where T : class
+        {
+            MethodInfo m    = typeof(T).GetMethod("Invoke");
+            Type[] mParams  = m.GetParameters().Select(p => p.ParameterType).ToArray();
+
+            DynamicMethod dyn = new DynamicMethod(m.Name, m.ReturnType, mParams, typeof(Delegate), skipVisibility: true);
+
+            ILGenerator il = dyn.GetILGenerator();
+            /*              
+              Calli - Stack behavior:
+              https://msdn.microsoft.com/en-us/library/system.reflection.emit.opcodes.calli.aspx
+
+                1. Method arguments are pushed onto the stack.
+                2. The method entry pointer is pushed onto the stack.
+                3. Method arguments and the entry pointer are popped from the stack. 
+                   The call to the method is performed. When complete, a return value is generated by the callee method and sent to the caller.
+                4. The return value is pushed onto the stack.             
+            */
+
+            for(int i = 0; i < mParams.Length; ++i) {
+                il.Emit(OpCodes.Ldarg, i);
+            }
+
+            if(IntPtr.Size == sizeof(Int64)) {
+                il.Emit(OpCodes.Ldc_I8, ptr.ToInt64()); //64bit ptr
+            }
+            else {
+                il.Emit(OpCodes.Ldc_I4, ptr.ToInt32()); //32bit ptr
+            }
+
+            il.EmitCalli(OpCodes.Calli, type, convRetType(m.ReturnType), mParams);
+            il.Emit(OpCodes.Ret);
+
+            return dyn.CreateDelegate(m.DeclaringType) as T;
+        }
+
+        /// <summary>
+        /// to support of implicit/explicit conversions
+        /// </summary>
+        /// <param name="origin">Base type</param>
+        /// <returns></returns>
+        protected Type convRetType(Type origin)
+        {
+            var t = origin.GetMember("op_Implicit", BindingFlags.Public | BindingFlags.Static);
+
+            if(t != null && t.Length > 0) {
+                return ((MethodInfo)t[0]).ReturnType;
+            }
+
+            return origin;
+        }
+    }
+}

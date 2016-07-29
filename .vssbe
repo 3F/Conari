@@ -1,0 +1,214 @@
+﻿{
+  "Header": {
+    "_": [
+      " Current file requires a vsSolutionBuildEvent engine.",
+      " Free plugin for Visual Studio or MSBuild Tools:",
+      "  * http://visualstudiogallery.msdn.microsoft.com/0d1dbfd7-ed8a-40af-ae39-281bfeca2334/",
+      "  * http://vssbe.r-eg.net",
+      " Feedback: entry.reg@gmail.com"
+    ],
+    "Compatibility": "0.9"
+  },
+  "Components": [
+    {
+      "ClassName": "InternalComponent",
+      "Enabled": true
+    },
+    {
+      "ClassName": "UserVariableComponent",
+      "Enabled": true
+    },
+    {
+      "ClassName": "OWPComponent",
+      "Enabled": true
+    },
+    {
+      "ClassName": "NuGetComponent",
+      "Enabled": true
+    },
+    {
+      "ClassName": "FunctionComponent",
+      "Enabled": true
+    },
+    {
+      "ClassName": "FileComponent",
+      "Enabled": true
+    },
+    {
+      "ClassName": "DTEComponent",
+      "Enabled": true
+    },
+    {
+      "ClassName": "BuildComponent",
+      "Enabled": true
+    },
+    {
+      "ClassName": "SevenZipComponent",
+      "Enabled": true
+    },
+    {
+      "ClassName": "ConditionComponent",
+      "Enabled": true
+    },
+    {
+      "ClassName": "MSBuildComponent",
+      "Enabled": true
+    },
+    {
+      "ClassName": "CommentComponent",
+      "Enabled": true
+    }
+  ],
+  "PreBuild": [
+    {
+      "Enabled": true,
+      "Name": "ActDir",
+      "Caption": "Prepare output directory",
+      "SupportMSBuild": true,
+      "SupportSBEScripts": true,
+      "IgnoreIfBuildFailed": false,
+      "BuildType": "Common",
+      "Confirmation": false,
+      "ToConfiguration": [],
+      "ExecutionOrder": {
+        "$type": "net.r_eg.vsSBE.Events.ExecutionOrder[], vsSolutionBuildEvent",
+        "$values": []
+      },
+      "Process": {
+        "$type": "net.r_eg.vsSBE.Events.EventProcess, vsSolutionBuildEvent",
+        "Waiting": true,
+        "Hidden": true,
+        "TimeLimit": 30
+      },
+      "Mode": {
+        "$type": "net.r_eg.vsSBE.Events.ModeScript, vsSolutionBuildEvent",
+        "Type": "Script",
+        "Command": "#[$(dbin = \"bin/$(Configuration)/\")]\n\n$(pConari   = \"Conari\")\n$(odir      = \"$(dbin)raw/\")\n\n#[IO delete.directory(\"$(dbin)\", true)]\n#[IO copy.directory(\"\", \"$(dbin)\", true)]",
+        "Command__": [
+          "#[$(dbin = \"bin/$(Configuration)/\")]",
+          "",
+          "$(pConari   = \"Conari\")",
+          "$(odir      = \"$(dbin)raw/\")",
+          "",
+          "#[IO delete.directory(\"$(dbin)\", true)]",
+          "#[IO copy.directory(\"\", \"$(dbin)\", true)]"
+        ]
+      }
+    },
+    {
+      "Enabled": true,
+      "Name": "ActVer",
+      "Caption": "Update version number 'as is' - TODO: ",
+      "SupportMSBuild": true,
+      "SupportSBEScripts": true,
+      "IgnoreIfBuildFailed": false,
+      "BuildType": "Common",
+      "Confirmation": false,
+      "ToConfiguration": [],
+      "ExecutionOrder": {
+        "$type": "net.r_eg.vsSBE.Events.ExecutionOrder[], vsSolutionBuildEvent",
+        "$values": []
+      },
+      "Process": {
+        "$type": "net.r_eg.vsSBE.Events.EventProcess, vsSolutionBuildEvent",
+        "Waiting": true,
+        "Hidden": true,
+        "TimeLimit": 30
+      },
+      "Mode": {
+        "$type": "net.r_eg.vsSBE.Events.ModeScript, vsSolutionBuildEvent",
+        "Type": "Script",
+        "Command": "#[var pVer = #[File get(\".version\")]]\n\n#[IO replace.Regexp(\"$(pConari)/ConariVersion.cs\", \"(S_NUM\\s+=).+?\\\";\", \"$1 \\\"$(pVer)\\\";\")]\n\n#[IO replace.Regexp(\"Conari.nuspec\", \"<version>.+?</version>\", \"<version>$(pVer)</version>\")]\n#[IO replace.Regexp(\"Conari.nuspec\", \"\\\"Conari/[0-9.]+\\\"\", \"\\\"Conari/$(pVer)\\\"\")]",
+        "Command__": [
+          "#[var pVer = #[File get(\".version\")]]",
+          "",
+          "#[IO replace.Regexp(\"$(pConari)/ConariVersion.cs\", \"(S_NUM\\s+=).+?\\\";\", \"$1 \\\"$(pVer)\\\";\")]",
+          "",
+          "#[IO replace.Regexp(\"Conari.nuspec\", \"<version>.+?</version>\", \"<version>$(pVer)</version>\")]",
+          "#[IO replace.Regexp(\"Conari.nuspec\", \"\\\"Conari/[0-9.]+\\\"\", \"\\\"Conari/$(pVer)\\\"\")]"
+        ]
+      }
+    }
+  ],
+  "PostBuild": [
+    {
+      "Enabled": true,
+      "Name": "ActBinaries",
+      "Caption": "Binaries & tools ...",
+      "SupportMSBuild": true,
+      "SupportSBEScripts": true,
+      "IgnoreIfBuildFailed": true,
+      "BuildType": "Common",
+      "Confirmation": false,
+      "ToConfiguration": [],
+      "ExecutionOrder": {
+        "$type": "net.r_eg.vsSBE.Events.ExecutionOrder[], vsSolutionBuildEvent",
+        "$values": []
+      },
+      "Process": {
+        "$type": "net.r_eg.vsSBE.Events.EventProcess, vsSolutionBuildEvent",
+        "Waiting": true,
+        "Hidden": true,
+        "TimeLimit": 30
+      },
+      "Mode": {
+        "$type": "net.r_eg.vsSBE.Events.ModeScript, vsSolutionBuildEvent",
+        "Type": "Script",
+        "Command": "[IO copy.file(\n            \"$(SolutionDir)tools/*.*\", \n            \"$(odir)/tools/\", \n            true, \n            {\"*.nuspec\"})]\n            \n#[IO copy.file(\"Conari.nuspec\", \"$(odir)/Conari.nuspec\", true)]\n#[IO copy.file(\"$(pConari)/$(OutDir:$(pConari))/*.*\", \n               \"$(odir)/lib/net$(TargetFrameworkVersion.Replace('v', '').Replace('.', ''))/\", true)]\n\n#[IO copy.file(\"LICENSE\", \"$(odir)/\", true)]\n#[IO copy.file(\"Readme.md\", \"$(odir)/\", true)]\n#[IO copy.file(\"changelog.txt\", \"$(odir)/\", true)]",
+        "Command__": [
+          "[IO copy.file(",
+          "            \"$(SolutionDir)tools/*.*\", ",
+          "            \"$(odir)/tools/\", ",
+          "            true, ",
+          "            {\"*.nuspec\"})]",
+          "            ",
+          "#[IO copy.file(\"Conari.nuspec\", \"$(odir)/Conari.nuspec\", true)]",
+          "#[IO copy.file(\"$(pConari)/$(OutDir:$(pConari))/*.*\", ",
+          "               \"$(odir)/lib/net$(TargetFrameworkVersion.Replace('v', '').Replace('.', ''))/\", true)]",
+          "",
+          "#[IO copy.file(\"LICENSE\", \"$(odir)/\", true)]",
+          "#[IO copy.file(\"Readme.md\", \"$(odir)/\", true)]",
+          "#[IO copy.file(\"changelog.txt\", \"$(odir)/\", true)]"
+        ]
+      }
+    },
+    {
+      "Enabled": true,
+      "Name": "ActPack",
+      "Caption": "Packing with GetNuTool ...",
+      "SupportMSBuild": true,
+      "SupportSBEScripts": true,
+      "IgnoreIfBuildFailed": true,
+      "BuildType": "Common",
+      "Confirmation": false,
+      "ToConfiguration": [],
+      "ExecutionOrder": {
+        "$type": "net.r_eg.vsSBE.Events.ExecutionOrder[], vsSolutionBuildEvent",
+        "$values": []
+      },
+      "Process": {
+        "$type": "net.r_eg.vsSBE.Events.EventProcess, vsSolutionBuildEvent",
+        "Waiting": true,
+        "Hidden": true,
+        "TimeLimit": 30
+      },
+      "Mode": {
+        "$type": "net.r_eg.vsSBE.Events.ModeScript, vsSolutionBuildEvent",
+        "Type": "Script",
+        "Command": "#[NuGet gnt.raw(\"/t:pack /p:ngin=\\\"$(odir)\\\" /p:ngout=\\\"$(dbin)\\\"\")]",
+        "Command__": [
+          "#[NuGet gnt.raw(\"/t:pack /p:ngin=\\\"$(odir)\\\" /p:ngout=\\\"$(dbin)\\\"\")]"
+        ]
+      }
+    }
+  ],
+  "CancelBuild": [],
+  "WarningsBuild": [],
+  "ErrorsBuild": [],
+  "OWPBuild": [],
+  "Transmitter": [],
+  "CommandEvent": [],
+  "Logging": [],
+  "SlnOpened": [],
+  "SlnClosed": []
+}
