@@ -57,7 +57,9 @@
     <Compile Include="Core\Loader.cs" />
     <Compile Include="ConariL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Types\ActionRef.cs" />
     <Compile Include="Types\ActionOut.cs" />
+    <Compile Include="Types\FuncRef.cs" />
     <Compile Include="Types\FuncOut.cs" />
     <Compile Include="Types\CharPtr.cs" />
     <Compile Include="Types\int_t.cs" />

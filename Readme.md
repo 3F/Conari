@@ -8,7 +8,7 @@ The Conari represents a flexible platform to work with any exported functions of
 
 *Did you know: The [LunaRoad](https://github.com/3F/LunaRoad) project works over Conari.*
 
-[![Build status](https://ci.appveyor.com/api/projects/status/94y78phdvkoi5oda/branch/master?svg=true)](https://ci.appveyor.com/project/3Fs/conari/branch/master)
+[![Build status](https://ci.appveyor.com/api/projects/status/qc1d3ofsso8fd67t/branch/master?svg=true)](https://ci.appveyor.com/project/3Fs/conari/branch/master)
 [![release-src](https://img.shields.io/github/release/3F/Conari.svg)](https://github.com/3F/Conari/releases/latest)
 [![License](https://img.shields.io/badge/License-MIT-74A5C2.svg)](https://github.com/3F/Conari/blob/master/LICENSE)
 [![NuGet package](https://img.shields.io/nuget/v/Conari.svg)](https://www.nuget.org/packages/Conari/) 
@@ -21,15 +21,36 @@ using(IConari c = new ConariL("Library.dll")) {
 }
 ```
 
-Conari is ready for any exported functions, immediately:
+Conari is ready for any exported functions via lambda-functions, immediately:
 
 ```csharp
 using(var c = new ConariL("Library.dll"))
 {
-    c.bind<Action<IntPtr>>("pushnil")(L);
-    c.bind<Action<IntPtr, int, int>>("call")(L, 2, 1); 
+    c.bind<Action<int, int>>("call")(2, 1); 
     double num = c.bind<Func<IntPtr, int, double>>("tonumber")(L, 4);
 }
+```
+
+It does not require the creation of any additional **delegate**. The Conari will do it **automatically** instead of you.
+
+Just use `bind<>` methods and have fun !
+
+```csharp
+c.bind<...>("function")
+```
+
+you already may invoke it immediately as above:
+
+```csharp
+c.bind<Action<int, string>>("set")(-1, "Hello from Conari !");
+```
+
+or later:
+
+```csharp
+var set = c.bind<Action<int, string>>("set");
+...
+set(-1, "Hello from Conari !");
 ```
 
 Lazy loading:

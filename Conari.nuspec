@@ -13,7 +13,8 @@
     <description>
     
         Binder of Unmanaged code for .NET
-        Conari represents a flexible platform to work ...TODO
+        The Conari represents a flexible platform to work with any exported functions of libraries (a library or executable module). 
+        The lightweight and powerful binding from unmanaged code now is much more easier !
         _ _ _ _ _ _
         Source code and all details here: https://github.com/3F/Conari
         
@@ -25,8 +26,8 @@
         * https://github.com/3F/GetNuTool         
         
     </description>
-    <summary>Conari represents a flexible platform to work with ... TODO :: Source code and all details here: https://github.com/3F/Conari</summary>
-    <tags>c-func dll API unmanaged-function exported-c-function Conari</tags>
+    <summary>Represents a flexible platform to work with any exported functions of libraries. The lightweight and powerful binding from unmanaged code now is much more easier ! :: Source code and all details here: https://github.com/3F/Conari</summary>
+    <tags>exported-function unmanaged-code unmanaged-function exported-c-function native c-func API dll cpp c .net c# csharp Lua Conari</tags>
     <releaseNotes></releaseNotes>
     <copyright>Copyright (c) 2016  Denis Kuzmin [entry.reg@gmail.com] </copyright>
     <references>
