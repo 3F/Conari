@@ -56,6 +56,27 @@ namespace net.r_eg.Conari.Types
             return new size_t(ptr.ToInt32());
         }
 
+        public static implicit operator long(size_t number)
+        {
+            return number.val;
+        }
+
+        public static implicit operator size_t(ulong number)
+        {
+            return new size_t(number);
+        }
+
+        public static implicit operator int(size_t number)
+        {
+            return number.val;
+        }
+
+        // we also use this to initialize the uint_t as the uint type
+        public static implicit operator size_t(uint number)
+        {
+            return new size_t((uint_t)number);
+        }
+
         public size_t(uint_t number)
         {
             val = number;

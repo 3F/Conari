@@ -56,6 +56,27 @@ namespace net.r_eg.Conari.Types
             return new ptrdiff_t(ptr.ToInt32());
         }
 
+        public static implicit operator long(ptrdiff_t number)
+        {
+            return number.val;
+        }
+
+        public static implicit operator ptrdiff_t(long number)
+        {
+            return new ptrdiff_t(number);
+        }
+
+        public static implicit operator int(ptrdiff_t number)
+        {
+            return number.val;
+        }
+
+        // we also use this to initialize the int_t as the int type
+        public static implicit operator ptrdiff_t(int number)
+        {
+            return new ptrdiff_t(number);
+        }
+
         public ptrdiff_t(int_t number)
         {
             val = number;

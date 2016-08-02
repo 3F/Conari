@@ -22,6 +22,7 @@
  * THE SOFTWARE.
 */
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using net.r_eg.Conari.Core;
@@ -32,30 +33,12 @@ namespace net.r_eg.Conari
     public class ConariL: Provider, IConari, ILoader, IProvider, IBinder/*, IDisposable*/
     {
         /// <summary>
-        /// Prefix for exported functions.
-        /// </summary>
-        public override string Prefix
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// How should call methods implemented in unmanaged code.
-        /// </summary>
-        public override CallingConvention Convention
-        {
-            get;
-            set;
-        }
-        
-        /// <summary>
         /// The Conari with specific calling convention.
         /// </summary>
         /// <param name="cfg">The Conari configuration.</param>
         /// <param name="conv">How should call methods.</param>
         /// <param name="prefix">Optional prefix to use via `bind&lt;&gt;`</param>
-        public ConariL(Config cfg, CallingConvention conv, string prefix = null)
+        public ConariL(IConfig cfg, CallingConvention conv, string prefix = null)
         {
             Prefix      = prefix;
             Convention  = conv;
@@ -67,7 +50,7 @@ namespace net.r_eg.Conari
         /// </summary>
         /// <param name="cfg">The Conari configuration.</param>
         /// <param name="prefix">Optional prefix to use via `bind&lt;&gt;`</param>
-        public ConariL(Config cfg, string prefix = null)
+        public ConariL(IConfig cfg, string prefix = null)
             : this(cfg, CallingConvention.StdCall, prefix)
         {
 
@@ -96,8 +79,12 @@ namespace net.r_eg.Conari
 
         }
 
-        protected void init(Config cfg)
+        protected void init(IConfig cfg)
         {
+            if(cfg == null) {
+                throw new ArgumentException("Configuration cannot be null.");
+            }
+
             if(cfg.LazyLoading) {
                 Library = new Link(cfg.LibName);
             }

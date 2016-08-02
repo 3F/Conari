@@ -64,13 +64,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Conari\Conari.csproj">
-      <Project>{359a216f-1b6d-4a82-b75a-09509a23830a}</Project>
-      <Name>Conari</Name>
-    </ProjectReference>
+    <None Include="key.snk" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="key.snk" />
+    <ProjectReference Include="..\Conari\Conari.csproj">
+      <Project>{27152fd4-7b94-4af0-a7ed-be7e7a196d57}</Project>
+      <Name>Conari</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

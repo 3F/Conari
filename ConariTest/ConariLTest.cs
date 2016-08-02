@@ -16,14 +16,20 @@ namespace net.r_eg.LunaRoadTes
         public void loadTest1()
         {
             try {
-                new ConariL(null);
+                new ConariL((string)null);
                 Assert.Fail("1");
             }
             catch(Exception ex) { Assert.IsTrue(ex.GetType() == typeof(ArgumentException), ex.GetType().ToString()); }
 
             try {
-                new ConariL(STUB_LIB_NAME);
+                new ConariL((IConfig)null);
                 Assert.Fail("2");
+            }
+            catch(Exception ex) { Assert.IsTrue(ex.GetType() == typeof(ArgumentException), ex.GetType().ToString()); }
+
+            try {
+                new ConariL(STUB_LIB_NAME);
+                Assert.Fail("3");
             }
             catch(Exception ex) { Assert.IsTrue(ex.GetType() == typeof(LoadLibException), ex.GetType().ToString()); }
             

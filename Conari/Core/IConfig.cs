@@ -22,55 +22,23 @@
  * THE SOFTWARE.
 */
 
-using System;
-
 namespace net.r_eg.Conari.Core
 {
-    public struct Config: IConfig
+    public interface IConfig
     {
         /// <summary>
         /// The library.
         /// </summary>
-        public string LibName
-        {
-            get;
-            set;
-        }
+        string LibName { get; set; }
 
         /// <summary>
         /// To use `commit` methods for end calling.
-        /// TODO:
         /// </summary>
-        public bool TransactionStrategy
-        {
-            get;
-            set;
-        }
+        bool TransactionStrategy { get; set; }
 
         /// <summary>
         /// To load library only when it required.
         /// </summary>
-        public bool LazyLoading
-        {
-            get;
-            set;
-        }
-
-        public static explicit operator String(Config cfg)
-        {
-            return cfg.LibName;
-        }
-
-        public static explicit operator Config(String lib)
-        {
-            return new Config() { LibName = lib };
-        }
-
-        /// <param name="lib">The library.</param>
-        public Config(string lib)
-            : this()
-        {
-            LibName = lib;
-        }
+        bool LazyLoading { get; set; }
     }
 }

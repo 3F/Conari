@@ -24,53 +24,28 @@
 
 using System;
 
-namespace net.r_eg.Conari.Core
+namespace net.r_eg.Conari.Types
 {
-    public struct Config: IConfig
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Struct, AllowMultiple = false)]
+    public sealed class NativeTypeAttribute: Attribute
     {
-        /// <summary>
-        /// The library.
-        /// </summary>
-        public string LibName
-        {
-            get;
-            set;
-        }
+        /*
+        
+            Use this to change priority of selecting type for unmanaged code, for example:
 
-        /// <summary>
-        /// To use `commit` methods for end calling.
-        /// TODO:
-        /// </summary>
-        public bool TransactionStrategy
-        {
-            get;
-            set;
-        }
+            ```
+            [NativeType] // to say: use this type 'as is'.
+            public struct MyInteger
+            {
+                // without any [NativeType] should be used `int_t` type.
+                // however, the `int_t` follows the same rules as and `MyInteger`, and it can be the final `int` type, etc.
+                public static implicit operator int_t(MyInteger number) { }
+    
+                [NativeType] // to say: use `long` type for unmanaged code if should be used `MyInteger` type.
+                public static implicit operator long(MyInteger number) { }
 
-        /// <summary>
-        /// To load library only when it required.
-        /// </summary>
-        public bool LazyLoading
-        {
-            get;
-            set;
-        }
+            ````
 
-        public static explicit operator String(Config cfg)
-        {
-            return cfg.LibName;
-        }
-
-        public static explicit operator Config(String lib)
-        {
-            return new Config() { LibName = lib };
-        }
-
-        /// <param name="lib">The library.</param>
-        public Config(string lib)
-            : this()
-        {
-            LibName = lib;
-        }
+         */
     }
 }

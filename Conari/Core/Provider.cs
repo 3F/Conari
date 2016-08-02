@@ -23,11 +23,13 @@
 */
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
 using net.r_eg.Conari.Exceptions;
+using net.r_eg.Conari.Types;
 using net.r_eg.Conari.WinAPI;
 
 namespace net.r_eg.Conari.Core
@@ -37,12 +39,20 @@ namespace net.r_eg.Conari.Core
         /// <summary>
         /// Prefix for exported functions.
         /// </summary>
-        public abstract string Prefix { get; set; }
+        public string Prefix
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// How should call methods implemented in unmanaged code.
         /// </summary>
-        public abstract CallingConvention Convention { get; set; }
+        public CallingConvention Convention
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// Binds the exported function.
@@ -141,19 +151,56 @@ namespace net.r_eg.Conari.Core
         }
 
         /// <summary>
-        /// to support of implicit/explicit conversions
+        /// to support of implicit conversions
         /// </summary>
         /// <param name="origin">Base type</param>
         /// <returns></returns>
         protected Type convRetType(Type origin)
         {
-            var t = origin.GetMember("op_Implicit", BindingFlags.Public | BindingFlags.Static);
+            Type found = typeByNativeAttr(origin);
+            if(found != null) {
+                return found;
+            }
 
-            if(t != null && t.Length > 0) {
-                return ((MethodInfo)t[0]).ReturnType;
+            var methods = implicitConvFor(origin).Where(t => t.ReturnType != origin);
+            foreach(var m in methods)
+            {
+                // we will use the first conversion
+                if(m.ReturnType.Namespace != typeof(int).Namespace) {
+                    return convRetType(m.ReturnType);
+                }
+                return m.ReturnType;
             }
 
             return origin;
+        }
+
+        protected Type typeByNativeAttr(Type origin)
+        {
+            // check for the entire struct
+            if(origin.GetCustomAttributes(false)
+                .Any(a => a.GetType() == typeof(NativeTypeAttribute)))
+            {
+                return origin;
+            }
+
+            // check for implicit conversions
+            foreach(MethodInfo m in implicitConvFor(origin))
+            {
+                if(Attribute.GetCustomAttributes(m)
+                    .Any(a => a.GetType() == typeof(NativeTypeAttribute)))
+                {
+                    return m.ReturnType;
+                }
+            }
+
+            return null;
+        }
+
+        protected virtual IEnumerable<MethodInfo> implicitConvFor(Type type)
+        {
+            return type.GetMember("op_Implicit", BindingFlags.Public | BindingFlags.Static)
+                       .Select(t => (MethodInfo)t);
         }
     }
 }
