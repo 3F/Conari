@@ -5,7 +5,7 @@ using net.r_eg.Conari;
 using net.r_eg.Conari.Core;
 using net.r_eg.Conari.Exceptions;
 
-namespace net.r_eg.LunaRoadTes
+namespace net.r_eg.ConariTest
 {
     [TestClass]
     public class ConariLTest

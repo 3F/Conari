@@ -2,7 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using net.r_eg.Conari.Core;
 
-namespace net.r_eg.LunaRoadTest.Core
+namespace net.r_eg.ConariTest.Core
 {
     [TestClass]
     public class LinkTest

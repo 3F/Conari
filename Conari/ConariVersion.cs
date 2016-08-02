@@ -6,7 +6,7 @@ namespace net.r_eg.Conari
 
     // TODO: it can be as here - vssbe.r-eg.net/doc/Examples/Version
     // but currently I don't want to change this, because it will be automatically changed if plugin exists (use .version)
-    public struct LunaRoadVersion
+    public struct ConariVersion
     {
         public static readonly Version number = new Version(S_NUM_REV);
 
