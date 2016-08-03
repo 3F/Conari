@@ -69,6 +69,7 @@
     <Compile Include="Types\uint_t.cs" />
     <Compile Include="Types\size_t.cs" />
     <Compile Include="Types\float_t.cs" />
+    <Compile Include="WinAPI\LoadLibraryFlags.cs" />
     <Compile Include="WinAPI\NativeMethods.cs" />
   </ItemGroup>
   <ItemGroup>

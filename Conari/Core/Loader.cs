@@ -70,7 +70,7 @@ namespace net.r_eg.Conari.Core
 
         protected Link loadLibrary(string lib)
         {
-            IntPtr hModule = NativeMethods.LoadLibrary(lib);
+            IntPtr hModule = NativeMethods.LoadLibraryEx(lib, IntPtr.Zero, LoadLibraryFlags.LOAD_WITH_ALTERED_SEARCH_PATH);
             return new Link(hModule, lib);
         }
 

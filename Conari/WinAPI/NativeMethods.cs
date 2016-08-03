@@ -46,6 +46,22 @@ namespace net.r_eg.Conari.WinAPI
         public static extern IntPtr LoadLibrary([MarshalAs(UnmanagedType.LPWStr)] string lpFileName);
 
         /// <summary>
+        /// Loads the specified module into the address space of the calling process. The specified module may cause other modules to be loaded.
+        /// https://msdn.microsoft.com/en-us/library/windows/desktop/ms684179.aspx
+        /// 
+        /// The behavior of this function is identical to the LoadLibrary function without flags.
+        /// </summary>
+        /// <param name="lpFileName">
+        ///     A string that specifies the file name of the module to load. 
+        ///     The module can be a library module (a .dll file) or an executable module (an .exe file).
+        /// </param>
+        /// <param name="hFile">This parameter is reserved for future use. It must be NULL.</param>
+        /// <param name="dwFlags">The action to be taken when loading the module. Use from LoadLibraryFlags.</param>
+        /// <returns></returns>
+        [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern IntPtr LoadLibraryEx([MarshalAs(UnmanagedType.LPWStr)]string lpFileName, IntPtr hFile, uint dwFlags);
+
+        /// <summary>
         /// Retrieves the address of an exported function or variable from the specified dynamic-link library (DLL).
         /// https://msdn.microsoft.com/en-us/library/windows/desktop/ms683212.aspx
         /// </summary>
