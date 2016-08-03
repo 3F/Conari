@@ -10,7 +10,7 @@ namespace net.r_eg.Conari
     {
         public static readonly Version number = new Version(S_NUM_REV);
 
-        public const string S_NUM       = "0.0.1";
+        public const string S_NUM       = "1.0.0";
         public const string S_REV       = "0";
         public const string S_NUM_REV   = S_NUM + "." + S_REV;
 

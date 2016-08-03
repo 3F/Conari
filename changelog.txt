@@ -3,4 +3,7 @@ Conari
 _ _ _ _
 
 
+[v1.0]
 
+    * Initial release.
+      A flexible platform to work with any exported functions of libraries (a library or executable module).
