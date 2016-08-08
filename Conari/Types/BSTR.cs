@@ -25,13 +25,23 @@
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Text;
 using net.r_eg.Conari.Extension;
 
 namespace net.r_eg.Conari.Types
 {
+    /// <summary>
+    /// A BSTR (Basic string or binary string) is a string data type that is used by COM, Automation, and Interop functions.
+    /// https://msdn.microsoft.com/en-us/library/windows/desktop/ms221069(v=vs.85).aspx
+    /// 
+    /// A BSTR is a composite data type that consists of a length prefix, a data string, and a terminator:
+    /// * Length prefix - A 4-byte integer that contains the number of bytes in the following data string. 
+    ///                   It appears immediately before the first character of the data string. 
+    /// 
+    /// * Data string   - A string of Unicode characters. May contain multiple embedded null characters.
+    /// * Terminator    - 2-null characters.
+    /// </summary>
     [DebuggerDisplay("{(string)this} [ {\"0x\" + ptr.ToString(\"X\")} Length: {Length} ]")]
-    public struct CharPtr
+    public struct BSTR
     {
         private IntPtr ptr;
 
@@ -48,42 +58,38 @@ namespace net.r_eg.Conari.Types
         public int Length
         {
             get {
-                return ptr.GetStringLength();
+                return ptr.GetStringLength(2);
             }
         }
 
-        public string Utf8
+        public string Unicode
         {
-            get
-            {
-                if(Length < 1) {
-                    return String.Empty;
-                }
-                return Encoding.UTF8.GetString(Raw, 0, Length);
+            get {
+                return Marshal.PtrToStringUni(ptr);
             }
         }
 
-        public static implicit operator string(CharPtr val)
+        public static implicit operator string(BSTR val)
         {
-            return Marshal.PtrToStringAnsi(val.ptr);
+            return Marshal.PtrToStringBSTR(val.ptr);
         }
 
-        public static implicit operator IntPtr(CharPtr val)
+        public static implicit operator IntPtr(BSTR val)
         {
             return val.ptr;
         }
 
-        public static implicit operator CharPtr(IntPtr ptr)
+        public static implicit operator BSTR(IntPtr ptr)
         {
-            return new CharPtr(ptr);
+            return new BSTR(ptr);
         }
 
-        public static implicit operator CharPtr(Int32 val)
+        public static implicit operator BSTR(Int32 val)
         {
-            return new CharPtr((IntPtr)val);
+            return new BSTR((IntPtr)val);
         }
 
-        public CharPtr(IntPtr ptr)
+        public BSTR(IntPtr ptr)
         {
             this.ptr = ptr;
         }

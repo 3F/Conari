@@ -23,69 +23,62 @@
 */
 
 using System;
-using System.Diagnostics;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using net.r_eg.Conari.Extension;
 
-namespace net.r_eg.Conari.Types
+namespace net.r_eg.Conari.Native.Core
 {
-    [DebuggerDisplay("{(string)this} [ {\"0x\" + ptr.ToString(\"X\")} Length: {Length} ]")]
-    public struct CharPtr
+    using Fields = List<Field>;
+
+    public sealed class Raw
     {
-        private IntPtr ptr;
+        private IntPtr pointer;
+        private Fields fields;
 
-        /// <summary>
-        /// Raw byte-sequence
-        /// </summary>
-        public byte[] Raw
+        private int offset;
+        private int length;
+
+        public byte[] Values
         {
             get {
-                return ptr.GetStringBytes(Length);
+                return Iter.ToArray();
             }
         }
 
-        public int Length
+        public IEnumerable<byte> Iter
         {
             get {
-                return ptr.GetStringLength();
+                return read(pointer, offset, length);
             }
         }
 
-        public string Utf8
+        public BType Type
         {
-            get
-            {
-                if(Length < 1) {
-                    return String.Empty;
-                }
-                return Encoding.UTF8.GetString(Raw, 0, Length);
+            get {
+                return new BType(Values, fields);
             }
         }
 
-        public static implicit operator string(CharPtr val)
+        public Raw(IntPtr ptr, Fields fields)
+            : this(ptr, fields.Sum(f => f.tsize), 0)
         {
-            return Marshal.PtrToStringAnsi(val.ptr);
+            this.fields = fields;
         }
 
-        public static implicit operator IntPtr(CharPtr val)
+        public Raw(IntPtr ptr, int length, int offset = 0)
         {
-            return val.ptr;
+            pointer = ptr;
+
+            this.length = length;
+            this.offset = offset;
         }
 
-        public static implicit operator CharPtr(IntPtr ptr)
+        private IEnumerable<byte> read(IntPtr ptr, int offset, int len)
         {
-            return new CharPtr(ptr);
-        }
-
-        public static implicit operator CharPtr(Int32 val)
-        {
-            return new CharPtr((IntPtr)val);
-        }
-
-        public CharPtr(IntPtr ptr)
-        {
-            this.ptr = ptr;
+            for(int i = offset; i < len; ++i) {
+                yield return Marshal.ReadByte(ptr, i);
+            }
         }
     }
 }

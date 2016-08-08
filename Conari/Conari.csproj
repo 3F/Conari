@@ -39,10 +39,13 @@
     <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\IConfig.cs" />
+    <Compile Include="Extensions\IntPtrExtension.cs" />
     <Compile Include="IConari.cs" />
     <Compile Include="Core\IBinder.cs" />
     <Compile Include="Core\IProvider.cs" />
@@ -57,9 +60,16 @@
     <Compile Include="Core\ILoader.cs" />
     <Compile Include="Core\Loader.cs" />
     <Compile Include="ConariL.cs" />
+    <Compile Include="Native\Core\Field.cs" />
+    <Compile Include="Native\Core\BType.cs" />
+    <Compile Include="Native\Core\Raw.cs" />
+    <Compile Include="Native\NativeData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Types\Action\Ref\ActionRef.cs" />
     <Compile Include="Types\Action\Out\ActionOut.cs" />
+    <Compile Include="Types\BSTR.cs" />
+    <Compile Include="Types\WCharPtr.cs" />
+    <Compile Include="Types\UnmanagedString.cs" />
     <Compile Include="Types\Func\Ref\FuncRef.cs" />
     <Compile Include="Types\Func\Out\FuncOut.cs" />
     <Compile Include="Types\CharPtr.cs" />
