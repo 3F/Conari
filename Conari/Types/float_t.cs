@@ -23,9 +23,11 @@
 */
 
 using System;
+using System.Diagnostics;
 
 namespace net.r_eg.Conari.Types
 {
+    [DebuggerDisplay(" = {val} [ ActualSize: {ActualSize} ]")]
     public struct float_t
     {
         public const int SIZE_SINGLE = sizeof(Single);

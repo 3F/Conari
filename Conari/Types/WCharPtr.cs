@@ -31,7 +31,7 @@ using net.r_eg.Conari.Extension;
 namespace net.r_eg.Conari.Types
 {
     [DebuggerDisplay("{(string)this} [ {\"0x\" + ptr.ToString(\"X\")} Length: {Length} ]")]
-    public struct CharPtr
+    public struct WCharPtr
     {
         private IntPtr ptr;
 
@@ -48,42 +48,42 @@ namespace net.r_eg.Conari.Types
         public int Length
         {
             get {
-                return ptr.GetStringLength();
+                return ptr.GetStringLength(2);
             }
         }
 
-        public string Utf8
+        public string BigEndian
         {
             get
             {
                 if(Length < 1) {
                     return String.Empty;
                 }
-                return Encoding.UTF8.GetString(Raw, 0, Length);
+                return Encoding.BigEndianUnicode.GetString(Raw, 0, Length);
             }
         }
 
-        public static implicit operator string(CharPtr val)
+        public static implicit operator string(WCharPtr val)
         {
-            return Marshal.PtrToStringAnsi(val.ptr);
+            return Marshal.PtrToStringUni(val.ptr);
         }
 
-        public static implicit operator IntPtr(CharPtr val)
+        public static implicit operator IntPtr(WCharPtr val)
         {
             return val.ptr;
         }
 
-        public static implicit operator CharPtr(IntPtr ptr)
+        public static implicit operator WCharPtr(IntPtr ptr)
         {
-            return new CharPtr(ptr);
+            return new WCharPtr(ptr);
         }
 
-        public static implicit operator CharPtr(Int32 val)
+        public static implicit operator WCharPtr(Int32 val)
         {
-            return new CharPtr((IntPtr)val);
+            return new WCharPtr((IntPtr)val);
         }
 
-        public CharPtr(IntPtr ptr)
+        public WCharPtr(IntPtr ptr)
         {
             this.ptr = ptr;
         }

@@ -23,9 +23,11 @@
 */
 
 using System;
+using System.Diagnostics;
 
 namespace net.r_eg.Conari.Types
 {
+    [DebuggerDisplay("(int_t) = {(long)val} [ IntPtr.Size: {System.IntPtr.Size} ]")]
     public struct ptrdiff_t
     {
         private int_t val;

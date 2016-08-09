@@ -23,6 +23,7 @@
 */
 
 using System;
+using System.Diagnostics;
 
 namespace net.r_eg.Conari.Types
 {
@@ -31,6 +32,7 @@ namespace net.r_eg.Conari.Types
     /// /or/ 
     /// unsigned __int64 (unsigned long long)
     /// </summary>
+    [DebuggerDisplay(" = {val} [ ActualSize: {ActualSize} ]")]
     public struct uint_t
     {
         public const int SIZE_IU64  = sizeof(UInt64);

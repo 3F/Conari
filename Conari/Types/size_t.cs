@@ -23,9 +23,11 @@
 */
 
 using System;
+using System.Diagnostics;
 
 namespace net.r_eg.Conari.Types
 {
+    [DebuggerDisplay("(uint_t) = {(ulong)val} [ UIntPtr.Size: {System.UIntPtr.Size} ]")]
     public struct size_t
     {
         private uint_t val;
@@ -35,12 +37,12 @@ namespace net.r_eg.Conari.Types
             return number.val;
         }
 
-        public static implicit operator IntPtr(size_t number)
+        public static implicit operator UIntPtr(size_t number)
         {
             if(number.val.ActualSize == uint_t.SIZE_IU64) {
-                return new IntPtr((Int64)number.val);
+                return new UIntPtr((UInt64)number.val);
             }
-            return new IntPtr((Int32)number.val);
+            return new UIntPtr((UInt32)number.val);
         }
 
         public static implicit operator size_t(uint_t number)
@@ -48,12 +50,12 @@ namespace net.r_eg.Conari.Types
             return new size_t(number);
         }
 
-        public static implicit operator size_t(IntPtr ptr)
+        public static implicit operator size_t(UIntPtr ptr)
         {
-            if(IntPtr.Size == uint_t.SIZE_IU64) {
-                return new size_t(ptr.ToInt64());
+            if(UIntPtr.Size == uint_t.SIZE_IU64) {
+                return new size_t(ptr.ToUInt64());
             }
-            return new size_t(ptr.ToInt32());
+            return new size_t((uint_t)ptr.ToUInt32());
         }
 
         public static implicit operator long(size_t number)
@@ -80,12 +82,6 @@ namespace net.r_eg.Conari.Types
         public size_t(uint_t number)
         {
             val = number;
-        }
-
-        public size_t(int_t number)
-            : this((uint_t)number)
-        {
-
         }
     }
 }

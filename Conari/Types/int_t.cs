@@ -23,9 +23,11 @@
 */
 
 using System;
+using System.Diagnostics;
 
 namespace net.r_eg.Conari.Types
 {
+    [DebuggerDisplay(" = {val} [ ActualSize: {ActualSize} ]")]
     public struct int_t
     {
         public const int SIZE_I64   = sizeof(Int64);
