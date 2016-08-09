@@ -61,6 +61,8 @@
   <ItemGroup>
     <Compile Include="ConariLTest.cs" />
     <Compile Include="Core\LinkTest.cs" />
+    <Compile Include="Extensions\IntPtrExtensionTest.cs" />
+    <Compile Include="Types\UnmanagedStringTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
