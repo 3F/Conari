@@ -13,7 +13,7 @@ The Conari represents a flexible platform to work with any exported functions of
 [![License](https://img.shields.io/badge/License-MIT-74A5C2.svg)](https://github.com/3F/Conari/blob/master/LICENSE)
 [![NuGet package](https://img.shields.io/nuget/v/Conari.svg)](https://www.nuget.org/packages/Conari/) 
 
-Easy to start:
+**Easy to start:**
 
 ```csharp
 using(IConari c = new ConariL("Library.dll")) {
@@ -21,7 +21,19 @@ using(IConari c = new ConariL("Library.dll")) {
 }
 ```
 
-Conari is ready for any exported functions via lambda-functions, immediately:
+**Conari is ready for any exported functions immediately via:**
+
+* Dynamic features / DLR:
+
+```csharp
+var ptr     = d.test<IntPtr>(); // eqv: l.bind<Func<IntPtr>>("test")();
+var codec   = d.avcodec_find_encoder<IntPtr>(AV_CODEC_ID_MP2); // eqv: l.bind<Func<ulong, IntPtr>>("avcodec_find_encoder")(AV_CODEC_ID_MP2);
+              d.push(); // eqv: l.bind<Action>("push")();
+```
+
+*It does not require the any configuration from you, we will do it* ***automatically.*** *Easy and works well.*
+
+* Lambda expressions:
 
 ```csharp
 using(var c = new ConariL("Library.dll"))
@@ -31,7 +43,7 @@ using(var c = new ConariL("Library.dll"))
 }
 ```
 
-It does not require the creation of any additional **delegate**. The Conari will do it **automatically** instead of you.
+This also does not require the creation of any additional **delegate**. The Conari will do it **automatically** instead of you.
 
 Just use `bind<>` methods and have fun !
 
@@ -53,7 +65,7 @@ var set = c.bind<Action<int, string>>("set");
 set(-1, "Hello from Conari !");
 ```
 
-Lazy loading:
+**Lazy loading:**
 
 ```csharp
 using(var l = new ConariL(
@@ -75,7 +87,11 @@ using(var l = new ConariL("Library.dll", CallingConvention.Cdecl))
 }
 ```
 
-Additional types:
+**Additional types:**
+
+* BSTR, CharPtr, float_t, int_t, ptrdiff_t, size_t, uint_t, WCharPtr
+* UnmanagedString - to allocation of new unmanaged strings for your unmanaged code.
+* ...
 
 ```csharp
 
@@ -88,7 +104,9 @@ uint_t v = dll.getU(2);
 ```
 
 
-and more ...
+**and more ...** 
+
+*you wish, we doing*
 
 ----
 
@@ -112,4 +130,3 @@ Available variants:
 * NuGet Commandline: `nuget install Conari`
 * [/releases](https://github.com/3F/Conari/releases) ( [latest](https://github.com/3F/Conari/releases/latest) )
 * [Nightly builds](https://ci.appveyor.com/project/3Fs/conari/history) (`/artifacts` page). But remember: It can be unstable or not work at all. Use this for tests of latest changes.
-
