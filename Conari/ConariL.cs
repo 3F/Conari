@@ -33,6 +33,16 @@ namespace net.r_eg.Conari
     public class ConariL: Provider, IConari, ILoader, IProvider, IBinder/*, IDisposable*/
     {
         /// <summary>
+        /// Provides dynamic features like adding 
+        /// and invoking of new exported-functions at runtime.
+        /// </summary>
+        public dynamic DLR
+        {
+            get;
+            protected set;
+        }
+
+        /// <summary>
         /// The Conari with specific calling convention.
         /// </summary>
         /// <param name="cfg">The Conari configuration.</param>
@@ -40,6 +50,8 @@ namespace net.r_eg.Conari
         /// <param name="prefix">Optional prefix to use via `bind&lt;&gt;`</param>
         public ConariL(IConfig cfg, CallingConvention conv, string prefix = null)
         {
+            DLR = new ProviderDLR(this);
+
             Prefix      = prefix;
             Convention  = conv;
             init(cfg);

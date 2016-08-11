@@ -23,16 +23,24 @@
 */
 
 using System;
-using net.r_eg.Conari.Core;
+using System.Reflection;
+using System.Reflection.Emit;
+using System.Runtime.InteropServices;
 
-namespace net.r_eg.Conari
+namespace net.r_eg.Conari.Core
 {
-    public interface IConari: IBinder, IProvider, IDisposable
+    public struct TDyn
     {
-        /// <summary>
-        /// Provides dynamic features like adding 
-        /// and invoking of new exported-functions at runtime.
-        /// </summary>
-        dynamic DLR { get; }
+        public DynamicMethod dynamic;
+
+        public MethodInfo method;
+
+        public Type[] args;
+
+        public Type returnType;
+
+        public Type declaringType;
+
+        public CallingConvention convention;
     }
 }
