@@ -83,12 +83,12 @@ namespace NS_UNLIB_API_
         return bstr;
     }
 
-    LIBAPI std::string get_StringVal(std::string str)
+    LIBAPI_CPP std::string get_StringVal(std::string str)
     {
         return str;
     }
 
-    LIBAPI std::wstring get_WStringVal(std::wstring wstr)
+    LIBAPI_CPP std::wstring get_WStringVal(std::wstring wstr)
     {
         return wstr;
     }
@@ -96,6 +96,23 @@ namespace NS_UNLIB_API_
 
     /* complex */
 
+    std::shared_ptr<TSpec> g_sharedTSpec; // to check DLR, delegates and MI
+    LIBAPI TSpec* get_TSpec()
+    {
+        if (g_sharedTSpec != nullptr) {
+            return g_sharedTSpec.get();
+        }
+
+        auto s = std::make_shared<TSpec>();
+
+        s->a    = 2;
+        s->b    = 4;
+        s->name = "Conari";
+
+        g_sharedTSpec = s;
+
+        return s.get();
+    }
 
 }
 _NS_UNLIB_API

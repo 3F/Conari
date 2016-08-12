@@ -65,6 +65,7 @@
     <Compile Include="Core\ILoader.cs" />
     <Compile Include="Core\Loader.cs" />
     <Compile Include="ConariL.cs" />
+    <Compile Include="Native\Core\BReader.cs" />
     <Compile Include="Native\Core\Field.cs" />
     <Compile Include="Native\Core\BType.cs" />
     <Compile Include="Native\Core\Raw.cs" />

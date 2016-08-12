@@ -55,10 +55,10 @@ namespace net.r_eg.Conari.Core
 
         /// <summary>
         /// Magic methods. Invoking.
-        /// <<![CDATA[
+        /// </summary>
+        /// <![CDATA[
         ///     `[result =] name<return_type>([{argument_types}])`
         /// ]]>
-        /// </summary>
         /// <param name="binder"></param>
         /// <param name="args"></param>
         /// <param name="result"></param>

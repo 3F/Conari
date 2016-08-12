@@ -29,12 +29,12 @@ namespace NS_UNLIB_API_
     LIBAPI const wchar_t* get_WCharPtrVal(const wchar_t* wstr);
     LIBAPI const BSTR* get_BSTRVal(const BSTR* bstr);
 
-    LIBAPI std::string get_StringVal(std::string str);
-    LIBAPI std::wstring get_WStringVal(std::wstring wstr);
+    LIBAPI_CPP std::string get_StringVal(std::string str);
+    LIBAPI_CPP std::wstring get_WStringVal(std::wstring wstr);
 
     /* complex */
 
-    //LIBAPI TSpec* get_TSpec();
+    LIBAPI TSpec* get_TSpec();
     //LIBAPI TSpec* get_TSpec(BYTE a, int b, const char* name);
 
     //LIBAPI TSpecB* get_TSpecB_A_ptr();

@@ -73,7 +73,7 @@ namespace net.r_eg.Conari.Native
             }
             return sum;
         }
-
+        
         /// <summary>
         /// Gets size of selected type in bytes that's should be considered as unmanaged type.
         /// </summary>
@@ -86,6 +86,16 @@ namespace net.r_eg.Conari.Native
             }
 
             return Marshal.SizeOf(type);
+        }
+
+        /// <summary>
+        /// Alias to `int SizeOf(Type type)`
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static int SizeOf<T>()
+        {
+            return SizeOf(typeof(T));
         }
 
         /// <summary>
@@ -230,6 +240,11 @@ namespace net.r_eg.Conari.Native
         protected virtual int track(string name, Type type)
         {
             int size = SizeOf(type);
+
+            if(type == typeof(IntPtr)) { // retype to use the fixed size
+                type = (size == sizeof(Int64)) ? typeof(Int64) : typeof(Int32);
+            }
+
             map.Add(new Field(type, size) { name = fieldName(name) });
 
             return size;

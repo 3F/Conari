@@ -56,6 +56,15 @@ namespace net.r_eg.Conari.Core
             set;
         }
 
+        /// <summary>
+        /// To cache dynamic types.
+        /// </summary>
+        public bool CacheDLR
+        {
+            get;
+            set;
+        }
+
         public static explicit operator String(Config cfg)
         {
             return cfg.LibName;
@@ -63,14 +72,15 @@ namespace net.r_eg.Conari.Core
 
         public static explicit operator Config(String lib)
         {
-            return new Config() { LibName = lib };
+            return new Config(lib);
         }
 
         /// <param name="lib">The library.</param>
         public Config(string lib)
             : this()
         {
-            LibName = lib;
+            LibName     = lib;
+            CacheDLR    = true;
         }
     }
 }

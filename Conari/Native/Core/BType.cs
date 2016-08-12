@@ -112,130 +112,6 @@ namespace net.r_eg.Conari.Native.Core
             Fields      = assign(fields, data);
         }
 
-        protected TFields assign(TFields fields, byte[] data)
-        {
-            var ret = new TFields();
-
-            if(fields == null || fields.Count < 1) {
-                return fields;
-            }
-
-            int offset = 0;
-            foreach(var f in fields)
-            {
-                var val = new Field(f);
-                setValue(val, ref offset, ref data);
-                ret.Add(val);
-            }
-
-            return ret;
-        }
-
-        protected void setValue(Field field, ref int offset, ref byte[] data)
-        {
-            // the BinaryReader as variant...
-
-            byte[] val  = range(ref data, offset, field.tsize);
-            offset      += field.tsize;
-
-            if(field.type == typeof(Byte)) {
-                field.value = (Byte)val[0];
-                return;
-            }
-
-            if(field.type == typeof(SByte)) {
-                field.value = (SByte)val[0];
-                return;
-            }
-
-            if(field.type == typeof(Int16)) {
-                field.value = BitConverter.ToInt16(val, 0);
-                return;
-            }
-
-            if(field.type == typeof(UInt16)) {
-                field.value = BitConverter.ToUInt16(val, 0);
-                return;
-            }
-
-            if(field.type == typeof(Int32)) {
-                field.value = BitConverter.ToInt32(val, 0);
-                return;
-            }
-
-            if(field.type == typeof(UInt32)) {
-                field.value = BitConverter.ToUInt32(val, 0);
-                return;
-            }
-
-            if(field.type == typeof(Int64)) {
-                field.value = BitConverter.ToInt64(val, 0);
-                return;
-            }
-
-            if(field.type == typeof(UInt64)) {
-                field.value = BitConverter.ToUInt64(val, 0);
-                return;
-            }
-
-            if(field.type == typeof(IntPtr))
-            {
-                if(IntPtr.Size == sizeof(Int64)) {
-                    field.value = BitConverter.ToInt64(val, 0);
-                }
-                else {
-                    field.value = BitConverter.ToInt32(val, 0);
-                }
-
-                return;
-            }
-
-            if(field.type == typeof(UIntPtr))
-            {
-                if(UIntPtr.Size == sizeof(UInt64)) {
-                    field.value = BitConverter.ToUInt64(val, 0);
-                }
-                else {
-                    field.value = BitConverter.ToUInt32(val, 0);
-                }
-
-                return;
-            }
-
-            if(field.type == typeof(Single)) {
-                field.value = BitConverter.ToSingle(val, 0);
-                return;
-            }
-
-            if(field.type == typeof(Double)) {
-                field.value = BitConverter.ToDouble(val, 0);
-                return;
-            }
-
-            if(field.type == typeof(Boolean)) {
-                field.value = BitConverter.ToBoolean(val, 0);
-                return;
-            }
-
-            if(field.type == typeof(Char)) {
-                field.value = BitConverter.ToChar(val, 0);
-                return;
-            }
-
-            if(field.type == typeof(String))
-            {
-                if(IntPtr.Size == sizeof(Int64)) {
-                    field.value = BitConverter.ToInt64(val, 0);
-                }
-                else {
-                    field.value = BitConverter.ToInt32(val, 0);
-                }
-                
-                //field.value = new Types.CharPtr((IntPtr)field.value);
-                return;
-            }
-        }
-
         protected virtual bool isNoname(string name)
         {
             // (name.IndexOf('<') != -1)
@@ -254,15 +130,23 @@ namespace net.r_eg.Conari.Native.Core
             return name.Substring(left, len);
         }
 
-        private byte[] range(ref byte[] data, int offset, int len)
+        protected TFields assign(TFields fields, byte[] data)
         {
-            int idx = 0;
-            byte[] ret = new byte[Math.Max(0, len)];
+            var ret = new TFields();
 
-            len = offset + len;
-            while(offset < len) {
-                ret[idx++] = data[offset++];
+            if(fields == null || fields.Count < 1) {
+                return fields;
             }
+
+            BReader br = new BReader(data, 0);
+
+            foreach(var f in fields)
+            {
+                var val     = new Field(f);
+                val.value   = br.next(val.type, val.tsize);
+                ret.Add(val);
+            }
+
             return ret;
         }
     }

@@ -50,8 +50,6 @@ namespace net.r_eg.Conari
         /// <param name="prefix">Optional prefix to use via `bind&lt;&gt;`</param>
         public ConariL(IConfig cfg, CallingConvention conv, string prefix = null)
         {
-            DLR = new ProviderDLR(this);
-
             Prefix      = prefix;
             Convention  = conv;
             init(cfg);
@@ -96,6 +94,10 @@ namespace net.r_eg.Conari
             if(cfg == null) {
                 throw new ArgumentException("Configuration cannot be null.");
             }
+
+            DLR = new ProviderDLR(this) {
+                Cache = cfg.CacheDLR
+            };
 
             if(cfg.LazyLoading) {
                 Library = new Link(cfg.LibName);

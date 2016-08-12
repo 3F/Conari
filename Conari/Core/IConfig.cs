@@ -40,5 +40,10 @@ namespace net.r_eg.Conari.Core
         /// To load library only when it required.
         /// </summary>
         bool LazyLoading { get; set; }
+
+        /// <summary>
+        /// To cache dynamic types.
+        /// </summary>
+        bool CacheDLR { get; set; }
     }
 }

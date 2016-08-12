@@ -3,6 +3,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using net.r_eg.Conari;
 using net.r_eg.Conari.Core;
 using net.r_eg.Conari.Exceptions;
+using net.r_eg.Conari.Native;
+using net.r_eg.Conari.Native.Core;
 using net.r_eg.Conari.Types;
 
 namespace net.r_eg.ConariTest
@@ -257,6 +259,80 @@ namespace net.r_eg.ConariTest
                     var dyn = l.bind(Dynamic.GetMethodInfo(typeof(WCharPtr), typeof(WCharPtr)), "get_WStringPtrVal");
                     Assert.AreEqual(exp, (WCharPtr)dyn.dynamic.Invoke(null, new object[] { wchrptr }));
                 }
+            }
+        }
+
+        [TestMethod]
+        public void complexTest1()
+        {
+            using(var l = new ConariL(UNLIB_DLL))
+            {
+                IntPtr ptr1 = l.DLR.get_TSpec<IntPtr>();
+                IntPtr ptr2 = l.bind<Func<IntPtr>>("get_TSpec")();
+
+                var dyn     = l.bind(Dynamic.GetMethodInfo(typeof(IntPtr)), "get_TSpec");
+                IntPtr ptr3 = (IntPtr)dyn.dynamic.Invoke(null, new object[0]);
+
+                Assert.AreNotEqual(IntPtr.Zero, ptr1);
+                Assert.IsTrue(ptr1 == ptr2 && ptr2 == ptr3);
+
+                /*                
+                    struct TSpec
+                    {
+                        BYTE a;
+                        int b;
+                        char* name;
+                    };
+
+                    s->a    = 2;
+                    s->b    = 4;
+                    s->name = "Conari";
+
+                 */
+                var TSpecPtr = NativeData
+                                    ._(ptr1)
+                                    .align<IntPtr>(3, "a", "b", "name");
+
+                byte[] bytes    = TSpecPtr.Raw.Values;
+                dynamic dlr     = TSpecPtr.Raw.Type;
+                var fields      = TSpecPtr.Raw.Type.Fields;
+
+                Assert.AreEqual(3, fields.Count);
+
+                int expA        = 2;
+                int expB        = 4;
+                string expName  = "Conari";
+
+                Type fxIntPtr = (IntPtr.Size == sizeof(Int64)) ? typeof(Int64) : typeof(Int32);
+
+                // a
+                Assert.AreEqual("a", fields[0].name);
+                Assert.AreEqual(NativeData.SizeOf(fxIntPtr), fields[0].tsize);
+                Assert.AreEqual(fxIntPtr, fields[0].type);
+                Assert.AreEqual(expA, fields[0].value);
+
+                // b
+                Assert.AreEqual("b", fields[1].name);
+                Assert.AreEqual(NativeData.SizeOf(fxIntPtr), fields[1].tsize);
+                Assert.AreEqual(fxIntPtr, fields[1].type);
+                Assert.AreEqual(expB, fields[1].value);
+
+                // name
+                Assert.AreEqual("name", fields[2].name);
+                Assert.AreEqual(IntPtr.Size, fields[2].tsize);
+                Assert.AreEqual(fxIntPtr, fields[2].type);
+                Assert.AreEqual(expName, (CharPtr)fields[2].value);
+
+                // DLR
+                Assert.AreEqual(expA, dlr.a);
+                Assert.AreEqual(expB, dlr.b);
+                Assert.AreEqual(expName, (CharPtr)dlr.name);
+
+                // byte-seq
+                var br = new BReader(bytes);
+                Assert.AreEqual(expA, br.next(fxIntPtr, NativeData.SizeOf(fxIntPtr)));
+                Assert.AreEqual(expB, br.next(fxIntPtr, NativeData.SizeOf(fxIntPtr)));
+                Assert.AreEqual(expName, (CharPtr)br.next(fxIntPtr, NativeData.SizeOf(fxIntPtr)));
             }
         }
     }
