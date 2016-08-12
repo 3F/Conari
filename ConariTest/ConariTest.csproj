@@ -60,6 +60,8 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="BindingTest.cs" />
+    <Compile Include="UserSpecType.cs" />
     <Compile Include="ConariLTest.cs" />
     <Compile Include="Core\DynamicTest.cs" />
     <Compile Include="Core\MIcacheTest.cs" />
