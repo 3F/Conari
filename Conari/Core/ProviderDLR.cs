@@ -51,7 +51,7 @@ namespace net.r_eg.Conari.Core
                 _cache = value;
             }
         }
-        private bool _cache;
+        private bool _cache = true;
 
         /// <summary>
         /// Magic methods. Invoking.

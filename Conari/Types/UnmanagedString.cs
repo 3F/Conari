@@ -52,6 +52,7 @@ namespace net.r_eg.Conari.Types
             BSTR
         }
 
+        [NativeType]
         public static implicit operator IntPtr(UnmanagedString val)
         {
             return val.pointer;

@@ -85,7 +85,7 @@ namespace net.r_eg.Conari.Core
             }
 
             AssemblyName asm        = new AssemblyName("DynamicAsm");
-            AssemblyBuilder dynAsm  = AppDomain.CurrentDomain.DefineDynamicAssembly(asm, AssemblyBuilderAccess.ReflectionOnly);
+            AssemblyBuilder dynAsm  = AppDomain.CurrentDomain.DefineDynamicAssembly(asm, AssemblyBuilderAccess.RunAndCollect);
 
             ModuleBuilder module    = dynAsm.DefineDynamicModule(asm.Name);
             TypeBuilder tbuild      = module.DefineType("DynamicType", TypeAttributes.Public);
