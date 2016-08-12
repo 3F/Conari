@@ -63,14 +63,15 @@ namespace net.r_eg.Conari.Types
             }
         }
 
-        public static implicit operator string(WCharPtr val)
-        {
-            return Marshal.PtrToStringUni(val.ptr);
-        }
-
+        [NativeType]
         public static implicit operator IntPtr(WCharPtr val)
         {
             return val.ptr;
+        }
+
+        public static implicit operator string(WCharPtr val)
+        {
+            return Marshal.PtrToStringUni(val.ptr);
         }
 
         public static implicit operator WCharPtr(IntPtr ptr)

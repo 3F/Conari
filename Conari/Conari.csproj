@@ -44,7 +44,12 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\IProviderDLR.cs" />
+    <Compile Include="Core\MIcache.cs" />
+    <Compile Include="Core\TDyn.cs" />
     <Compile Include="Core\IConfig.cs" />
+    <Compile Include="Core\Dynamic.cs" />
+    <Compile Include="Core\ProviderDLR.cs" />
     <Compile Include="Extensions\IntPtrExtension.cs" />
     <Compile Include="IConari.cs" />
     <Compile Include="Core\IBinder.cs" />

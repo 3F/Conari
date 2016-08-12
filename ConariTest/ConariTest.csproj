@@ -41,6 +41,7 @@
     <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -59,8 +60,14 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="BindingTest.cs" />
+    <Compile Include="UserSpecType.cs" />
     <Compile Include="ConariLTest.cs" />
+    <Compile Include="Core\DynamicTest.cs" />
+    <Compile Include="Core\MIcacheTest.cs" />
     <Compile Include="Core\LinkTest.cs" />
+    <Compile Include="Extensions\IntPtrExtensionTest.cs" />
+    <Compile Include="Types\UnmanagedStringTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

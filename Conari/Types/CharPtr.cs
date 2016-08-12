@@ -63,14 +63,15 @@ namespace net.r_eg.Conari.Types
             }
         }
 
-        public static implicit operator string(CharPtr val)
-        {
-            return Marshal.PtrToStringAnsi(val.ptr);
-        }
-
+        [NativeType]
         public static implicit operator IntPtr(CharPtr val)
         {
             return val.ptr;
+        }
+
+        public static implicit operator string(CharPtr val)
+        {
+            return Marshal.PtrToStringAnsi(val.ptr);
         }
 
         public static implicit operator CharPtr(IntPtr ptr)

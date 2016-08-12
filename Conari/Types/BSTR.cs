@@ -69,14 +69,15 @@ namespace net.r_eg.Conari.Types
             }
         }
 
-        public static implicit operator string(BSTR val)
-        {
-            return Marshal.PtrToStringBSTR(val.ptr);
-        }
-
+        [NativeType]
         public static implicit operator IntPtr(BSTR val)
         {
             return val.ptr;
+        }
+
+        public static implicit operator string(BSTR val)
+        {
+            return Marshal.PtrToStringBSTR(val.ptr);
         }
 
         public static implicit operator BSTR(IntPtr ptr)

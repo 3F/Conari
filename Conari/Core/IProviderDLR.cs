@@ -22,17 +22,14 @@
  * THE SOFTWARE.
 */
 
-using System;
-using net.r_eg.Conari.Core;
-
-namespace net.r_eg.Conari
+namespace net.r_eg.Conari.Core
 {
-    public interface IConari: IBinder, IProvider, IDisposable
+    public interface IProviderDLR
     {
         /// <summary>
-        /// Provides dynamic features like adding 
-        /// and invoking of new exported-functions at runtime.
+        /// To cache dynamic types with similar signatures:
+        ///     `{return_type} name( [{argument_types}] )`
         /// </summary>
-        dynamic DLR { get; }
+        bool Cache { get; set; }
     }
 }

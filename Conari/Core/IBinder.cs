@@ -22,6 +22,8 @@
  * THE SOFTWARE.
 */
 
+using System.Reflection;
+
 namespace net.r_eg.Conari.Core
 {
     public interface IBinder
@@ -41,5 +43,30 @@ namespace net.r_eg.Conari.Core
         /// <param name="func">The name of exported C API function.</param>
         /// <returns>Delegate of exported function.</returns>
         T bind<T>(string func) where T : class;
+
+        /// <summary>
+        /// Binds the exported Function via MethodInfo.
+        /// </summary>
+        /// <param name="mi">Prepared signature with valid function name.</param>
+        /// <param name="prefix">Add prefix to function name from IProvider.Prefix if true.</param>
+        /// <returns>
+        ///     Complete information to: 
+        ///     * create delegates ~ `dyn.CreateDelegate(type.declaringType) as T`
+        ///     * or to invoke methods ~ `dyn.Invoke(null, mParams)`
+        /// </returns>
+        TDyn bind(MethodInfo mi, bool prefix = false);
+
+        /// <summary>
+        /// Binds the exported Function via MethodInfo and an specific name.
+        /// Note: 
+        ///     It's recommended as a more efficient, 
+        ///     because it allows caching of all MethodInfo for the same signatures but different function names.
+        /// 
+        ///     Use IProvider.funcName() to same control of IProvider.Prefix if needed.
+        /// </summary>
+        /// <param name="mi">Prepared signature.</param>
+        /// <param name="name">Valid function name.</param>
+        /// <returns>Complete information to create delegates or to invoke methods.</returns>
+        TDyn bind(MethodInfo mi, string name);
     }
 }
