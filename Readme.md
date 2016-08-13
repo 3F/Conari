@@ -80,10 +80,10 @@ using(var l = new ConariL(
 [Calling Convention](https://msdn.microsoft.com/en-us/library/system.runtime.interopservices.callingconvention.aspx):
 
 ```csharp
-using(var l = new ConariL("Library.dll", CallingConvention.Cdecl))
+using(var l = new ConariL("Library.dll", CallingConvention.StdCall))
 {
     //...
-    l.Convention = CallingConvention.StdCall;
+    l.Convention = CallingConvention.Cdecl;
 }
 ```
 

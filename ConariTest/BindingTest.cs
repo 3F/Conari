@@ -104,7 +104,7 @@ namespace net.r_eg.ConariTest
         //----
 
         [TestMethod]
-        public void decoratedTest1()
+        public void manglingTest1()
         {
             // bool net::r_eg::Conari::UnLib::API::getD_True(void)
             // ?getD_True@API@UnLib@Conari@r_eg@net@@YA_NXZ
@@ -119,7 +119,7 @@ namespace net.r_eg.ConariTest
         }
 
         [TestMethod]
-        public void decoratedTest2()
+        public void manglingTest2()
         {
             // unsigned short net::r_eg::Conari::UnLib::API::getD_Seven(void)
             // ?getD_Seven@API@UnLib@Conari@r_eg@net@@YAGXZ
@@ -133,7 +133,7 @@ namespace net.r_eg.ConariTest
         }
 
         [TestMethod]
-        public void decoratedTest3()
+        public void manglingTest3()
         {
             // char const * net::r_eg::Conari::UnLib::API::getD_HelloWorld(void)
             // ?getD_HelloWorld@API@UnLib@Conari@r_eg@net@@YAPBDXZ
@@ -145,6 +145,33 @@ namespace net.r_eg.ConariTest
                 var dyn = l.bind(Dynamic.GetMethodInfo(typeof(CharPtr)), "?getD_HelloWorld@API@UnLib@Conari@r_eg@net@@YAPBDXZ");
                 Assert.AreEqual(exp, (CharPtr)dyn.dynamic.Invoke(null, new object[0]));
             }
+        }
+
+        /// <summary>
+        /// unsigned short int __stdcall get_SevenStdCall()
+        /// </summary>
+        [TestMethod]
+        public void manglingTest4()
+        {
+            //TODO
+        }
+
+        /// <summary>
+        /// unsigned short int __fastcall get_SevenFastCall();
+        /// </summary>
+        [TestMethod]
+        public void manglingTest5()
+        {
+            //TODO
+        }
+
+        /// <summary>
+        /// unsigned short int __vectorcall get_SevenVectorCall();
+        /// </summary>
+        [TestMethod]
+        public void manglingTest6()
+        {
+            //TODO
         }
 
         /// <summary>
@@ -291,7 +318,9 @@ namespace net.r_eg.ConariTest
                  */
                 var TSpecPtr = NativeData
                                     ._(ptr1)
-                                    .align<IntPtr>(3, "a", "b", "name");
+                                    .t<int, int>("a", "b")
+                                    .t<IntPtr>("name")
+                                    .AlignSizeByMax;
 
                 byte[] bytes    = TSpecPtr.Raw.Values;
                 dynamic dlr     = TSpecPtr.Raw.Type;
@@ -303,24 +332,22 @@ namespace net.r_eg.ConariTest
                 int expB        = 4;
                 string expName  = "Conari";
 
-                Type fxIntPtr = (IntPtr.Size == sizeof(Int64)) ? typeof(Int64) : typeof(Int32);
-
                 // a
                 Assert.AreEqual("a", fields[0].name);
-                Assert.AreEqual(NativeData.SizeOf(fxIntPtr), fields[0].tsize);
-                Assert.AreEqual(fxIntPtr, fields[0].type);
+                Assert.AreEqual(NativeData.SizeOf<int>(), fields[0].tsize);
+                Assert.AreEqual(typeof(int), fields[0].type);
                 Assert.AreEqual(expA, fields[0].value);
 
                 // b
                 Assert.AreEqual("b", fields[1].name);
-                Assert.AreEqual(NativeData.SizeOf(fxIntPtr), fields[1].tsize);
-                Assert.AreEqual(fxIntPtr, fields[1].type);
+                Assert.AreEqual(NativeData.SizeOf<int>(), fields[1].tsize);
+                Assert.AreEqual(typeof(int), fields[1].type);
                 Assert.AreEqual(expB, fields[1].value);
 
                 // name
                 Assert.AreEqual("name", fields[2].name);
                 Assert.AreEqual(IntPtr.Size, fields[2].tsize);
-                Assert.AreEqual(fxIntPtr, fields[2].type);
+                Assert.AreEqual(typeof(IntPtr), fields[2].type);
                 Assert.AreEqual(expName, (CharPtr)fields[2].value);
 
                 // DLR
@@ -330,9 +357,92 @@ namespace net.r_eg.ConariTest
 
                 // byte-seq
                 var br = new BReader(bytes);
-                Assert.AreEqual(expA, br.next(fxIntPtr, NativeData.SizeOf(fxIntPtr)));
-                Assert.AreEqual(expB, br.next(fxIntPtr, NativeData.SizeOf(fxIntPtr)));
-                Assert.AreEqual(expName, (CharPtr)br.next(fxIntPtr, NativeData.SizeOf(fxIntPtr)));
+                Assert.AreEqual(expA, br.next<int>(NativeData.SizeOf<int>()));
+                Assert.AreEqual(expB, br.next<int>(NativeData.SizeOf<int>()));
+                Assert.AreEqual(expName, (CharPtr)br.next<IntPtr>(NativeData.SizeOf<IntPtr>()));
+            }
+        }
+
+        [TestMethod]
+        public void complexTest2()
+        {
+            using(var l = new ConariL(UNLIB_DLL))
+            {
+                IntPtr ptr = l.DLR.get_TSpecB_A_ptr<IntPtr>();
+                Assert.AreNotEqual(IntPtr.Zero, ptr);
+
+                /*                
+                    struct TSpecA
+                    {
+                        int a;
+                        int b;
+                    };
+
+                    struct TSpecB
+                    {
+                        bool d;
+                        TSpecA* s;
+                    };
+
+                    A->a = 4;
+                    A->b = -8;
+
+                    B->d = true;
+                    B->s = TSpecA*;
+
+                 */
+                var TSpecBPtr = NativeData
+                                    ._(ptr)
+                                    .t<bool>("d")
+                                    .t<IntPtr>("s")
+                                    .AlignSizeByMax;
+
+                Assert.AreEqual(2, TSpecBPtr.Raw.Type.Fields.Count);
+
+                dynamic dlr = TSpecBPtr.Raw.Type;
+
+                IntPtr addrA = dlr.s;
+
+                Assert.AreEqual(true, dlr.d);
+                Assert.AreNotEqual(IntPtr.Zero, addrA);
+
+                // B->A
+
+                var TSpecAPtr = NativeData
+                                    ._(addrA)
+                                    .align<Int32>(2, "a", "b");
+
+                Assert.AreEqual(2, TSpecAPtr.Raw.Type.Fields.Count);
+
+                dynamic s = TSpecAPtr.Raw.Type;
+
+                Assert.AreEqual(4, s.a);  // B->s->a
+                Assert.AreEqual(-8, s.b); // B->s->b
+
+                // the test with reading memory again
+
+                dynamic attempt2 = NativeData
+                                    ._(addrA)
+                                    .align<Int32>(2, "a", "b")
+                                    .Raw.Type;
+
+                Assert.AreEqual(4, attempt2.a);  // B->s->a
+                Assert.AreEqual(-8, attempt2.b); // B->s->b
+
+
+                // free mem
+
+                //var dirtyA = addrA;
+
+                //l.DLR.free(addrA);
+
+                //dynamic hole = NativeData
+                //                    ._(dirtyA)
+                //                    .align<Int32>(2, "a", "b")
+                //                    .Raw.Type;
+
+                //int _a = hole.a; // ~ 0
+                //int _b = hole.b; // ~ 0
             }
         }
     }

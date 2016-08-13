@@ -22,26 +22,16 @@
  * THE SOFTWARE.
 */
 
-using System.Runtime.InteropServices;
+using System;
 
 namespace net.r_eg.Conari.Core
 {
-    public interface IProvider: IBinder, IMem
+    public interface IMem
     {
         /// <summary>
-        /// Prefix for exported functions.
+        /// To free memory from the heap allocated from the unmanaged memory.
         /// </summary>
-        string Prefix { get; set; }
-
-        /// <summary>
-        /// How should call methods implemented in unmanaged code.
-        /// </summary>
-        CallingConvention Convention { get; set; }
-
-        /// <summary>
-        /// Returns full name of exported function.
-        /// </summary>
-        /// <param name="name">short function name.</param>
-        string funcName(string name);
+        /// <param name="ptr">The address of the memory to be freed.</param>
+        void free(IntPtr ptr);
     }
 }

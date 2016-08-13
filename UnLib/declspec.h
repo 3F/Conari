@@ -25,3 +25,5 @@
     #define LIBAPI_CPP  LIBAPI
 
 #endif
+
+#define LIBSVC LIBAPI

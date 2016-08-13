@@ -31,6 +31,21 @@ namespace net.r_eg.Conari.Core
     public abstract class Loader: ILoader, IDisposable
     {
         /// <summary>
+        /// Before unloading a library.
+        /// </summary>
+        public event EventHandler<DataArgs<Link>> BeforeUnload = delegate(object sender, DataArgs<Link> e) { };
+
+        /// <summary>
+        /// When library has been unloaded.
+        /// </summary>
+        public event EventHandler<DataArgs<Link>> AfterUnload = delegate(object sender, DataArgs<Link> e) { };
+
+        /// <summary>
+        /// When library has been loaded.
+        /// </summary>
+        public event EventHandler<DataArgs<Link>> AfterLoad = delegate(object sender, DataArgs<Link> e) { };
+
+        /// <summary>
         /// Active library.
         /// </summary>
         public Link Library
@@ -60,6 +75,7 @@ namespace net.r_eg.Conari.Core
                 throw new LoadLibException($"Failed loading '{Library.LibName}': Check used architecture or existence of file.", true);
             }
 
+            AfterLoad(this, new DataArgs<Link>(Library));
             return true;
         }
 
@@ -79,7 +95,21 @@ namespace net.r_eg.Conari.Core
             if(!Library.IsActive) {
                 return true;
             }
-            return NativeMethods.FreeLibrary(Library.Handle);
+
+            BeforeUnload(this, new DataArgs<Link>(Library));
+
+            try {
+                return NativeMethods.FreeLibrary(Library.Handle);
+            }
+            finally
+            {
+                AfterUnload(
+                    this, 
+                    new DataArgs<Link>(
+                        new Link(Library.LibName)
+                    )
+                );
+            }
         }
 
         #region IDisposable

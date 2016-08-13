@@ -61,6 +61,16 @@ namespace net.r_eg.Conari.Native
         }
 
         /// <summary>
+        /// Align by max size of existing types without changing of original types.
+        /// </summary>
+        public NativeData AlignSizeByMax
+        {
+            get {
+                return alignSizeBy(map.Max(m => m.tsize));
+            }
+        }
+
+        /// <summary>
         /// Gets size of selected types in bytes that are should be considered as unmanaged types.
         /// </summary>
         /// <param name="types"></param>
@@ -136,6 +146,15 @@ namespace net.r_eg.Conari.Native
                 track(name, typeof(T));
             }
 
+            return this;
+        }
+
+        /// <summary>
+        /// Align by specific size without changing of original types.
+        /// </summary>
+        public NativeData alignSizeBy(int size)
+        {
+            map.ForEach(m => m.tsize = size);
             return this;
         }
 
@@ -240,11 +259,6 @@ namespace net.r_eg.Conari.Native
         protected virtual int track(string name, Type type)
         {
             int size = SizeOf(type);
-
-            if(type == typeof(IntPtr)) { // retype to use the fixed size
-                type = (size == sizeof(Int64)) ? typeof(Int64) : typeof(Int32);
-            }
-
             map.Add(new Field(type, size) { name = fieldName(name) });
 
             return size;

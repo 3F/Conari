@@ -64,7 +64,11 @@ namespace net.r_eg.Conari.Types
 
         public string Unicode
         {
-            get {
+            get
+            {
+                if(ptr == IntPtr.Zero) {
+                    return null;
+                }
                 return Marshal.PtrToStringUni(ptr);
             }
         }
@@ -77,6 +81,9 @@ namespace net.r_eg.Conari.Types
 
         public static implicit operator string(BSTR val)
         {
+            if(val.ptr == IntPtr.Zero) {
+                return null;
+            }
             return Marshal.PtrToStringBSTR(val.ptr);
         }
 
@@ -88,6 +95,16 @@ namespace net.r_eg.Conari.Types
         public static implicit operator BSTR(Int32 val)
         {
             return new BSTR((IntPtr)val);
+        }
+
+        /// <summary>
+        /// Frees a BSTR using the COM SysFreeString function:
+        /// https://msdn.microsoft.com/en-us/Library/ms221481.aspx
+        /// </summary>
+        public void free()
+        {
+            Marshal.FreeBSTR(ptr);
+            ptr = IntPtr.Zero;
         }
 
         public BSTR(IntPtr ptr)

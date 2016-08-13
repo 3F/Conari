@@ -79,20 +79,12 @@ namespace net.r_eg.Conari.Native.Core
                 return BitConverter.ToUInt64(val, 0);
             }
 
-            if(type == typeof(IntPtr))
-            {
-                if(IntPtr.Size == sizeof(Int64)) {
-                    return BitConverter.ToInt64(val, 0);
-                }
-                return BitConverter.ToInt32(val, 0);
+            if(type == typeof(IntPtr)) {
+                return asIntPtr(val);
             }
 
-            if(type == typeof(UIntPtr))
-            {
-                if(UIntPtr.Size == sizeof(UInt64)) {
-                    return BitConverter.ToUInt64(val, 0);
-                }
-                return BitConverter.ToUInt32(val, 0);
+            if(type == typeof(UIntPtr)) {
+                return asUIntPtr(val);
             }
 
             if(type == typeof(Single)) {
@@ -111,14 +103,9 @@ namespace net.r_eg.Conari.Native.Core
                 return BitConverter.ToChar(val, 0);
             }
 
-            if(type == typeof(String))
-            {
+            if(type == typeof(String)) {
                 //return new Types.CharPtr((IntPtr)field.value);
-
-                if(IntPtr.Size == sizeof(Int64)) {
-                    return BitConverter.ToInt64(val, 0);
-                }
-                return BitConverter.ToInt32(val, 0);
+                return asIntPtr(val);
             }
 
             throw new NotSupportedException($"The type `{type}` is not supported.");
@@ -194,6 +181,22 @@ namespace net.r_eg.Conari.Native.Core
         {
             data        = raw;
             this.offset = offset;
+        }
+
+        private static IntPtr asIntPtr(byte[] val)
+        {
+            if(IntPtr.Size == sizeof(Int64)) {
+                return (IntPtr)BitConverter.ToInt64(val, 0);
+            }
+            return (IntPtr)BitConverter.ToInt32(val, 0);
+        }
+
+        private static UIntPtr asUIntPtr(byte[] val)
+        {
+            if(UIntPtr.Size == sizeof(UInt64)) {
+                return (UIntPtr)BitConverter.ToUInt64(val, 0);
+            }
+            return (UIntPtr)BitConverter.ToUInt32(val, 0);
         }
 
         private static byte[] range(ref byte[] data, int offset, int len)

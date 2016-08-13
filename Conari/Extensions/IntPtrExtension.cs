@@ -37,6 +37,10 @@ namespace net.r_eg.Conari.Extension
         /// <returns></returns>
         public static int GetStringLength(this IntPtr ptr, uint nulsize = 1)
         {
+            if(ptr == IntPtr.Zero) {
+                return -1;
+            }
+
             int nul = (int)Math.Max(1, nulsize);
 
             Func<int, bool> isNul = delegate(int ofs)
@@ -75,7 +79,7 @@ namespace net.r_eg.Conari.Extension
         /// <returns></returns>
         public static byte[] GetStringBytes(this IntPtr ptr, int length)
         {
-            if(length < 1) {
+            if(length < 1 || ptr == IntPtr.Zero) {
                 return new byte[0];
             }
 

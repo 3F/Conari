@@ -102,6 +102,8 @@ namespace net.r_eg.ConariTest.Core
 
             Assert.AreEqual(typeof(IntPtr), Dynamic.DCast(typeof(IntPtr), 17).GetType());
             Assert.AreEqual(typeof(char), Dynamic.DCast(typeof(char), (byte)0x3F).GetType());
+
+            Assert.AreEqual(null, Dynamic.DCast(typeof(void), 17));
         }
     }
 }

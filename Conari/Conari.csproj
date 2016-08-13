@@ -44,6 +44,8 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\DataArgs.cs" />
+    <Compile Include="Core\IMem.cs" />
     <Compile Include="Core\IProviderDLR.cs" />
     <Compile Include="Core\MIcache.cs" />
     <Compile Include="Core\TDyn.cs" />

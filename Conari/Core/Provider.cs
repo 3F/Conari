@@ -111,6 +111,15 @@ namespace net.r_eg.Conari.Core
             return $"{Prefix}{name}";
         }
 
+        /// <summary>
+        /// To free memory from the heap allocated from the unmanaged memory.
+        /// </summary>
+        /// <param name="ptr">The address of the memory to be freed.</param>
+        public void free(IntPtr ptr)
+        {
+            throw new NotImplementedException("Not yet implemented. Please use it from unmanaged code.");
+        }
+
         /// <param name="lpProcName">The name of exported function.</param>
         /// <returns>The address of the exported function.</returns>
         protected IntPtr getProcAddress(string lpProcName)

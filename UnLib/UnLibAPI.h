@@ -11,11 +11,16 @@ namespace NS_UNLIB_API_
     LIBAPI unsigned short int get_Seven();
     LIBAPI const char* get_HelloWorld();
 
-    /* decorated */
+
+    /* mangling */
 
     LIBAPI_CPP bool getD_True();
     LIBAPI_CPP unsigned short int getD_Seven();
     LIBAPI_CPP const char* getD_HelloWorld();
+
+    LIBAPI unsigned short int __stdcall get_SevenStdCall();
+    LIBAPI unsigned short int __fastcall get_SevenFastCall();
+    LIBAPI unsigned short int __vectorcall get_SevenVectorCall();
 
     /* echo */
 
@@ -35,14 +40,20 @@ namespace NS_UNLIB_API_
     /* complex */
 
     LIBAPI TSpec* get_TSpec();
-    //LIBAPI TSpec* get_TSpec(BYTE a, int b, const char* name);
+    LIBAPI TSpecB* get_TSpecB_A_ptr();
+    LIBAPI TSpecB* get_g_TSpecB();
 
-    //LIBAPI TSpecB* get_TSpecB_A_ptr();
+    //LIBAPI TSpec* get_TSpec(BYTE a, int b, const char* name);
     //LIBAPI TSpecC* get_TSpecC_A_val();
 
     //LIBAPI TSpecA get_TSpecA();
     //LIBAPI TSpecA get_TSpecA(int a, int b);
 
 
+    /* service */
+
+    LIBSVC void freeAll();
+    LIBSVC void free(void* ptr);
+    LIBSVC void free_arr(void* ptr);
 }
 _NS_UNLIB_API

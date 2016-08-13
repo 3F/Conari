@@ -56,12 +56,12 @@ namespace net.r_eg.Conari
         }
 
         /// <summary>
-        /// The Conari with StdCall - When the callee cleans the stack.
+        /// The Conari with Cdecl - When the stack is cleaned up by the caller, it can do vararg functions.
         /// </summary>
         /// <param name="cfg">The Conari configuration.</param>
         /// <param name="prefix">Optional prefix to use via `bind&lt;&gt;`</param>
         public ConariL(IConfig cfg, string prefix = null)
-            : this(cfg, CallingConvention.StdCall, prefix)
+            : this(cfg, CallingConvention.Cdecl, prefix)
         {
 
         }

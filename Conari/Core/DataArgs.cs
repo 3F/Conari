@@ -22,26 +22,25 @@
  * THE SOFTWARE.
 */
 
-using System.Runtime.InteropServices;
+using System;
 
 namespace net.r_eg.Conari.Core
 {
-    public interface IProvider: IBinder, IMem
+    [Serializable]
+    public class DataArgs<T>: EventArgs
     {
         /// <summary>
-        /// Prefix for exported functions.
+        /// Provides a T value to use with events.
         /// </summary>
-        string Prefix { get; set; }
+        public T Data
+        {
+            get;
+            protected set;
+        }
 
-        /// <summary>
-        /// How should call methods implemented in unmanaged code.
-        /// </summary>
-        CallingConvention Convention { get; set; }
-
-        /// <summary>
-        /// Returns full name of exported function.
-        /// </summary>
-        /// <param name="name">short function name.</param>
-        string funcName(string name);
+        public DataArgs(T val)
+        {
+            Data = val;
+        }
     }
 }

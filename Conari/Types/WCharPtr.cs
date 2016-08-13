@@ -56,9 +56,14 @@ namespace net.r_eg.Conari.Types
         {
             get
             {
+                if(ptr == IntPtr.Zero) {
+                    return null;
+                }
+
                 if(Length < 1) {
                     return String.Empty;
                 }
+
                 return Encoding.BigEndianUnicode.GetString(Raw, 0, Length);
             }
         }
@@ -71,6 +76,9 @@ namespace net.r_eg.Conari.Types
 
         public static implicit operator string(WCharPtr val)
         {
+            if(val.ptr == IntPtr.Zero) {
+                return null;
+            }
             return Marshal.PtrToStringUni(val.ptr);
         }
 

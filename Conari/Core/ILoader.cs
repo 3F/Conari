@@ -22,10 +22,27 @@
  * THE SOFTWARE.
 */
 
+using System;
+
 namespace net.r_eg.Conari.Core
 {
     public interface ILoader
     {
+        /// <summary>
+        /// Before unloading a library.
+        /// </summary>
+        event EventHandler<DataArgs<Link>> BeforeUnload;
+
+        /// <summary>
+        /// When library has been unloaded.
+        /// </summary>
+        event EventHandler<DataArgs<Link>> AfterUnload;
+
+        /// <summary>
+        /// When library has been loaded.
+        /// </summary>
+        event EventHandler<DataArgs<Link>> AfterLoad;
+
         /// <summary>
         /// Active library.
         /// </summary>

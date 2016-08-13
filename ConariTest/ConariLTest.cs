@@ -108,10 +108,10 @@ namespace net.r_eg.ConariTest
                                      LazyLoading = true
                                  }))
             {
-                Assert.AreEqual(CallingConvention.StdCall, l.Convention);
-
-                l.Convention = CallingConvention.Cdecl;
                 Assert.AreEqual(CallingConvention.Cdecl, l.Convention);
+
+                l.Convention = CallingConvention.StdCall;
+                Assert.AreEqual(CallingConvention.StdCall, l.Convention);
             }
         }
 

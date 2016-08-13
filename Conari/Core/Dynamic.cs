@@ -102,8 +102,12 @@ namespace net.r_eg.Conari.Core
             return tbuild.CreateType();
         }
 
-        public static dynamic DCast(Type type, object obj)
+        public static dynamic DCast(Type type, dynamic obj)
         {
+            if(type == typeof(void)) {
+                return null;
+            }
+
             return typeof(Dynamic)
                         .GetMethod("Cast", BindingFlags.Public | BindingFlags.Static)
                         .MakeGenericMethod(type)
