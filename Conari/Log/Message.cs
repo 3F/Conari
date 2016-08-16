@@ -23,36 +23,49 @@
 */
 
 using System;
-using System.Runtime.InteropServices;
 
-namespace net.r_eg.Conari.Core
+namespace net.r_eg.Conari.Log
 {
-    public interface IProvider: IBinder, IMem
+    [Serializable]
+    public class Message: EventArgs
     {
-        /// <summary>
-        /// When Prefix has been changed.
-        /// </summary>
-        event EventHandler<DataArgs<string>> PrefixChanged;
+        public DateTime stamp;
 
-        /// <summary>
-        /// When Convention has been changed.
-        /// </summary>
-        event EventHandler<DataArgs<CallingConvention>> ConventionChanged;
+        public string content;
 
-        /// <summary>
-        /// Prefix for exported functions.
-        /// </summary>
-        string Prefix { get; set; }
+        public Exception exception;
 
-        /// <summary>
-        /// How should call methods implemented in unmanaged code.
-        /// </summary>
-        CallingConvention Convention { get; set; }
+        public object data;
 
-        /// <summary>
-        /// Returns full name of exported function.
-        /// </summary>
-        /// <param name="name">short function name.</param>
-        string funcName(string name);
+        public Level type;
+
+        public enum Level
+        {
+            Trace,
+            Debug,
+            Info,
+            Warn,
+            Error,
+            Fatal
+        }
+
+        public Message(string msg, Level type = Level.Debug)
+        {
+            content     = msg;
+            this.type   = type;
+            stamp       = DateTime.Now;
+        }
+
+        public Message(string msg, Exception ex, Level type = Level.Error)
+            : this(msg, type)
+        {
+            exception = ex;
+        }
+
+        public Message(string msg, object data, Level type = Level.Debug)
+            : this(msg, type)
+        {
+            this.data = data;
+        }
     }
 }

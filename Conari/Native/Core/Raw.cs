@@ -36,19 +36,29 @@ namespace net.r_eg.Conari.Native.Core
         private IntPtr pointer;
         private Fields fields;
 
+        private byte[] local;
+
         private int offset;
         private int length;
 
         public byte[] Values
         {
-            get {
+            get
+            {
+                if(IsLocal) {
+                    return local;
+                }
                 return Iter.ToArray();
             }
         }
 
         public IEnumerable<byte> Iter
         {
-            get {
+            get
+            {
+                if(IsLocal) {
+                    return local.AsEnumerable();
+                }
                 return read(pointer, offset, length);
             }
         }
@@ -60,6 +70,13 @@ namespace net.r_eg.Conari.Native.Core
             }
         }
 
+        private bool IsLocal
+        {
+            get {
+                return (pointer == IntPtr.Zero);
+            }
+        }
+
         public Raw(IntPtr ptr, Fields fields)
             : this(ptr, fields.Sum(f => f.tsize), 0)
         {
@@ -68,10 +85,29 @@ namespace net.r_eg.Conari.Native.Core
 
         public Raw(IntPtr ptr, int length, int offset = 0)
         {
+            if(ptr == IntPtr.Zero) {
+                throw new ArgumentException("The pointer cannot be zero.");
+            }
             pointer = ptr;
 
             this.length = length;
             this.offset = offset;
+        }
+
+        public Raw(byte[] bytes, Fields fields)
+        {
+            if(bytes == null) {
+                throw new ArgumentException("Array of bytes cannot be null.");
+            }
+
+            local       = bytes;
+            this.fields = fields;
+        }
+
+        public Raw(byte[] bytes)
+            : this(bytes, null)
+        {
+
         }
 
         private IEnumerable<byte> read(IntPtr ptr, int offset, int len)

@@ -37,22 +37,44 @@ namespace net.r_eg.Conari.Core
     public abstract class Provider: Loader, ILoader, IProvider
     {
         /// <summary>
+        /// When Prefix has been changed.
+        /// </summary>
+        public event EventHandler<DataArgs<string>> PrefixChanged = delegate(object sender, DataArgs<string> e) { };
+
+        /// <summary>
+        /// When Convention has been changed.
+        /// </summary>
+        public event EventHandler<DataArgs<CallingConvention>> ConventionChanged = delegate(object sender, DataArgs<CallingConvention> e) { };
+
+        /// <summary>
         /// Prefix for exported functions.
         /// </summary>
         public string Prefix
         {
-            get;
-            set;
+            get {
+                return _prefix;
+            }
+            set {
+                _prefix = value;
+                PrefixChanged(this, new DataArgs<string>(value));
+            }
         }
+        private string _prefix;
 
         /// <summary>
         /// How should call methods implemented in unmanaged code.
         /// </summary>
         public CallingConvention Convention
         {
-            get;
-            set;
+            get {
+                return _convention;
+            }
+            set {
+                _convention = value;
+                ConventionChanged(this, new DataArgs<CallingConvention>(value));
+            }
         }
+        private CallingConvention _convention;
 
         /// <summary>
         /// Binds the exported function.

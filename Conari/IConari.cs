@@ -27,7 +27,7 @@ using net.r_eg.Conari.Core;
 
 namespace net.r_eg.Conari
 {
-    public interface IConari: IBinder, IProvider, IDisposable
+    public interface IConari: IBinder, IProvider, ILoader, IDisposable
     {
         /// <summary>
         /// Provides dynamic features like adding 

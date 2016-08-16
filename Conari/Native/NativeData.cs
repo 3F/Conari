@@ -36,6 +36,7 @@ namespace net.r_eg.Conari.Native
     public class NativeData
     {
         protected Fields map = new Fields();
+        protected byte[] local;
         private IntPtr pointer;
 
         /// <summary>
@@ -44,7 +45,11 @@ namespace net.r_eg.Conari.Native
         /// <returns></returns>
         public Raw Raw
         {
-            get {
+            get
+            {
+                if(pointer == IntPtr.Zero) {
+                    return new Raw(local, map);
+                }
                 return new Raw(pointer, map);
             }
         }
@@ -129,6 +134,15 @@ namespace net.r_eg.Conari.Native
         public static NativeData _(IntPtr ptr)
         {
             return new NativeData(ptr);
+        }
+
+        /// <summary>
+        /// Alias to get instance: `new NativeData(byte[])`
+        /// </summary>
+        /// <param name="bytes">local raw data.</param>
+        public static NativeData _(byte[] bytes)
+        {
+            return new NativeData(bytes);
         }
 
         /// <summary>
@@ -242,6 +256,12 @@ namespace net.r_eg.Conari.Native
         public NativeData(IntPtr ptr)
         {
             pointer = ptr;
+        }
+
+        /// <param name="bytes">local raw data.</param>
+        public NativeData(byte[] bytes)
+        {
+            local = bytes;
         }
 
         protected int track(string[] names, params Type[] types)

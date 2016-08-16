@@ -47,6 +47,10 @@ namespace net.r_eg.Conari.Native.Core
             byte[] val  = range(ref data, offset, tsize);
             offset      += tsize;
 
+            if(type == typeof(Byte[])) {
+                return (Byte[])val;
+            }
+
             if(type == typeof(Byte)) {
                 return (Byte)val[0];
             }
@@ -158,15 +162,25 @@ namespace net.r_eg.Conari.Native.Core
             return next(typeof(T), tsize);
         }
 
-        ///// <summary>
-        ///// Gets next value in byte-sequence.
-        ///// </summary>
-        ///// <param name="type">The type of value.</param>
-        ///// <returns></returns>
-        //public dynamic next(Type type)
-        //{
-        //    return next(type, NativeData.SizeOf(type));
-        //}
+        /// <summary>
+        /// Gets next value in byte-sequence with size of type by default.
+        /// </summary>
+        /// <param name="type">The type of value.</param>
+        /// <returns></returns>
+        public dynamic next(Type type)
+        {
+            return next(type, NativeData.SizeOf(type));
+        }
+
+        /// <summary>
+        /// Alias to `next(Type type)`
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public dynamic next<T>()
+        {
+            return next(typeof(T));
+        }
 
         /// <summary>
         /// To reset position.
