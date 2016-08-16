@@ -22,6 +22,8 @@
  * THE SOFTWARE.
 */
 
+using System.Runtime.InteropServices;
+
 namespace net.r_eg.Conari.Core
 {
     public interface IProviderDLR
@@ -31,5 +33,10 @@ namespace net.r_eg.Conari.Core
         ///     `{return_type} name( [{argument_types}] )`
         /// </summary>
         bool Cache { get; set; }
+
+        /// <summary>
+        /// Current Convention for all dynamic methods.
+        /// </summary>
+        CallingConvention Convention { get; }
     }
 }

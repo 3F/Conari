@@ -45,5 +45,10 @@ namespace net.r_eg.Conari.Core
         /// To cache dynamic types.
         /// </summary>
         bool CacheDLR { get; set; }
+
+        /// <summary>
+        /// Auto name-decoration to find entry points of exported functions.
+        /// </summary>
+        bool Mangling { get; set; }
     }
 }

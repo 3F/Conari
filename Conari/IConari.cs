@@ -34,5 +34,25 @@ namespace net.r_eg.Conari
         /// and invoking of new exported-functions at runtime.
         /// </summary>
         dynamic DLR { get; }
+
+        /// <summary>
+        /// DLR Features with `__cdecl` calling convention.
+        /// </summary>
+        dynamic __cdecl { get; }
+
+        /// <summary>
+        /// DLR Features with `__stdcall` calling convention.
+        /// </summary>
+        dynamic __stdcall { get; }
+
+        /// <summary>
+        /// DLR Features with `__fastcall` calling convention.
+        /// </summary>
+        dynamic __fastcall { get; }
+
+        /// <summary>
+        /// DLR Features with `__vectorcall` calling convention.
+        /// </summary>
+        dynamic __vectorcall { get; }
     }
 }

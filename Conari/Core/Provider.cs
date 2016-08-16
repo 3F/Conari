@@ -29,11 +29,14 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
 using net.r_eg.Conari.Exceptions;
+using net.r_eg.Conari.Log;
 using net.r_eg.Conari.Types;
 using net.r_eg.Conari.WinAPI;
 
 namespace net.r_eg.Conari.Core
 {
+    using CMangling = Mangling.C;
+
     public abstract class Provider: Loader, ILoader, IProvider
     {
         /// <summary>
@@ -75,6 +78,15 @@ namespace net.r_eg.Conari.Core
             }
         }
         private CallingConvention _convention;
+
+        /// <summary>
+        /// Auto name-decoration to find entry points of exported functions.
+        /// </summary>
+        public bool Mangling
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// Binds the exported function.
@@ -122,6 +134,18 @@ namespace net.r_eg.Conari.Core
         }
 
         /// <summary>
+        /// Binds the exported Function via MethodInfo, an specific name and CallingConvention.
+        /// </summary>
+        /// <param name="mi">Prepared signature.</param>
+        /// <param name="name">Valid function name.</param>
+        /// <param name="conv">How it should be called. It overrides only for current method.</param>
+        /// <returns>Complete information to create delegates or to invoke methods.</returns>
+        public TDyn bind(MethodInfo mi, string name, CallingConvention conv)
+        {
+            return wire(mi, name, conv);
+        }
+
+        /// <summary>
         /// Returns full name of exported function.
         /// </summary>
         /// <param name="name">short function name.</param>
@@ -150,12 +174,37 @@ namespace net.r_eg.Conari.Core
                 throw new LoaderException($"The handle of library is zero. Last loaded library: '{Library.LibName}'");
             }
 
-            IntPtr pAddr = NativeMethods.GetProcAddress(Library.Handle, lpProcName);
-            if(pAddr == IntPtr.Zero) {
-                throw new WinFuncFailException($"The entry point '{lpProcName}' was not found.", true);
+            return getProcAddress(Library.Handle, lpProcName, Mangling);
+        }
+
+        protected IntPtr getProcAddress(IntPtr hModule, string lpProcName, bool mangling = true)
+        {
+            if(String.IsNullOrWhiteSpace(lpProcName)) {
+                throw new ArgumentException($"lpProcName is empty or null.");
             }
 
-            return pAddr;
+            IntPtr pAddr = NativeMethods.GetProcAddress(hModule, lpProcName);
+            if(pAddr != IntPtr.Zero) {
+                return pAddr;
+            }
+
+            string msgerr = $"The entry point '{lpProcName}' was not found.";
+            if(!mangling) {
+                throw new WinFuncFailException(msgerr, true);
+            }
+
+            // C-rules
+
+            LSender.Send(this, $"{msgerr} Trying to decorate with C rules.", Message.Level.Warn);
+
+            var func = CMangling.Decorate(lpProcName, ((ILoader)this).ExportFunctionNames);
+            if(func == null) {
+                throw new EntryPointNotFoundException(
+                    $"{msgerr} The `Mangling.C` does not help. Check a correct name manually. Related issue: https://github.com/3F/Conari/issues/3"
+                );
+            }
+
+            return getProcAddress(hModule, func, false);
         }
 
         protected T getDelegate<T>(string lpProcName) where T : class
@@ -178,7 +227,12 @@ namespace net.r_eg.Conari.Core
 
         protected TDyn wire(MethodInfo mi, string lpProcName)
         {
-            return wire(mi, getProcAddress(lpProcName));
+            return wire(mi, lpProcName, Convention);
+        }
+
+        protected TDyn wire(MethodInfo mi, string lpProcName, CallingConvention conv)
+        {
+            return wire(mi, getProcAddress(lpProcName), conv);
         }
 
         protected TDyn wire(MethodInfo mi, IntPtr ptr)

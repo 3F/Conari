@@ -50,6 +50,11 @@ namespace net.r_eg.Conari.Core
         CallingConvention Convention { get; set; }
 
         /// <summary>
+        /// Auto name-decoration to find entry points of exported functions.
+        /// </summary>
+        bool Mangling { get; set; }
+
+        /// <summary>
         /// Returns full name of exported function.
         /// </summary>
         /// <param name="name">short function name.</param>

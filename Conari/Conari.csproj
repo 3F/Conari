@@ -71,6 +71,7 @@
     <Compile Include="Log\ISender.cs" />
     <Compile Include="Log\Message.cs" />
     <Compile Include="Log\LSender.cs" />
+    <Compile Include="Mangling\C.cs" />
     <Compile Include="Native\Core\BReader.cs" />
     <Compile Include="Native\Core\Field.cs" />
     <Compile Include="Native\Core\BType.cs" />

@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace net.r_eg.Conari.Core
 {
@@ -54,6 +55,15 @@ namespace net.r_eg.Conari.Core
         private bool _cache = true;
 
         /// <summary>
+        /// Current Convention for all dynamic methods.
+        /// </summary>
+        public CallingConvention Convention
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
         /// Magic methods. Invoking.
         /// </summary>
         /// <![CDATA[
@@ -69,18 +79,20 @@ namespace net.r_eg.Conari.Core
             var tGeneric    = getGenericArgTypes(binder).ToArray();
 
             MethodInfo mi   = getmi(binder.Name, tArgs, tGeneric);
-            TDyn dyn        = provider.bind(mi, provider.funcName(binder.Name));
+            TDyn dyn        = provider.bind(mi, provider.funcName(binder.Name), Convention);
             result          = Dynamic.DCast(dyn.returnType, dyn.dynamic.Invoke(null, args));
 
             return true;
         }
 
-        public ProviderDLR(IProvider provider)
+        public ProviderDLR(IProvider provider, CallingConvention conv)
         {
             if(provider == null) {
                 throw new ArgumentException("Provider cannot be null.");
             }
-            this.provider = provider;
+
+            this.provider   = provider;
+            Convention      = conv;
         }
 
         private MethodInfo getmi(string name, Type[] args, Type[] generic)

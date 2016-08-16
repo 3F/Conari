@@ -60,6 +60,7 @@ namespace net.r_eg.ConariTest
         {
             using(var l = new ConariL(UNLIB_DLL))
             {
+                l.Mangling = false;
                 l.DLR.not_real_func_name<bool>();
             }
         }
@@ -70,6 +71,7 @@ namespace net.r_eg.ConariTest
         {
             using(var l = new ConariL(UNLIB_DLL))
             {
+                l.Mangling = false;
                 l.bind<Func<bool>>("not_real_func_name")();
             }
         }
@@ -80,6 +82,7 @@ namespace net.r_eg.ConariTest
         {
             using(var l = new ConariL(UNLIB_DLL))
             {
+                l.Mangling = false;
                 l.bind(Dynamic.GetMethodInfo(typeof(bool)), "not_real_func_name")
                     .dynamic
                     .Invoke(null, new object[0]);
@@ -101,7 +104,37 @@ namespace net.r_eg.ConariTest
             }
         }
 
-        //----
+        [TestMethod]
+        [ExpectedException(typeof(EntryPointNotFoundException))]
+        public void basicTest8()
+        {
+            using(var l = new ConariL(UNLIB_DLL)) {
+                l.Mangling = true;
+                l.DLR.not_real_func_name<bool>();
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(EntryPointNotFoundException))]
+        public void basicTest9()
+        {
+            using(var l = new ConariL(UNLIB_DLL)) {
+                l.Mangling = true;
+                l.bind<Func<bool>>("not_real_func_name")();
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(EntryPointNotFoundException))]
+        public void basicTest10()
+        {
+            using(var l = new ConariL(UNLIB_DLL)) {
+                l.Mangling = true;
+                l.bind(Dynamic.GetMethodInfo(typeof(bool)), "not_real_func_name")
+                    .dynamic
+                    .Invoke(null, new object[0]);
+            }
+        }
 
         [TestMethod]
         public void manglingTest1()
@@ -153,7 +186,16 @@ namespace net.r_eg.ConariTest
         [TestMethod]
         public void manglingTest4()
         {
-            //TODO
+            using(var l = new ConariL(UNLIB_DLL))
+            {
+                l.Mangling = true;
+
+                Assert.AreEqual(7, l.DLR.get_SevenStdCall<ushort>());
+                Assert.AreEqual(7, l.bind<Func<ushort>>("get_SevenStdCall")());
+                Assert.AreEqual((ushort)7, l.bind(Dynamic.GetMethodInfo(typeof(ushort)), "get_SevenStdCall")
+                                                         .dynamic
+                                                         .Invoke(null, new object[0]));
+            }
         }
 
         /// <summary>
@@ -162,7 +204,16 @@ namespace net.r_eg.ConariTest
         [TestMethod]
         public void manglingTest5()
         {
-            //TODO
+            using(var l = new ConariL(UNLIB_DLL))
+            {
+                l.Mangling = true;
+
+                Assert.AreEqual(7, l.DLR.get_SevenFastCall<ushort>());
+                Assert.AreEqual(7, l.bind<Func<ushort>>("get_SevenFastCall")());
+                Assert.AreEqual((ushort)7, l.bind(Dynamic.GetMethodInfo(typeof(ushort)), "get_SevenFastCall")
+                                                         .dynamic
+                                                         .Invoke(null, new object[0]));
+            }
         }
 
         /// <summary>
@@ -171,7 +222,60 @@ namespace net.r_eg.ConariTest
         [TestMethod]
         public void manglingTest6()
         {
-            //TODO
+            using(var l = new ConariL(UNLIB_DLL))
+            {
+                l.Mangling = true;
+
+                Assert.AreEqual(7, l.DLR.get_SevenVectorCall<ushort>());
+                Assert.AreEqual(7, l.bind<Func<ushort>>("get_SevenVectorCall")());
+                Assert.AreEqual((ushort)7, l.bind(Dynamic.GetMethodInfo(typeof(ushort)), "get_SevenVectorCall")
+                                                         .dynamic
+                                                         .Invoke(null, new object[0]));
+            }
+        }
+
+        /// <summary>
+        /// unsigned short int __stdcall get_SevenStdCall()
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(WinFuncFailException))]
+        public void manglingTest7()
+        {
+            using(var l = new ConariL(UNLIB_DLL))
+            {
+                l.Mangling = false;
+                l.DLR.get_SevenStdCall<ushort>();
+            }
+        }
+
+        /// <summary>
+        /// unsigned short int __stdcall get_SevenStdCall()
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(WinFuncFailException))]
+        public void manglingTest8()
+        {
+            using(var l = new ConariL(UNLIB_DLL))
+            {
+                l.Mangling = false;
+                l.bind<Func<ushort>>("get_SevenStdCall")();
+            }
+        }
+
+        /// <summary>
+        /// unsigned short int __stdcall get_SevenStdCall()
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(WinFuncFailException))]
+        public void manglingTest9()
+        {
+            using(var l = new ConariL(UNLIB_DLL))
+            {
+                l.Mangling = false;
+                l.bind(Dynamic.GetMethodInfo(typeof(ushort)), "get_SevenStdCall")
+                    .dynamic
+                    .Invoke(null, new object[0]);
+            }
         }
 
         /// <summary>

@@ -65,6 +65,15 @@ namespace net.r_eg.Conari.Core
             set;
         }
 
+        /// <summary>
+        /// Auto name-decoration to find entry points of exported functions.
+        /// </summary>
+        public bool Mangling
+        {
+            get;
+            set;
+        }
+
         public static explicit operator String(Config cfg)
         {
             return cfg.LibName;
@@ -81,6 +90,7 @@ namespace net.r_eg.Conari.Core
         {
             LibName     = lib;
             CacheDLR    = true;
+            Mangling    = true;
         }
     }
 }

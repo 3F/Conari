@@ -26,12 +26,15 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using net.r_eg.Conari.Core;
+using net.r_eg.Conari.Log;
 
 namespace net.r_eg.Conari
 {
     [SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly", Justification = "Bug. False positive. The IDisposable is already implemented correctly !")]
     public class ConariL: Provider, IConari, ILoader, IProvider, IBinder/*, IDisposable*/
     {
+        protected IConfig config;
+
         /// <summary>
         /// Provides dynamic features like adding 
         /// and invoking of new exported-functions at runtime.
@@ -40,6 +43,61 @@ namespace net.r_eg.Conari
         {
             get;
             protected set;
+        }
+
+        /// <summary>
+        /// DLR Features with `__cdecl` calling convention.
+        /// </summary>
+        public dynamic __cdecl
+        {
+            get
+            {
+                if(_dlrCdecl == null) {
+                    _dlrCdecl = newDLR(CallingConvention.Cdecl);
+                }
+                return _dlrCdecl;
+            }
+        }
+        protected dynamic _dlrCdecl;
+
+        /// <summary>
+        /// DLR Features with `__stdcall` calling convention.
+        /// </summary>
+        public dynamic __stdcall
+        {
+            get
+            {
+                if(_dlrStd == null) {
+                    _dlrStd = newDLR(CallingConvention.StdCall);
+                }
+                return _dlrStd;
+            }
+        }
+        protected dynamic _dlrStd;
+
+        /// <summary>
+        /// DLR Features with `__fastcall` calling convention.
+        /// </summary>
+        public dynamic __fastcall
+        {
+            get {
+                if(_dlrFast == null) {
+                    _dlrFast = newDLR(CallingConvention.FastCall);
+                }
+                return _dlrFast;
+            }
+        }
+        protected dynamic _dlrFast;
+
+        /// <summary>
+        /// DLR Features with `__vectorcall` calling convention.
+        /// https://msdn.microsoft.com/en-us/library/dn375768.aspx
+        /// </summary>
+        public dynamic __vectorcall
+        {
+            get {
+                throw new NotSupportedException("Not yet implemented.");
+            }
         }
 
         /// <summary>
@@ -52,7 +110,9 @@ namespace net.r_eg.Conari
         {
             Prefix      = prefix;
             Convention  = conv;
+
             init(cfg);
+            ConventionChanged += onConventionChanged;
         }
 
         /// <summary>
@@ -95,9 +155,8 @@ namespace net.r_eg.Conari
                 throw new ArgumentException("Configuration cannot be null.");
             }
 
-            DLR = new ProviderDLR(this) {
-                Cache = cfg.CacheDLR
-            };
+            config      = cfg;
+            Mangling    = cfg.Mangling;
 
             if(cfg.LazyLoading) {
                 Library = new Link(cfg.LibName);
@@ -105,6 +164,21 @@ namespace net.r_eg.Conari
             else {
                 load(cfg.LibName);
             }
+
+            DLR = newDLR(Convention);
+        }
+
+        private dynamic newDLR(CallingConvention conv)
+        {
+            return new ProviderDLR(this, conv) {
+                Cache = config.CacheDLR
+            };
+        }
+
+        private void onConventionChanged(object sender, DataArgs<CallingConvention> e)
+        {
+            LSender.Send(sender, $"DLR has been updated with new CallingConvention: {e.Data}", Message.Level.Info);
+            DLR = newDLR(e.Data);
         }
     }
 }
