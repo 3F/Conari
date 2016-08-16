@@ -24,33 +24,21 @@
 
 using System;
 
-namespace net.r_eg.Conari.Core
+namespace net.r_eg.Conari.Exceptions
 {
-    public interface ILoader
+    [Serializable]
+    public class PECorruptDataException: CommonException
     {
-        /// <summary>
-        /// Before unloading a library.
-        /// </summary>
-        event EventHandler<DataArgs<Link>> BeforeUnload;
+        public PECorruptDataException(string message)
+            : base(message)
+        {
 
-        /// <summary>
-        /// When library has been unloaded.
-        /// </summary>
-        event EventHandler<DataArgs<Link>> AfterUnload;
+        }
 
-        /// <summary>
-        /// When library has been loaded.
-        /// </summary>
-        event EventHandler<DataArgs<Link>> AfterLoad;
+        public PECorruptDataException()
+            : this("Incorrect or damaged PE-format.")
+        {
 
-        /// <summary>
-        /// Active library.
-        /// </summary>
-        Link Library { get; }
-
-        /// <summary>
-        /// Gets names of all available export functions from current library.
-        /// </summary>
-        string[] ExportFunctionNames { get; }
+        }
     }
 }

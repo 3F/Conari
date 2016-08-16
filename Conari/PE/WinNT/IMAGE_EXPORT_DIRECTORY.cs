@@ -22,35 +22,29 @@
  * THE SOFTWARE.
 */
 
-using System;
-
-namespace net.r_eg.Conari.Core
+namespace net.r_eg.Conari.PE.WinNT
 {
-    public interface ILoader
+    using DWORD = System.UInt32;
+    using WORD  = System.UInt16;
+
+    /// <summary>
+    /// Export Format
+    /// /winnt.h
+    /// </summary>
+    public struct IMAGE_EXPORT_DIRECTORY
     {
-        /// <summary>
-        /// Before unloading a library.
-        /// </summary>
-        event EventHandler<DataArgs<Link>> BeforeUnload;
+        public const int SIZEOF_EXPORT_DIRECTORY = 40;
 
-        /// <summary>
-        /// When library has been unloaded.
-        /// </summary>
-        event EventHandler<DataArgs<Link>> AfterUnload;
-
-        /// <summary>
-        /// When library has been loaded.
-        /// </summary>
-        event EventHandler<DataArgs<Link>> AfterLoad;
-
-        /// <summary>
-        /// Active library.
-        /// </summary>
-        Link Library { get; }
-
-        /// <summary>
-        /// Gets names of all available export functions from current library.
-        /// </summary>
-        string[] ExportFunctionNames { get; }
+        public DWORD Characteristics;
+        public DWORD TimeDateStamp;
+        public WORD MajorVersion;
+        public WORD MinorVersion;
+        public DWORD Name;
+        public DWORD Base;
+        public DWORD NumberOfFunctions;
+        public DWORD NumberOfNames;
+        public DWORD AddressOfFunctions;     // RVA from base of image
+        public DWORD AddressOfNames;         // RVA from base of image
+        public DWORD AddressOfNameOrdinals;  // RVA from base of image
     }
 }

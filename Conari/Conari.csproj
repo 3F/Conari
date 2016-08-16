@@ -52,6 +52,7 @@
     <Compile Include="Core\IConfig.cs" />
     <Compile Include="Core\Dynamic.cs" />
     <Compile Include="Core\ProviderDLR.cs" />
+    <Compile Include="Exceptions\PECorruptDataException.cs" />
     <Compile Include="Extensions\IntPtrExtension.cs" />
     <Compile Include="IConari.cs" />
     <Compile Include="Core\IBinder.cs" />
@@ -75,6 +76,9 @@
     <Compile Include="Native\Core\BType.cs" />
     <Compile Include="Native\Core\Raw.cs" />
     <Compile Include="Native\NativeData.cs" />
+    <Compile Include="PE\Hole\ExportFunctions.cs" />
+    <Compile Include="PE\WinNT\IMAGE_EXPORT_DIRECTORY.cs" />
+    <Compile Include="PE\WinNT\IMAGE_SECTION_HEADER.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Types\Action\Ref\ActionRef.cs" />
     <Compile Include="Types\Action\Out\ActionOut.cs" />

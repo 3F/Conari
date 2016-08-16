@@ -24,6 +24,7 @@
 
 using System;
 using net.r_eg.Conari.Exceptions;
+using net.r_eg.Conari.PE.Hole;
 using net.r_eg.Conari.WinAPI;
 
 namespace net.r_eg.Conari.Core
@@ -55,6 +56,21 @@ namespace net.r_eg.Conari.Core
         }
 
         /// <summary>
+        /// Gets names of all available export functions from current library.
+        /// </summary>
+        public string[] ExportFunctionNames
+        {
+            get
+            {
+                if(_exportFuncNames == null) {
+                    _exportFuncNames = ExportFunctions.GetNames(Library.LibName);
+                }
+                return _exportFuncNames;
+            }
+        }
+        private string[] _exportFuncNames;
+
+        /// <summary>
         /// Loads library into the address space.
         /// </summary>
         /// <param name="lib">The name of the library.</param>
@@ -74,6 +90,8 @@ namespace net.r_eg.Conari.Core
             if(Library.Handle == IntPtr.Zero) {
                 throw new LoadLibException($"Failed loading '{Library.LibName}': Check used architecture or existence of file.", true);
             }
+
+            _exportFuncNames = null; // to update export list
 
             AfterLoad(this, new DataArgs<Link>(Library));
             return true;
