@@ -113,7 +113,7 @@ Raw mt = NativeData
         [6]    0x00    byte   |
         [7]    0x00    byte --^ b = 7
         [8]    0x20    byte --
-        [9]    0x78    byte   |_ pointer to allocated string: (CharPtr)z.name
+        [9]    0x78    byte   |_ pointer to allocated string: (CharPtr)name
         [10]   0xf0    byte   |
         [11]   0x56    byte --
 ...

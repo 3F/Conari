@@ -52,8 +52,8 @@ namespace NS_UNLIB_API_
 
     /* service */
 
-    LIBSVC void freeAll();
-    LIBSVC void free(void* ptr);
-    LIBSVC void free_arr(void* ptr);
+    LIBSVC void svcFreeAll();
+    LIBSVC void svcFree(void* ptr);
+    LIBSVC void svcFreeArr(void* ptr);
 }
 _NS_UNLIB_API

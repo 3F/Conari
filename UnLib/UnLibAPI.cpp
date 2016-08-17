@@ -154,7 +154,7 @@ namespace NS_UNLIB_API_
 
     /* service */
 
-    LIBSVC void freeAll()
+    LIBSVC void svcFreeAll()
     {
         g_sharedTSpec.reset();
         delete g_TSpecB->s; // TSpecB->TSpecA
@@ -162,12 +162,13 @@ namespace NS_UNLIB_API_
         // ...
     }
 
-    LIBSVC void free(void* ptr)
+    // do not use `free(void* ptr)`: __scrt_dllmain_uninitialize_c() & __CRTDECL operator delete(void* block, size_t)
+    LIBSVC void svcFree(void* ptr)
     {
         delete ptr;
     }
 
-    LIBSVC void free_arr(void* ptr)
+    LIBSVC void svcFreeArr(void* ptr)
     {
         delete[] ptr;
     }

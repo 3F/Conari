@@ -120,6 +120,7 @@ namespace net.r_eg.Conari.Native.Core
         /// </summary>
         /// <param name="type">The type of value.</param>
         /// <param name="tsize">Actual size of value.</param>
+        /// <param name="value">Output value.</param>
         /// <returns></returns>
         public bool tryNext(Type type, int tsize, out dynamic value)
         {
