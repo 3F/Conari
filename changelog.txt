@@ -3,6 +3,29 @@ Conari
 _ _ _ _
 
 
+[v1.1]
+
+    NEW: DLR features for core with caching of dynamic types.
+    NEW: Added features for convenient work with Native C/C++ structures without declaration. /Issue #2
+    NEW: The Mangling features by C rules: to automatically find entry points of exported functions. /Issue #3
+    NEW: Added access to export functions from PE files.
+         ILoader.ExportFunctionNames
+
+    NEW: Added LSender as a simple retranslator for loggers.
+    NEW: Added features for convenient work with any binary raw data.
+
+    NEW: Added Core events:
+         * BeforeUnload - Before unloading a library.
+         * AfterUnload - When library has been unloaded.
+         * AfterLoad - When library has been loaded.
+         * PrefixChanged - When Prefix has been changed.
+         * ConventionChanged - When Convention has been changed.
+
+    FIXED: bug with CharPtr when unboxing for unmanaged code.
+    FIXED: trivial fixes with implicit conversion for size_t and UIntPtr.
+    CHANGED: Updated CharPtr: +BSTR, +WCharPtr & added new UnmanagedString, that allocates strings for unmanaged code.
+    CHANGED: Other trivial fixes and improvements.
+
 [v1.0]
 
     * Initial release.
