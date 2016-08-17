@@ -177,8 +177,8 @@ namespace net.r_eg.Conari
 
         private void onConventionChanged(object sender, DataArgs<CallingConvention> e)
         {
-            LSender.Send(sender, $"DLR has been updated with new CallingConvention: {e.Data}", Message.Level.Info);
             DLR = newDLR(e.Data);
+            LSender.Send(sender, $"DLR has been updated with new CallingConvention: {e.Data}", Message.Level.Info);
         }
     }
 }

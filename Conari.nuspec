@@ -13,8 +13,9 @@
     <description>
     
         Binder of Unmanaged code for .NET
-        The Conari represents a flexible platform to work with any exported functions of libraries (a library or executable module). 
-        The lightweight and powerful binding from unmanaged code now is much more easier !
+        
+        The Conari represents a flexible platform to work with unmanaged code, other native and binary data.
+        The lightweight and powerful binding from any exported functions of libraries (a library or executable module), and more...
         _ _ _ _ _ _
         Source code and all details here: https://github.com/3F/Conari
         

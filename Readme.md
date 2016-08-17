@@ -4,7 +4,8 @@
 
 Binder of Unmanaged code for .NET
 
-The Conari represents a flexible platform to work with any exported functions of libraries (a library or executable module). The lightweight and powerful binding from unmanaged code now is much more easier !
+The Conari represents a flexible platform to work with unmanaged code, other native and binary data.
+The lightweight and powerful binding from any exported functions of libraries (a library or executable module), and more...
 
 *Did you know: The [LunaRoad](https://github.com/3F/LunaRoad) project works over Conari.*
 
@@ -21,9 +22,9 @@ using(IConari c = new ConariL("Library.dll")) {
 }
 ```
 
-**Conari is ready for any exported functions immediately via:**
+Conari is ready for any exported functions immediately via:
 
-* Dynamic features / DLR:
+* **Dynamic features** / **DLR**:
 
 ```csharp
 var ptr     = d.test<IntPtr>(); // eqv: l.bind<Func<IntPtr>>("test")();
@@ -33,7 +34,7 @@ var codec   = d.avcodec_find_encoder<IntPtr>(AV_CODEC_ID_MP2); // eqv: l.bind<Fu
 
 *It does not require the any configuration from you, we will do it* ***automatically.*** *Easy and works well.*
 
-* Lambda expressions:
+* **Lambda expressions**:
 
 ```csharp
 using(var c = new ConariL("Library.dll"))
@@ -43,23 +44,18 @@ using(var c = new ConariL("Library.dll"))
 }
 ```
 
-This also does not require the creation of any additional **delegate**. The Conari will do it **automatically** instead of you.
-
+This also does not require the creation of any additional **delegate**. The Conari will do it **automatically** instead of you. 
 Just use `bind<>` methods and have fun !
 
 ```csharp
 c.bind<...>("function")
 ```
 
-you already may invoke it immediately as above:
-
 ```csharp
+// you already may invoke it immediately as above:
 c.bind<Action<int, string>>("set")(-1, "Hello from Conari !");
-```
 
-or later:
-
-```csharp
+// or later:
 var set = c.bind<Action<int, string>>("set");
 ...
 set(-1, "Hello from Conari !");
@@ -77,12 +73,59 @@ using(var l = new ConariL(
 }
 ```
 
-[Calling Convention](https://msdn.microsoft.com/en-us/library/system.runtime.interopservices.callingconvention.aspx):
+**Native C/C++ structures without declaration** **[[?](https://github.com/3F/Conari/issues/2)]**:
+
+```csharp
+
+// IMAGE_FILE_HEADER: https://msdn.microsoft.com/en-us/library/windows/desktop/ms680313.aspx
+dynamic ifh = NativeData
+                ._(data)
+                .t<WORD, WORD>(null, "NumberOfSections")
+                .align<DWORD>(3)
+                .t<WORD, WORD>("SizeOfOptionalHeader")
+                .Raw.Type;
+                
+if(ifh.SizeOfOptionalHeader == 0xE0) { // IMAGE_OPTIONAL_HEADER32
+    ... 
+}
+
+// IMAGE_DATA_DIRECTORY: https://msdn.microsoft.com/en-us/library/windows/desktop/ms680305.aspx
+dynamic idd = (new NativeData(data))
+                    .t<DWORD>("VirtualAddress") // idd.VirtualAddress
+                    .t<DWORD>("Size")           // idd.Size
+                    .Raw.Type;
+```
+
+```csharp
+Raw mt = NativeData
+            ._(ptr)
+            .align<int>(2, "a", "b")
+            .t<IntPtr>("name")
+            .Raw;
+            
+-     {byte[0x0000000c]} byte[]
+        [0]    0x05    byte --
+        [1]    0x00    byte   |
+        [2]    0x00    byte   |
+        [3]    0x00    byte --^ a = 5
+        [4]    0x07    byte --
+        [5]    0x00    byte   |
+        [6]    0x00    byte   |
+        [7]    0x00    byte --^ b = 7
+        [8]    0x20    byte --
+        [9]    0x78    byte   |_ pointer to allocated string: (CharPtr)z.name
+        [10]   0xf0    byte   |
+        [11]   0x56    byte --
+...
+```
+
+**Calling Convention** & **Name-Decoration** **[[?](https://github.com/3F/Conari/issues/3)]**:
 
 ```csharp
 using(var l = new ConariL("Library.dll", CallingConvention.StdCall))
 {
     //...
+    l.Mangling = true; // _get_SevenStdCall@0 <-> get_SevenStdCall
     l.Convention = CallingConvention.Cdecl;
 }
 ```
@@ -101,6 +144,23 @@ CharPtr name = c.bind<FuncOut3<int, size_t, IntPtr>>("to")(1, out len);
 string myName += name; // (IntPtr)name; .Raw; .Ansi; .Utf8; ...
 ...
 uint_t v = dll.getU(2);
+```
+
+**Events**:
+
+```csharp
+l.ConventionChanged += (object sender, DataArgs<CallingConvention> e) =>
+{
+    DLR = newDLR(e.Data);
+    LSender.Send(sender, $"DLR has been updated with new CallingConvention: {e.Data}", Message.Level.Info);
+};
+
+l.BeforeUnload += (object sender, DataArgs<Link> e) =>
+{
+    // Do not forget to do something before unloading a library
+};
+
+...
 ```
 
 
@@ -130,3 +190,6 @@ Available variants:
 * NuGet Commandline: `nuget install Conari`
 * [/releases](https://github.com/3F/Conari/releases) ( [latest](https://github.com/3F/Conari/releases/latest) )
 * [Nightly builds](https://ci.appveyor.com/project/3Fs/conari/history) (`/artifacts` page). But remember: It can be unstable or not work at all. Use this for tests of latest changes.
+
+
+[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=entry%2ereg%40gmail%2ecom&lc=US&item_name=3F%2dOpenSource%20%5b%20github%2ecom%2f3F&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted)
