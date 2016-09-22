@@ -3,7 +3,7 @@
   <metadata>
     <id>Conari</id>
     <version>1.1.0</version>
-    <title>[ Conari ] Binder of Unmanaged code for .NET /DLR &amp; Lambda features</title>
+    <title>[ Conari ] Binder of Unmanaged code for .NET</title>
     <authors>github.com/3F/Conari</authors>
     <owners>reg</owners>
     <licenseUrl>https://github.com/3F/Conari/blob/master/LICENSE</licenseUrl>

@@ -12,6 +12,11 @@ namespace NS_UNLIB_API_
         return true;
     }
 
+    LIBAPI bool get_False()
+    {
+        return false;
+    }
+
     LIBAPI unsigned short int get_Seven()
     {
         return 7;

@@ -277,7 +277,7 @@ namespace net.r_eg.Conari.Core
                 il.Emit(OpCodes.Ldc_I4, ptr.ToInt32()); //32bit ptr
             }
 
-            il.EmitCalli(OpCodes.Calli, conv, convRetType(mi.ReturnType), mParams);
+            il.EmitCalli(OpCodes.Calli, conv, fixTypes(convRetType(mi.ReturnType)), mParams);
             il.Emit(OpCodes.Ret);
 
             return new TDyn()
@@ -289,6 +289,21 @@ namespace net.r_eg.Conari.Core
                 declaringType   = mi.DeclaringType,
                 convention      = conv
             };
+        }
+
+        /// <summary>
+        /// Fixes for specific types like a bool -> I1 etc.
+        /// https://github.com/3F/Conari/issues/6
+        /// </summary>
+        /// <param name="origin">Base type</param>
+        /// <returns></returns>
+        protected virtual Type fixTypes(Type origin)
+        {
+            if(origin == typeof(bool)) {
+                return typeof(byte);
+            }
+
+            return origin;
         }
 
         /// <summary>

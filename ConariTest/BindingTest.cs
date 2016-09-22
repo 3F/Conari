@@ -137,6 +137,19 @@ namespace net.r_eg.ConariTest
         }
 
         [TestMethod]
+        public void basicTest11()
+        {
+            using(var l = new ConariL(UNLIB_DLL))
+            {
+                Assert.AreEqual(false, l.DLR.get_False<bool>());
+                Assert.AreEqual(false, l.bind<Func<bool>>("get_False")());
+                Assert.AreEqual(false, l.bind(Dynamic.GetMethodInfo(typeof(bool)), "get_False")
+                                                    .dynamic
+                                                    .Invoke(null, new object[0]));
+            }
+        }
+
+        [TestMethod]
         public void manglingTest1()
         {
             // bool net::r_eg::Conari::UnLib::API::getD_True(void)
@@ -390,6 +403,44 @@ namespace net.r_eg.ConariTest
                     var dyn = l.bind(Dynamic.GetMethodInfo(typeof(WCharPtr), typeof(WCharPtr)), "get_WStringPtrVal");
                     Assert.AreEqual(exp, (WCharPtr)dyn.dynamic.Invoke(null, new object[] { wchrptr }));
                 }
+            }
+        }
+
+        /// <summary>
+        /// get_BoolVal
+        /// </summary>
+        [TestMethod]
+        public void echoTest6()
+        {
+            using(var l = new ConariL(UNLIB_DLL))
+            {
+                Assert.AreEqual(false, l.DLR.get_BoolVal<bool>(false));
+                Assert.AreEqual(false, l.bind<Func<bool, bool>>("get_BoolVal")(false));
+                Assert.AreEqual(false, l.bind(Dynamic.GetMethodInfo(typeof(bool), typeof(bool)), "get_BoolVal")
+                                                    .dynamic
+                                                    .Invoke(null, new object[1] { false }));
+
+                Assert.AreEqual(true, l.DLR.get_BoolVal<bool>(true));
+                Assert.AreEqual(true, l.bind<Func<bool, bool>>("get_BoolVal")(true));
+                Assert.AreEqual(true, l.bind(Dynamic.GetMethodInfo(typeof(bool), typeof(bool)), "get_BoolVal")
+                                                    .dynamic
+                                                    .Invoke(null, new object[1] { true }));
+            }
+        }
+
+        /// <summary>
+        /// get_IntVal
+        /// </summary>
+        [TestMethod]
+        public void echoTest7()
+        {
+            using(var l = new ConariL(UNLIB_DLL))
+            {
+                Assert.AreEqual(0, l.DLR.get_IntVal<int>(0));
+                Assert.AreEqual(-456, l.bind<Func<int, int>>("get_IntVal")(-456));
+                Assert.AreEqual(1024, l.bind(Dynamic.GetMethodInfo(typeof(int), typeof(int)), "get_IntVal")
+                                                    .dynamic
+                                                    .Invoke(null, new object[1] { 1024 }));
             }
         }
 

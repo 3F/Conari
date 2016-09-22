@@ -8,6 +8,7 @@ namespace NS_UNLIB_API_
     /* basic */
 
     LIBAPI bool get_True();
+    LIBAPI bool get_False();
     LIBAPI unsigned short int get_Seven();
     LIBAPI const char* get_HelloWorld();
 
