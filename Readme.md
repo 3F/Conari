@@ -7,7 +7,7 @@ Binder of Unmanaged code for .NET
 The Conari represents a flexible platform to work with unmanaged code, other native and binary data.
 The lightweight and powerful binding from any exported functions of libraries (a library or executable module), and more...
 
-*Did you know: The [LunaRoad](https://github.com/3F/LunaRoad) project works over Conari.*
+*Did you know: The [LunaRoad](https://github.com/3F/LunaRoad) project works via Conari engine.*
 
 [![Build status](https://ci.appveyor.com/api/projects/status/qc1d3ofsso8fd67t/branch/master?svg=true)](https://ci.appveyor.com/project/3Fs/conari/branch/master)
 [![release-src](https://img.shields.io/github/release/3F/Conari.svg)](https://github.com/3F/Conari/releases/latest)
@@ -24,7 +24,7 @@ using(IConari c = new ConariL("Library.dll")) {
 
 Conari is ready for any exported functions immediately via:
 
-* **Dynamic features** / **DLR**:
+**Dynamic features** / **DLR**:
 
 ```csharp
 var ptr     = d.test<IntPtr>(); // eqv: l.bind<Func<IntPtr>>("test")();
@@ -32,9 +32,9 @@ var codec   = d.avcodec_find_encoder<IntPtr>(AV_CODEC_ID_MP2); // eqv: l.bind<Fu
               d.push(); // eqv: l.bind<Action>("push")();
 ```
 
-*It does not require the any configuration from you, we will do it* ***automatically.*** *Easy and works well.*
+*It does not require the any configuration from you, we will do it automatically. Easy and works well.*
 
-* **Lambda expressions**:
+**Lambda expressions**:
 
 ```csharp
 using(var c = new ConariL("Library.dll"))
@@ -164,9 +164,28 @@ l.BeforeUnload += (object sender, DataArgs<Link> e) =>
 ```
 
 
-**and more ...** 
+and more !
 
-*you wish, we doing*
+
+### Samples
+
+How about to use [regXwild](https://github.com/3F/regXwild) (Fast and powerful wildcards on C++) in your C# code ? It easy:
+
+```csharp
+using(var l = new ConariL("regXwild.dll")) {
+...
+    if(l.DLR.searchEssC<bool>((WCharPtr)data, (WCharPtr)filter, false)) {
+        // ...
+    }
+}
+```
+yes, you don't need to do anything else ! The Conari will prepare all required operations and binding with native method instead of you:
+
+```cpp
+REGXWILD_API bool searchEssC(const TCHAR* data, const TCHAR* filter, bool ignoreCase);
+```
+
+have fun !
 
 ----
 
