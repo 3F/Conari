@@ -152,6 +152,7 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TSpec.h" />
+    <ClInclude Include="TVer.h" />
     <ClInclude Include="UnLib.h" />
     <ClInclude Include="UnLibAPI.h" />
     <ClInclude Include="UnLibConf.h" />

@@ -64,6 +64,8 @@
     <Compile Include="Native\Core\RawTest.cs" />
     <Compile Include="Native\Core\BReaderTest.cs" />
     <Compile Include="Native\NativeDataTest.cs" />
+    <Compile Include="TVer.cs" />
+    <Compile Include="Types\UnmanagedStructureTest.cs" />
     <Compile Include="UserSpecType.cs" />
     <Compile Include="ConariLTest.cs" />
     <Compile Include="Core\DynamicTest.cs" />

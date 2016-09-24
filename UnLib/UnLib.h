@@ -4,6 +4,7 @@
 #include "UnLibConf.h"
 
 #include "TSpec.h"
+#include "TVer.h"
 
 namespace NS_UNLIB_
 {

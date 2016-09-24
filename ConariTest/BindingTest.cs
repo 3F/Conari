@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using net.r_eg.Conari;
 using net.r_eg.Conari.Core;
@@ -598,6 +599,135 @@ namespace net.r_eg.ConariTest
 
                 //int _a = hole.a; // ~ 0
                 //int _b = hole.b; // ~ 0
+            }
+        }
+
+        /// <summary>
+        /// get_CharPtrCmpRef
+        /// </summary>
+        [TestMethod]
+        public void stringTest1()
+        {
+            using(var l = new ConariL(UNLIB_DLL))
+            {
+                string exp = "mystring-123 !";
+
+                using(var uns1 = new UnmanagedString(exp, UnmanagedString.SType.Ansi))
+                using(var uns2 = new UnmanagedString(exp, UnmanagedString.SType.Ansi))
+                using(var uns3 = new UnmanagedString(" " + exp, UnmanagedString.SType.Ansi))
+                {
+                    CharPtr chrptr  = uns1;
+                    CharPtr chrptr2 = uns2;
+
+                    Assert.AreEqual(true, l.DLR.get_CharPtrCmpRef<bool>(chrptr, chrptr2));
+                    Assert.AreEqual(true, l.bind<Func<CharPtr, CharPtr, bool>>("get_CharPtrCmpRef")(chrptr, chrptr2));
+
+                    Assert.AreEqual(false, l.DLR.get_CharPtrCmpRef<bool>(chrptr, (CharPtr)uns3));
+                }
+            }
+        }
+
+        /// <summary>
+        /// get_WCharPtrCmpRef
+        /// </summary>
+        [TestMethod]
+        public void stringTest2()
+        {
+            using(var l = new ConariL(UNLIB_DLL))
+            {
+                string exp = "mystring-123 !";
+
+                using(var uns1 = new UnmanagedString(exp, UnmanagedString.SType.Unicode))
+                using(var uns2 = new UnmanagedString(exp, UnmanagedString.SType.Unicode))
+                using(var uns3 = new UnmanagedString(" " + exp, UnmanagedString.SType.Unicode))
+                {
+                    WCharPtr wchrptr    = uns1;
+                    WCharPtr wchrptr2   = uns2;
+
+                    Assert.AreEqual(true, l.DLR.get_WCharPtrCmpRef<bool>(wchrptr, wchrptr2));
+                    Assert.AreEqual(true, l.bind<Func<WCharPtr, WCharPtr, bool>>("get_WCharPtrCmpRef")(wchrptr, wchrptr2));
+
+                    Assert.AreEqual(false, l.DLR.get_WCharPtrCmpRef<bool>(wchrptr, (WCharPtr)uns3));
+                }
+            }
+        }
+
+        /// <summary>
+        /// get_StringPtrCmpRef
+        /// </summary>
+        [TestMethod]
+        public void stringTest3()
+        {
+            using(var l = new ConariL(UNLIB_DLL))
+            {
+                string exp = "mystring-123 !";
+
+                using(var uns1 = new UnmanagedString(exp, UnmanagedString.SType.Ansi))
+                using(var uns2 = new UnmanagedString(exp, UnmanagedString.SType.Ansi))
+                using(var uns3 = new UnmanagedString(" " + exp, UnmanagedString.SType.Ansi))
+                {
+                    CharPtr chrptr  = uns1;
+                    CharPtr chrptr2 = uns2;
+
+                    Assert.AreEqual(true, l.DLR.get_StringPtrCmpRef<bool>(chrptr, chrptr2));
+                    Assert.AreEqual(true, l.bind<Func<CharPtr, CharPtr, bool>>("get_StringPtrCmpRef")(chrptr, chrptr2));
+
+                    Assert.AreEqual(false, l.DLR.get_StringPtrCmpRef<bool>(chrptr, (CharPtr)uns3));
+                }
+            }
+        }
+
+        /// <summary>
+        /// get_WStringPtrCmpRef
+        /// </summary>
+        [TestMethod]
+        public void stringTest4()
+        {
+            using(var l = new ConariL(UNLIB_DLL))
+            {
+                string exp = "mystring-123 !";
+
+                using(var uns1 = new UnmanagedString(exp, UnmanagedString.SType.Unicode))
+                using(var uns2 = new UnmanagedString(exp, UnmanagedString.SType.Unicode))
+                using(var uns3 = new UnmanagedString(" " + exp, UnmanagedString.SType.Unicode))
+                {
+                    WCharPtr chrptr  = uns1;
+                    WCharPtr chrptr2 = uns2;
+
+                    Assert.AreEqual(true, l.DLR.get_WStringPtrCmpRef<bool>(chrptr, chrptr2));
+                    Assert.AreEqual(true, l.bind<Func<WCharPtr, WCharPtr, bool>>("get_WStringPtrCmpRef")(chrptr, chrptr2));
+
+                    Assert.AreEqual(false, l.DLR.get_WStringPtrCmpRef<bool>(chrptr, (WCharPtr)uns3));
+                }
+            }
+        }
+
+        [TestMethod]
+        public void chkTypeTVerTest1()
+        {
+            using(var l = new ConariL(UNLIB_DLL))
+            {
+                TVer v = new TVer(7, 0, 256);
+
+                Assert.AreEqual(true, l.DLR.chkTypeTVer<bool>(v, 7, 0, 256));
+                Assert.AreEqual(false, l.DLR.chkTypeTVer<bool>(v, 7, 1, 256));
+            }
+        }
+
+        [TestMethod]
+        public void chkTypeRefTVerTest1()
+        {
+            using(var l = new ConariL(UNLIB_DLL))
+            {
+                TVer v = new TVer(5, 0, 1024);
+
+                using(var uv = new UnmanagedStructure(v))
+                {
+                    IntPtr ptr = uv;
+
+                    Assert.AreEqual(true, l.DLR.chkTypeRefTVer<bool>(ptr, 5, 0, 1024));
+                    Assert.AreEqual(false, l.DLR.chkTypeRefTVer<bool>(ptr, 5, 1, 1024));
+                }
             }
         }
     }

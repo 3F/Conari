@@ -4,6 +4,7 @@
 
 namespace NS_UNLIB_API_
 {
+    using namespace std;
 
     /* basic */
 
@@ -29,14 +30,14 @@ namespace NS_UNLIB_API_
     LIBAPI int get_IntVal(int v);
     LIBAPI void* get_GPtrVal(void* pdata);
 
-    LIBAPI std::string* get_StringPtrVal(std::string* str);
-    LIBAPI std::wstring* get_WStringPtrVal(std::wstring* wstr);
+    LIBAPI string* get_StringPtrVal(string* str);
+    LIBAPI wstring* get_WStringPtrVal(wstring* wstr);
     LIBAPI const char* get_CharPtrVal(const char* str);
     LIBAPI const wchar_t* get_WCharPtrVal(const wchar_t* wstr);
     LIBAPI const BSTR* get_BSTRVal(const BSTR* bstr);
 
-    LIBAPI_CPP std::string get_StringVal(std::string str);
-    LIBAPI_CPP std::wstring get_WStringVal(std::wstring wstr);
+    LIBAPI_CPP string get_StringVal(string str);
+    LIBAPI_CPP wstring get_WStringVal(wstring wstr);
 
     /* complex */
 
@@ -50,6 +51,23 @@ namespace NS_UNLIB_API_
     //LIBAPI TSpecA get_TSpecA();
     //LIBAPI TSpecA get_TSpecA(int a, int b);
 
+    /* strings */
+
+    LIBAPI bool get_CharPtrCmpRef(const char& str1, const char* str2);
+    LIBAPI bool get_WCharPtrCmpRef(const wchar_t& wstr1, const wchar_t* wstr2);
+
+    LIBAPI bool get_StringPtrCmpRef(const string& str1, const string* str2);
+    LIBAPI bool get_WStringPtrCmpRef(const wstring& wstr1, const wstring* wstr2);
+
+
+    /* types */
+
+    LIBAPI bool chkTypeTVer(TVer t, int major, int minor, int patch);
+    LIBAPI bool chkTypeRefTVer(TVer& t, int major, int minor, int patch);
+
+    // TODO: byte-packing etc. for support of template/generic types. ~TVerTpl<char>
+    //LIBAPI_CPP bool chkWordForString(string str);
+    //LIBAPI_CPP bool get_WStringVal(wstring wstr);
 
     /* service */
 

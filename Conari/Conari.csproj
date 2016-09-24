@@ -84,6 +84,7 @@
     <Compile Include="Types\Action\Ref\ActionRef.cs" />
     <Compile Include="Types\Action\Out\ActionOut.cs" />
     <Compile Include="Types\BSTR.cs" />
+    <Compile Include="Types\UnmanagedStructure.cs" />
     <Compile Include="Types\WCharPtr.cs" />
     <Compile Include="Types\UnmanagedString.cs" />
     <Compile Include="Types\Func\Ref\FuncRef.cs" />

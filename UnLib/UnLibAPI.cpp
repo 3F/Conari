@@ -4,6 +4,7 @@
 
 namespace NS_UNLIB_API_
 {
+    using namespace std;
 
     /* basic */
 
@@ -77,12 +78,12 @@ namespace NS_UNLIB_API_
         return pdata;
     }
 
-    LIBAPI std::string* get_StringPtrVal(std::string* str)
+    LIBAPI string* get_StringPtrVal(string* str)
     {
         return str;
     }
 
-    LIBAPI std::wstring* get_WStringPtrVal(std::wstring* wstr)
+    LIBAPI wstring* get_WStringPtrVal(wstring* wstr)
     {
         return wstr;
     }
@@ -102,12 +103,12 @@ namespace NS_UNLIB_API_
         return bstr;
     }
 
-    LIBAPI_CPP std::string get_StringVal(std::string str)
+    LIBAPI_CPP string get_StringVal(string str)
     {
         return str;
     }
 
-    LIBAPI_CPP std::wstring get_WStringVal(std::wstring wstr)
+    LIBAPI_CPP wstring get_WStringVal(wstring wstr)
     {
         return wstr;
     }
@@ -155,7 +156,39 @@ namespace NS_UNLIB_API_
         return g_TSpecB;
     }
 
+    /* strings */
 
+    LIBAPI bool get_CharPtrCmpRef(const char& str1, const char* str2)
+    {
+        return str1 == *str2;
+    }
+
+    LIBAPI bool get_WCharPtrCmpRef(const wchar_t& wstr1, const wchar_t* wstr2)
+    {
+        return wstr1 == *wstr2;
+    }
+
+    LIBAPI bool get_StringPtrCmpRef(const string& str1, const string* str2)
+    {
+        return lstrcmpA((LPCSTR)&str1, ((LPCSTR)str2)) == 0;
+    }
+
+    LIBAPI bool get_WStringPtrCmpRef(const wstring& wstr1, const wstring* wstr2)
+    {
+        return lstrcmpW((LPCWSTR)&wstr1, ((LPCWSTR)wstr2)) == 0;
+    }
+
+    /* types */
+
+    LIBAPI bool chkTypeTVer(TVer t, int major, int minor, int patch)
+    {
+        return t.major == major && t.minor == minor && t.patch == patch;
+    }
+
+    LIBAPI bool chkTypeRefTVer(TVer& t, int major, int minor, int patch)
+    {
+        return t.major == major && t.minor == minor && t.patch == patch;
+    }
 
     /* service */
 
