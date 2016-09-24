@@ -2,6 +2,10 @@
 Conari
 _ _ _ _
 
+[v1.2]
+
+    FIXED: Incorrect boolean values from unmanaged code #6
+    NEW: Added type for work with unmanaged structures - UnmanagedStructure
 
 [v1.1]
 
