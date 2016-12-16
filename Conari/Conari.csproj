@@ -53,6 +53,7 @@
     <Compile Include="Core\Dynamic.cs" />
     <Compile Include="Core\ProviderDLR.cs" />
     <Compile Include="Exceptions\PECorruptDataException.cs" />
+    <Compile Include="Extensions\ObjectExtension.cs" />
     <Compile Include="Extensions\IntPtrExtension.cs" />
     <Compile Include="IConari.cs" />
     <Compile Include="Core\IBinder.cs" />
@@ -84,6 +85,9 @@
     <Compile Include="Types\Action\Ref\ActionRef.cs" />
     <Compile Include="Types\Action\Out\ActionOut.cs" />
     <Compile Include="Types\BSTR.cs" />
+    <Compile Include="Types\IBoxed.cs" />
+    <Compile Include="Types\INullType.cs" />
+    <Compile Include="Types\NullType.cs" />
     <Compile Include="Types\UnmanagedStructure.cs" />
     <Compile Include="Types\WCharPtr.cs" />
     <Compile Include="Types\UnmanagedString.cs" />

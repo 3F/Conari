@@ -23,41 +23,33 @@
 */
 
 using System;
-using net.r_eg.Conari.Core;
 
-namespace net.r_eg.Conari
+namespace net.r_eg.Conari.Types
 {
-    public interface IConari: IBinder, IProvider, ILoader, IDisposable
+    /// <summary>
+    /// To store information about basic type for any null values.
+    /// </summary>
+    /// <typeparam name="T">Nullable type.</typeparam>
+    public struct NullType<T>: INullType, IBoxed
+        where T: class
     {
         /// <summary>
-        /// Access to available configuration data of dynamic DLR.
+        /// To get/set encapsulated data.
         /// </summary>
-        IProviderDLR ConfigDLR { get; }
+        public dynamic Data
+        {
+            get;
+            set;
+        }
 
         /// <summary>
-        /// Provides dynamic features like adding 
-        /// and invoking of new exported-functions at runtime.
+        /// To get base type.
         /// </summary>
-        dynamic DLR { get; }
-
-        /// <summary>
-        /// DLR Features with `__cdecl` calling convention.
-        /// </summary>
-        dynamic __cdecl { get; }
-
-        /// <summary>
-        /// DLR Features with `__stdcall` calling convention.
-        /// </summary>
-        dynamic __stdcall { get; }
-
-        /// <summary>
-        /// DLR Features with `__fastcall` calling convention.
-        /// </summary>
-        dynamic __fastcall { get; }
-
-        /// <summary>
-        /// DLR Features with `__vectorcall` calling convention.
-        /// </summary>
-        dynamic __vectorcall { get; }
+        public Type GenericType
+        {
+            get {
+                return typeof(T);
+            }
+        }
     }
 }

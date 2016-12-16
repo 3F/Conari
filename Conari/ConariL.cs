@@ -36,6 +36,16 @@ namespace net.r_eg.Conari
         protected IConfig config;
 
         /// <summary>
+        /// Access to available configuration data of dynamic DLR.
+        /// </summary>
+        public IProviderDLR ConfigDLR
+        {
+            get {
+                return (IProviderDLR)DLR;
+            }
+        }
+
+        /// <summary>
         /// Provides dynamic features like adding 
         /// and invoking of new exported-functions at runtime.
         /// </summary>

@@ -38,5 +38,18 @@ namespace net.r_eg.Conari.Core
         /// Current Convention for all dynamic methods.
         /// </summary>
         CallingConvention Convention { get; }
+
+        /// <summary>
+        /// To use information about types from CallingContext if it's possible.
+        /// This should automatically:
+        ///     * Detect all ByRef&amp; types.
+        ///     * Bind all null-values for any reference-types that pushed with out/ref modifier.
+        /// </summary>
+        bool UseCallingContext { get; set; }
+
+        /// <summary>
+        /// To use ByRef&amp; (reference-types) for all sent types.
+        /// </summary>
+        bool UseByRef { get; set; }
     }
 }

@@ -22,42 +22,13 @@
  * THE SOFTWARE.
 */
 
-using System;
-using net.r_eg.Conari.Core;
-
-namespace net.r_eg.Conari
+namespace net.r_eg.Conari.Types
 {
-    public interface IConari: IBinder, IProvider, ILoader, IDisposable
+    internal interface IBoxed
     {
         /// <summary>
-        /// Access to available configuration data of dynamic DLR.
+        /// Access to internal data.
         /// </summary>
-        IProviderDLR ConfigDLR { get; }
-
-        /// <summary>
-        /// Provides dynamic features like adding 
-        /// and invoking of new exported-functions at runtime.
-        /// </summary>
-        dynamic DLR { get; }
-
-        /// <summary>
-        /// DLR Features with `__cdecl` calling convention.
-        /// </summary>
-        dynamic __cdecl { get; }
-
-        /// <summary>
-        /// DLR Features with `__stdcall` calling convention.
-        /// </summary>
-        dynamic __stdcall { get; }
-
-        /// <summary>
-        /// DLR Features with `__fastcall` calling convention.
-        /// </summary>
-        dynamic __fastcall { get; }
-
-        /// <summary>
-        /// DLR Features with `__vectorcall` calling convention.
-        /// </summary>
-        dynamic __vectorcall { get; }
+        dynamic Data { get; set; }
     }
 }
