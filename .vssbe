@@ -1,11 +1,11 @@
 ﻿{
   "Header": {
     "_": [
-      " Current file requires a vsSolutionBuildEvent engine.",
+      " This requires vsSolutionBuildEvent engine.",
       " Free plugin for Visual Studio or MSBuild Tools:",
-      "  * http://visualstudiogallery.msdn.microsoft.com/0d1dbfd7-ed8a-40af-ae39-281bfeca2334/",
-      "  * http://vssbe.r-eg.net",
-      " Feedback: entry.reg@gmail.com"
+      "  * https://github.com/3F/vsSolutionBuildEvent",
+      "  * https://visualstudiogallery.msdn.microsoft.com/0d1dbfd7-ed8a-40af-ae39-281bfeca2334/",
+      " Feedback: github.com/3F  or entry.reg@gmail.com"
     ],
     "Compatibility": "0.9"
   },
@@ -16,6 +16,10 @@
     },
     {
       "ClassName": "UserVariableComponent",
+      "Enabled": true
+    },
+    {
+      "ClassName": "TryComponent",
       "Enabled": true
     },
     {
@@ -40,6 +44,10 @@
     },
     {
       "ClassName": "BuildComponent",
+      "Enabled": true
+    },
+    {
+      "ClassName": "BoxComponent",
       "Enabled": true
     },
     {
@@ -83,9 +91,10 @@
       "Mode": {
         "$type": "net.r_eg.vsSBE.Events.ModeScript, vsSolutionBuildEvent",
         "Type": "Script",
-        "Command": "#[$(dbin = \"bin/$(Configuration)/\")]\n\n$(pConari   = \"Conari\")\n$(odir      = \"$(dbin)raw/\")\n\n#[IO delete.directory(\"$(dbin)\", true)]\n#[IO copy.directory(\"\", \"$(dbin)\", true)]",
+        "Command": "#[$(dbin    = \"bin/$(Configuration)/\")]\n$(netstamp  = $(TargetFrameworkVersion.Replace('v', '').Replace('.', '')))\n\n$(pConari   = \"Conari\")\n$(odir      = \"$(dbin)raw/\")\n\n#[IO delete.directory(\"$(dbin)\", true)]\n#[IO copy.directory(\"\", \"$(dbin)\", true)]",
         "Command__": [
-          "#[$(dbin = \"bin/$(Configuration)/\")]",
+          "#[$(dbin    = \"bin/$(Configuration)/\")]",
+          "$(netstamp  = $(TargetFrameworkVersion.Replace('v', '').Replace('.', '')))",
           "",
           "$(pConari   = \"Conari\")",
           "$(odir      = \"$(dbin)raw/\")",
@@ -154,7 +163,7 @@
       "Mode": {
         "$type": "net.r_eg.vsSBE.Events.ModeScript, vsSolutionBuildEvent",
         "Type": "Script",
-        "Command": "[IO copy.file(\n            \"$(SolutionDir)tools/*.*\", \n            \"$(odir)/tools/\", \n            true, \n            {\"*.nuspec\"})]\n            \n#[IO copy.file(\"Conari.nuspec\", \"$(odir)/Conari.nuspec\", true)]\n#[IO copy.file(\"$(pConari)/$(OutDir:$(pConari))/*.*\", \n               \"$(odir)/lib/net$(TargetFrameworkVersion.Replace('v', '').Replace('.', ''))/\", true)]\n\n#[IO copy.file(\"LICENSE\", \"$(odir)/\", true)]\n#[IO copy.file(\"Readme.md\", \"$(odir)/\", true)]\n#[IO copy.file(\"changelog.txt\", \"$(odir)/\", true)]",
+        "Command": "[IO copy.file(\n            \"$(SolutionDir)tools/*.*\", \n            \"$(odir)/tools/\", \n            true, \n            {\"*.nuspec\"})]\n            \n#[IO copy.file(\"Conari.nuspec\", \"$(odir)/Conari.nuspec\", true)]\n#[IO copy.file(\"$(pConari)/$(OutDir:$(pConari))/*.*\", \n               \"$(odir)/lib/net$(netstamp)/\", true)]\n\n#[IO copy.file(\"LICENSE\", \"$(odir)/\", true)]\n#[IO copy.file(\"Readme.md\", \"$(odir)/\", true)]\n#[IO copy.file(\"changelog.txt\", \"$(odir)/\", true)]",
         "Command__": [
           "[IO copy.file(",
           "            \"$(SolutionDir)tools/*.*\", ",
@@ -164,7 +173,7 @@
           "            ",
           "#[IO copy.file(\"Conari.nuspec\", \"$(odir)/Conari.nuspec\", true)]",
           "#[IO copy.file(\"$(pConari)/$(OutDir:$(pConari))/*.*\", ",
-          "               \"$(odir)/lib/net$(TargetFrameworkVersion.Replace('v', '').Replace('.', ''))/\", true)]",
+          "               \"$(odir)/lib/net$(netstamp)/\", true)]",
           "",
           "#[IO copy.file(\"LICENSE\", \"$(odir)/\", true)]",
           "#[IO copy.file(\"Readme.md\", \"$(odir)/\", true)]",
@@ -198,6 +207,40 @@
         "Command": "#[NuGet gnt.raw(\"/t:pack /p:ngin=\\\"$(odir)\\\" /p:ngout=\\\"$(dbin)\\\"\")]",
         "Command__": [
           "#[NuGet gnt.raw(\"/t:pack /p:ngin=\\\"$(odir)\\\" /p:ngout=\\\"$(dbin)\\\"\")]"
+        ]
+      }
+    },
+    {
+      "Enabled": true,
+      "Name": "Distributives",
+      "Caption": "zip archives etc.",
+      "SupportMSBuild": true,
+      "SupportSBEScripts": true,
+      "IgnoreIfBuildFailed": true,
+      "BuildType": "Common",
+      "Confirmation": false,
+      "ToConfiguration": [],
+      "ExecutionOrder": {
+        "$type": "net.r_eg.vsSBE.Events.ExecutionOrder[], vsSolutionBuildEvent",
+        "$values": []
+      },
+      "Process": {
+        "$type": "net.r_eg.vsSBE.Events.EventProcess, vsSolutionBuildEvent",
+        "Waiting": true,
+        "Hidden": true,
+        "TimeLimit": 30
+      },
+      "Mode": {
+        "$type": "net.r_eg.vsSBE.Events.ModeScript, vsSolutionBuildEvent",
+        "Type": "Script",
+        "Command": "#[7z pack.files({ \n        \"$(odir)\\\\lib\\\\net$(netstamp)\\\\*.*\",\n        \"$(odir)\\\\*.*\"\n    }, \n    \"$(dbin)\\\\Conari_v$(pVer).zip\", \n    { \"$(odir)\\\\*.nuspec\" })]",
+        "Command__": [
+          "#[7z pack.files({ ",
+          "        \"$(odir)\\\\lib\\\\net$(netstamp)\\\\*.*\",",
+          "        \"$(odir)\\\\*.*\"",
+          "    }, ",
+          "    \"$(dbin)\\\\Conari_v$(pVer).zip\", ",
+          "    { \"$(odir)\\\\*.nuspec\" })]"
         ]
       }
     }

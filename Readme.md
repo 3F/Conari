@@ -1,11 +1,11 @@
-# Conari
+# [Conari](https://github.com/3F/Conari)
 
 [![](https://raw.githubusercontent.com/3F/Conari/master/Conari/Resources/Conari_v1.png)](https://github.com/3F/Conari/fork)
 
 Binder of Unmanaged code for .NET
 
-The Conari represents a flexible platform to work with unmanaged code, other native and binary data.
-The lightweight and powerful binding from any exported functions of libraries (a library or executable module), and more...
+The Conari engine represents flexible platform for work with unmanaged code: Libraries, Executable Modules, other native and binary data.
+Lightweight and powerful binding with any exported functions and much more.
 
 *Did you know: The [LunaRoad](https://github.com/3F/LunaRoad) project works via Conari engine.*
 
@@ -17,7 +17,7 @@ The lightweight and powerful binding from any exported functions of libraries (a
 **Easy to start:**
 
 ```csharp
-using(IConari c = new ConariL("Library.dll")) {
+using(IConari l = new ConariL("Library.dll")) {
     // ...
 }
 ```
@@ -27,12 +27,15 @@ Conari is ready for any exported functions immediately via:
 **Dynamic features** / **DLR**:
 
 ```csharp
-var ptr     = d.test<IntPtr>(); // eqv: l.bind<Func<IntPtr>>("test")();
-var codec   = d.avcodec_find_encoder<IntPtr>(AV_CODEC_ID_MP2); // eqv: l.bind<Func<ulong, IntPtr>>("avcodec_find_encoder")(AV_CODEC_ID_MP2);
-              d.push(); // eqv: l.bind<Action>("push")();
+var ptr     = d.test<IntPtr>(); //Lambda variant: l.bind<Func<IntPtr>>("test")();
+var codec   = d.avcodec_find_encoder<IntPtr>(AV_CODEC_ID_MP2); //Lambda variant: l.bind<Func<ulong, IntPtr>>("avcodec_find_encoder")(AV_CODEC_ID_MP2);
+              d.push(); //Lambda variant: l.bind<Action>("push")();
+              d.create<int>(ref cid, out data); //Lambda variant: l.bind<MyFunc<Guid, object>>("create")(ref cid, out data);
 ```
 
-*It does not require the any configuration from you, we will do it automatically. Easy and works well.*
+It does not require the any configuration from you, because Conari will do it **automatically**. *Easy and works well.*
+
+*This works perfectly for most popular libraries like: Lua, 7-zip, FFmpeg, ...*
 
 **Lambda expressions**:
 
@@ -44,8 +47,7 @@ using(var c = new ConariL("Library.dll"))
 }
 ```
 
-This also does not require the creation of any additional **delegate**. The Conari will do it **automatically** instead of you. 
-Just use `bind<>` methods and have fun !
+This also does not require the creation of any additional **delegate**. Just use `bind<>` methods with additional types and have fun !
 
 ```csharp
 c.bind<...>("function")
@@ -205,7 +207,7 @@ Copyright (c) 2016  Denis Kuzmin <entry.reg@gmail.com>
 Available variants:
 
 * NuGet PM: `Install-Package Conari`
-* [GetNuTool](https://github.com/3F/GetNuTool): `msbuild gnt.core /p:ngpackages="Conari"` or [gnt](https://github.com/3F/GetNuTool/releases/download/v1.5/gnt.bat) /p:ngpackages="Conari"
+* [GetNuTool](https://github.com/3F/GetNuTool): `msbuild gnt.core /p:ngpackages="Conari"` or **[gnt](https://github.com/3F/GetNuTool/releases/download/v1.6/gnt.bat)** /p:ngpackages="Conari"
 * NuGet Commandline: `nuget install Conari`
 * [/releases](https://github.com/3F/Conari/releases) ( [latest](https://github.com/3F/Conari/releases/latest) )
 * [Nightly builds](https://ci.appveyor.com/project/3Fs/conari/history) (`/artifacts` page). But remember: It can be unstable or not work at all. Use this for tests of latest changes.
