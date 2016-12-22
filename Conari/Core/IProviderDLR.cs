@@ -29,8 +29,12 @@ namespace net.r_eg.Conari.Core
     public interface IProviderDLR
     {
         /// <summary>
-        /// To cache dynamic types with similar signatures:
-        ///     `{return_type} name( [{argument_types}] )`
+        /// Access to used IDynamic object.
+        /// </summary>
+        IDynamic DynCfg { get; }
+
+        /// <summary>
+        /// To use cache for dynamic types etc.
         /// </summary>
         bool Cache { get; set; }
 

@@ -38,25 +38,29 @@ namespace net.r_eg.Conari.Core
     public sealed class ProviderDLR: DynamicObject, IProviderDLR
     {
         private IProvider provider;
-        private MIcache micache = new MIcache();
 
         /// <summary>
-        /// To cache dynamic types with similar signatures:
-        ///     `{return type} name( [{argument types}] )`
+        /// Access to used IDynamic object.
+        /// </summary>
+        public IDynamic DynCfg
+        {
+            get {
+                return Dynamic._;
+            }
+        }
+
+        /// <summary>
+        /// To use cache for dynamic types etc.
         /// </summary>
         public bool Cache
         {
             get {
-                return _cache;
+                return DynCfg.UseCache;
             }
             set {
-                if(!value) {
-                    micache.Clear();
-                }
-                _cache = value;
+                DynCfg.UseCache = value;
             }
         }
-        private bool _cache = true;
 
         /// <summary>
         /// Current Convention for all dynamic methods.
@@ -111,7 +115,7 @@ namespace net.r_eg.Conari.Core
             }
 
             Type[] tGeneric = getGenericArgTypes(binder).ToArray();
-            MethodInfo mi   = getmi(binder.Name, tArgs, tGeneric);
+            MethodInfo mi   = getmi(binder.Name, tGeneric, tArgs);
             TDyn dyn        = provider.bind(mi, provider.funcName(binder.Name), Convention);
 
             // Boxing types, for example: NullType -> null -> NullType
@@ -166,26 +170,17 @@ namespace net.r_eg.Conari.Core
             }
         }
 
-        private MethodInfo getmi(string name, Type[] args, Type[] generic)
+        private MethodInfo getmi(string name, Type[] generic, Type[] args)
         {
-            if(generic.Length > 1) {
+            if(generic?.Length > 1) {
                 throw new ArgumentException("Allowed only one type (as a return type) for this generic method.");
             }
-            Type retType = (generic.Length < 1) ? typeof(void) : generic[0];
 
-            if(!Cache) {
-                return Dynamic.GetMethodInfo(name, retType, args);
-            }
-
-            var key = new Type[args.Length + 1];
-            key[0]  = retType;
-            args.CopyTo(key, 1);
-
-            if(!micache.ContainsKey(key)) {
-                micache[key] = Dynamic.GetMethodInfo(name, retType, args);
-            }
-
-            return micache[key];
+            return Dynamic.GetMethodInfo(
+                                name,
+                                (generic == null || generic.Length < 1) ? null : generic[0],
+                                args
+                           );
         }
 
         private Type[] getArgTypes(InvokeMemberBinder binder, object[] args)
