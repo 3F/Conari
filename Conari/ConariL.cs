@@ -31,7 +31,7 @@ using net.r_eg.Conari.Log;
 namespace net.r_eg.Conari
 {
     [SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly", Justification = "Bug. False positive. The IDisposable is already implemented correctly !")]
-    public class ConariL: Provider, IConari, ILoader, IProvider, IBinder/*, IDisposable*/
+    public class ConariL: Provider, IConari, ILoader, IProvider, IBinder, IDisposable
     {
         protected IConfig config;
 
@@ -162,7 +162,7 @@ namespace net.r_eg.Conari
         protected void init(IConfig cfg)
         {
             if(cfg == null) {
-                throw new ArgumentException("Configuration cannot be null.");
+                throw new ArgumentNullException("Configuration cannot be null.");
             }
 
             config      = cfg;

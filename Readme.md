@@ -1,10 +1,10 @@
 # [Conari](https://github.com/3F/Conari)
 
-[![](https://raw.githubusercontent.com/3F/Conari/master/Conari/Resources/Conari_v1.png)](https://github.com/3F/Conari/fork)
+[![](https://raw.githubusercontent.com/3F/Conari/master/Conari/Resources/Conari_v1.png)](https://github.com/3F/Conari)
 
 Binder of Unmanaged code for .NET
 
-The Conari engine represents flexible platform for work with unmanaged code: Libraries, Executable Modules, other native and binary data.
+The Conari engine represents flexible platform for work with unmanaged code (native C/C++ etc.): Libraries, Executable Modules, other native and binary data.
 Lightweight and powerful binding with any exported functions and much more.
 
 *Did you know: The [LunaRoad](https://github.com/3F/LunaRoad) project works via Conari engine.*
@@ -24,7 +24,7 @@ using(IConari l = new ConariL("Library.dll")) {
 
 Conari is ready for any exported functions immediately via:
 
-**Dynamic features** / **DLR**:
+**Dynamic features** / **DLR** - *fully automatic way*:
 
 ```csharp
 var ptr     = d.test<IntPtr>(); //Lambda variant: l.bind<Func<IntPtr>>("test")();
@@ -37,7 +37,7 @@ It does not require the any configuration from you, because Conari will do it **
 
 *This works perfectly for most popular libraries like: Lua, 7-zip, FFmpeg, ...*
 
-**Lambda expressions**:
+**Lambda expressions** - *semi-automatic way*:
 
 ```csharp
 using(var c = new ConariL("Library.dll"))

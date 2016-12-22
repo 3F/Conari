@@ -28,13 +28,26 @@ using System.Runtime.InteropServices;
 
 namespace net.r_eg.Conari.Types
 {
-    [DebuggerDisplay("[ {\"0x\" + pointer.ToString(\"X\")} ] SizeOf: {SizeOf}")]
+    [DebuggerDisplay("[ {\"0x\" + Pointer.ToString(\"X\")} ] SizeOf: {SizeOf}")]
     public sealed class UnmanagedStructure: IDisposable
     {
         /// <summary>
         /// Pointer to unmanaged memory where will placed structure.
         /// </summary>
-        private IntPtr pointer;
+        public IntPtr Pointer
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Who is the owner for allocated structure.
+        /// </summary>
+        public bool Owner
+        {
+            get;
+            private set;
+        }
 
         /// <summary>
         /// Managed structure.
@@ -55,7 +68,7 @@ namespace net.r_eg.Conari.Types
         [NativeType]
         public static implicit operator IntPtr(UnmanagedStructure val)
         {
-            return val.pointer;
+            return val.Pointer;
         }
 
         public static object ConvertToManaged(IntPtr ptr, Type type)
@@ -66,7 +79,7 @@ namespace net.r_eg.Conari.Types
         public UnmanagedStructure(dynamic obj)
         {
             if(obj == null) {
-                throw new ArgumentNullException("UnmanagedStructure cannot be null.");
+                throw new ArgumentNullException("UnmanagedStructure: object cannot be null.");
             }
             Managed = obj;
 
@@ -75,29 +88,38 @@ namespace net.r_eg.Conari.Types
 
         public UnmanagedStructure(IntPtr ptr, Type type)
         {
+            if(ptr == IntPtr.Zero) {
+                throw new ArgumentException("UnmanagedStructure: pointer must be non-zero.");
+            }
+
             Managed = alloc(ptr, type);
         }
 
         private void alloc()
         {
-            pointer = Marshal.AllocHGlobal(SizeOf);
+            Pointer = Marshal.AllocHGlobal(SizeOf);
+            Owner   = true;
 
             // copy to unmanaged memory
-            Marshal.StructureToPtr(Managed, pointer, false);
+            Marshal.StructureToPtr(Managed, Pointer, true);
         }
 
         private dynamic alloc(IntPtr ptr, Type type)
         {
-            pointer = ptr;
+            Pointer = ptr;
+            Owner   = false;
+
             return ConvertToManaged(ptr, type);
         }
 
         private void free()
         {
-            Marshal.FreeHGlobal(pointer);
+            if(Owner) {
+                Marshal.FreeHGlobal(Pointer);
+            }
 
             // but we still can try to get data from this offset :)
-            pointer = IntPtr.Zero;
+            Pointer = IntPtr.Zero;
             Managed = null;
         }
 

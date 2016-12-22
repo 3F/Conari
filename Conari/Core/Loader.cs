@@ -88,7 +88,7 @@ namespace net.r_eg.Conari.Core
             Library = loadLibrary(lib);
 
             if(Library.Handle == IntPtr.Zero) {
-                throw new LoadLibException($"Failed loading '{Library.LibName}': Check used architecture or existence of file.", true);
+                throw new LoadLibException($"Failed loading '{Library.LibName}': Check used architecture or existence of file. https://github.com/3F/Conari/issues/4", true);
             }
 
             _exportFuncNames = null; // to update export list

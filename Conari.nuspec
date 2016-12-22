@@ -14,20 +14,20 @@
     
         Binder of Unmanaged code for .NET
         
-        The Conari represents a flexible platform to work with unmanaged code, other native and binary data.
-        The lightweight and powerful binding from any exported functions of libraries (a library or executable module), and more...
+        The Conari engine represents flexible platform for work with unmanaged code (native C/C++ etc.): Libraries, Executable Modules, other native and binary data.
+        Lightweight and powerful binding with any exported functions and much more.
         _ _ _ _ _ _
         Source code and all details here: https://github.com/3F/Conari
         
         ~~~~~~~~
-        Alternative to get it:
+        Get it via GetNuTool:
         ==========================================
-        msbuild gnt.core /p:ngpackages="Conari/1.2.0"
+        gnt /p:ngpackages="Conari/1.2.0"
         ==========================================
         * https://github.com/3F/GetNuTool         
         
     </description>
-    <summary>Represents a flexible platform to work with unmanaged code, other native and binary data. The lightweight and powerful binding from any exported functions of libraries (a library or executable module), and more... https://github.com/3F/Conari</summary>
+    <summary>Binder of Unmanaged code for .NET :: Powerful engine for work with unmanaged code (native C/C++ etc.): Libraries, Executable Modules, other native and binary data ... https://github.com/3F/Conari</summary>
     <tags>exported-function unmanaged-code unmanaged-function exported-c-function unmanaged exports native c-func export API dll cpp c .net c# csharp Lua 7z 7zip DLR Lambda-expressions Conari</tags>
     <releaseNotes></releaseNotes>
     <copyright>Copyright (c) 2016  Denis Kuzmin [entry.reg@gmail.com] </copyright>

@@ -27,12 +27,12 @@ namespace net.r_eg.ConariTest.Types
         {
             var managed = new TVer(0, 32, 1024);
 
-            UnmanagedStructure uv = new UnmanagedStructure(managed);
+            UnmanagedStructure uv;
             using(uv = new UnmanagedStructure(managed))
             {
                 IntPtr ptr = uv;
 
-                UnmanagedStructure uv2 = new UnmanagedStructure(ptr, typeof(TVer));
+                var uv2 = new UnmanagedStructure(ptr, typeof(TVer));
                 
                 TVer managed2 = (TVer)uv2.Managed;
 

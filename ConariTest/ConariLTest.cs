@@ -25,7 +25,7 @@ namespace net.r_eg.ConariTest
                 new ConariL((IConfig)null);
                 Assert.Fail("2");
             }
-            catch(Exception ex) { Assert.IsTrue(ex.GetType() == typeof(ArgumentException), ex.GetType().ToString()); }
+            catch(Exception ex) { Assert.IsTrue(ex.GetType() == typeof(ArgumentNullException), ex.GetType().ToString()); }
 
             try {
                 new ConariL(STUB_LIB_NAME);

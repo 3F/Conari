@@ -28,15 +28,19 @@ using System.Runtime.InteropServices;
 
 namespace net.r_eg.Conari.Types
 {
-    [DebuggerDisplay("{managed} [ {\"0x\" + pointer.ToString(\"X\")} ]")]
+    [DebuggerDisplay("{managed} [ {\"0x\" + Pointer.ToString(\"X\")} ]")]
     public sealed class UnmanagedString: IDisposable
     {
         private string managed;
 
         /// <summary>
-        /// Pointer to our allocated string.
+        /// Pointer to allocated string.
         /// </summary>
-        private IntPtr pointer;
+        public IntPtr Pointer
+        {
+            get;
+            private set;
+        }
 
         public SType Type
         {
@@ -55,22 +59,22 @@ namespace net.r_eg.Conari.Types
         [NativeType]
         public static implicit operator IntPtr(UnmanagedString val)
         {
-            return val.pointer;
+            return val.Pointer;
         }
 
         public static implicit operator CharPtr(UnmanagedString val)
         {
-            return new CharPtr(val.pointer);
+            return new CharPtr(val.Pointer);
         }
 
         public static implicit operator WCharPtr(UnmanagedString val)
         {
-            return new WCharPtr(val.pointer);
+            return new WCharPtr(val.Pointer);
         }
 
         public static implicit operator BSTR(UnmanagedString val)
         {
-            return new BSTR(val.pointer);
+            return new BSTR(val.Pointer);
         }
 
         public UnmanagedString(string str, SType type = SType.Auto)
@@ -86,19 +90,19 @@ namespace net.r_eg.Conari.Types
             switch(Type)
             {
                 case SType.Auto: {
-                    pointer = Marshal.StringToHGlobalAuto(managed);
+                    Pointer = Marshal.StringToHGlobalAuto(managed);
                     return;
                 }
                 case SType.Ansi: {
-                    pointer = Marshal.StringToHGlobalAnsi(managed);
+                    Pointer = Marshal.StringToHGlobalAnsi(managed);
                     return;
                 }
                 case SType.Unicode: {
-                    pointer = Marshal.StringToHGlobalUni(managed);
+                    Pointer = Marshal.StringToHGlobalUni(managed);
                     return;
                 }
                 case SType.BSTR: {
-                    pointer = Marshal.StringToBSTR(managed);
+                    Pointer = Marshal.StringToBSTR(managed);
                     return;
                 }
             }
@@ -112,17 +116,17 @@ namespace net.r_eg.Conari.Types
                 case SType.Auto:
                 case SType.Ansi:
                 case SType.Unicode: {
-                    Marshal.FreeHGlobal(pointer);
+                    Marshal.FreeHGlobal(Pointer);
                     break;
                 }
                 case SType.BSTR: {
-                    Marshal.FreeBSTR(pointer);
+                    Marshal.FreeBSTR(Pointer);
                     break;
                 }
             }
 
             // but we still can try to get data from this offset :)
-            pointer = IntPtr.Zero;
+            Pointer = IntPtr.Zero;
             managed = null;
         }
 
