@@ -50,6 +50,11 @@ namespace net.r_eg.Conari.Core
         public event EventHandler<DataArgs<CallingConvention>> ConventionChanged = delegate(object sender, DataArgs<CallingConvention> e) { };
 
         /// <summary>
+        /// When handling new non-zero ProcAddress.
+        /// </summary>
+        public event EventHandler<ProcAddressArgs> NewProcAddress = delegate(object sender, ProcAddressArgs e) { };
+
+        /// <summary>
         /// Prefix for exported functions.
         /// </summary>
         public string Prefix
@@ -185,6 +190,7 @@ namespace net.r_eg.Conari.Core
 
             IntPtr pAddr = NativeMethods.GetProcAddress(hModule, lpProcName);
             if(pAddr != IntPtr.Zero) {
+                NewProcAddress(this, new ProcAddressArgs(pAddr, hModule, lpProcName));
                 return pAddr;
             }
 

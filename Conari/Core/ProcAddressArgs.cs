@@ -23,46 +23,47 @@
 */
 
 using System;
-using System.Runtime.InteropServices;
 
 namespace net.r_eg.Conari.Core
 {
-    public interface IProvider: IBinder, IMem
+    [Serializable]
+    public class ProcAddressArgs: EventArgs
     {
         /// <summary>
-        /// When Prefix has been changed.
+        /// The address of the exported function or variable.
         /// </summary>
-        event EventHandler<DataArgs<string>> PrefixChanged;
+        public IntPtr PAddr
+        {
+            get;
+            protected set;
+        }
 
         /// <summary>
-        /// When Convention has been changed.
+        /// A handle of used module.
         /// </summary>
-        event EventHandler<DataArgs<CallingConvention>> ConventionChanged;
+        public IntPtr Handle
+        {
+            get;
+            protected set;
+        }
 
         /// <summary>
-        /// When handling new non-zero ProcAddress.
+        /// The function or variable name, or the function's ordinal value.
+        /// 
+        /// If this parameter is an ordinal value, it must be in the low-order word;
+        /// the high-order word must be zero.
         /// </summary>
-        event EventHandler<ProcAddressArgs> NewProcAddress;
+        public string LPProcName
+        {
+            get;
+            protected set;
+        }
 
-        /// <summary>
-        /// Prefix for exported functions.
-        /// </summary>
-        string Prefix { get; set; }
-
-        /// <summary>
-        /// How should call methods implemented in unmanaged code.
-        /// </summary>
-        CallingConvention Convention { get; set; }
-
-        /// <summary>
-        /// Auto name-decoration to find entry points of exported functions.
-        /// </summary>
-        bool Mangling { get; set; }
-
-        /// <summary>
-        /// Returns full name of exported function.
-        /// </summary>
-        /// <param name="name">short function name.</param>
-        string funcName(string name);
+        public ProcAddressArgs(IntPtr pAddr, IntPtr handle, string lpProcName)
+        {
+            PAddr       = pAddr;
+            Handle      = handle;
+            LPProcName  = lpProcName;
+        }
     }
 }
