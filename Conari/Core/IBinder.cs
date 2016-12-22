@@ -22,11 +22,15 @@
  * THE SOFTWARE.
 */
 
+using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using net.r_eg.Conari.Types.Methods;
 
 namespace net.r_eg.Conari.Core
 {
+    using Method = Method<object, object>;
+
     public interface IBinder
     {
         /// <summary>
@@ -38,6 +42,14 @@ namespace net.r_eg.Conari.Core
         T bindFunc<T>(string lpProcName) where T : class;
 
         /// <summary>
+        /// Alias `bindFunc&lt;Action&gt;(string lpProcName)`
+        /// Binds the exported function.
+        /// </summary>
+        /// <param name="lpProcName">The full name of exported function.</param>
+        /// <returns>Delegate of exported function.</returns>
+        Action bindFunc(string lpProcName);
+
+        /// <summary>
         /// Binds the exported C API Function.
         /// </summary>
         /// <typeparam name="T">Type of delegate.</typeparam>
@@ -46,16 +58,24 @@ namespace net.r_eg.Conari.Core
         T bind<T>(string func) where T : class;
 
         /// <summary>
-        /// Binds the exported Function via MethodInfo.
+        /// Alias `bind&lt;Action&gt;(string func)`
+        /// Binds the exported C API Function.
         /// </summary>
-        /// <param name="mi">Prepared signature with valid function name.</param>
-        /// <param name="prefix">Add prefix to function name from IProvider.Prefix if true.</param>
-        /// <returns>
-        ///     Complete information to: 
-        ///     * create delegates ~ `dyn.CreateDelegate(type.declaringType) as T`
-        ///     * or to invoke methods ~ `dyn.Invoke(null, mParams)`
-        /// </returns>
-        TDyn bind(MethodInfo mi, bool prefix = false);
+        /// <param name="func">The name of exported C API function.</param>
+        /// <returns>Delegate of exported function.</returns>
+        Action bind(string func);
+
+        ///// <summary>
+        ///// Binds the exported Function via MethodInfo.
+        ///// </summary>
+        ///// <param name="mi">Prepared signature with valid function name.</param>
+        ///// <param name="prefix">Add prefix to function name from IProvider.Prefix if true.</param>
+        ///// <returns>
+        /////     Complete information to: 
+        /////     * create delegates ~ `dyn.CreateDelegate(type.declaringType) as T`
+        /////     * or to invoke methods ~ `dyn.Invoke(null, mParams)`
+        ///// </returns>
+        //TDyn bind(MethodInfo mi, bool prefix = false);
 
         /// <summary>
         /// Binds the exported Function via MethodInfo and an specific name.
@@ -78,5 +98,45 @@ namespace net.r_eg.Conari.Core
         /// <param name="conv">How it should be called. It overrides only for current method.</param>
         /// <returns>Complete information to create delegates or to invoke methods.</returns>
         TDyn bind(MethodInfo mi, string name, CallingConvention conv);
+
+        /// <summary>
+        /// Alias `bindFunc&lt;object&gt;(string lpProcName, Type ret, params Type[] args)`
+        /// Binds the exported function.
+        /// </summary>
+        /// <param name="lpProcName">The full name of exported function.</param>
+        /// <param name="ret">The type of return value.</param>
+        /// <param name="args">The type of arguments.</param>
+        /// <returns>Delegate of exported function.</returns>
+        Method bindFunc(string lpProcName, Type ret, params Type[] args);
+
+        /// <summary>
+        /// Binds the exported function.
+        /// </summary>
+        /// <typeparam name="T">The return type for new Delegate should be as T type.</typeparam>
+        /// <param name="lpProcName">The full name of exported function.</param>
+        /// <param name="ret">The type of return value.</param>
+        /// <param name="args">The type of arguments.</param>
+        /// <returns>Delegate of exported function.</returns>
+        Method<T, object> bindFunc<T>(string lpProcName, Type ret, params Type[] args);
+
+        /// <summary>
+        /// Alias `bind&lt;object&gt;(string func, Type ret, params Type[] args)`
+        /// Binds the exported C API Function.
+        /// </summary>
+        /// <param name="func">The name of exported C API function.</param>
+        /// <param name="ret">The type of return value.</param>
+        /// <param name="args">The type of arguments.</param>
+        /// <returns>Delegate of exported function.</returns>
+        Method bind(string func, Type ret, params Type[] args);
+
+        /// <summary>
+        /// Binds the exported C API Function.
+        /// </summary>
+        /// <typeparam name="T">The return type for new Delegate should be as T type.</typeparam>
+        /// <param name="func">The name of exported C API function.</param>
+        /// <param name="ret">The type of return value.</param>
+        /// <param name="args">The type of arguments.</param>
+        /// <returns>Delegate of exported function.</returns>
+        Method<T, object> bind<T>(string func, Type ret, params Type[] args);
     }
 }

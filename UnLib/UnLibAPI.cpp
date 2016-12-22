@@ -28,6 +28,33 @@ namespace NS_UNLIB_API_
         return "Hello World !";
     }
 
+    int _varSevenData = 7;
+    LIBAPI int get_VarSeven()
+    {
+        return _varSevenData;
+    }
+
+    LIBAPI void set_VarSeven(int v)
+    {
+        _varSevenData = v;
+    }
+
+    LIBAPI void reset_VarSeven()
+    {
+        _varSevenData = -1;
+    }
+
+    /* naming */
+
+    LIBAPI int GetMagicNum()
+    {
+        return -1;
+    }
+
+    LIBAPI int apiprefix_GetMagicNum()
+    {
+        return 4;
+    }
 
     /* mangling */
 

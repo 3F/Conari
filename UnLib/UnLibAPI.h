@@ -12,6 +12,14 @@ namespace NS_UNLIB_API_
     LIBAPI bool get_False();
     LIBAPI unsigned short int get_Seven();
     LIBAPI const char* get_HelloWorld();
+    LIBAPI int get_VarSeven();
+    LIBAPI void set_VarSeven(int v);
+    LIBAPI void reset_VarSeven();
+
+    /* naming */
+
+    LIBAPI int GetMagicNum();
+    LIBAPI int apiprefix_GetMagicNum();
 
 
     /* mangling */

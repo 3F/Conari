@@ -151,6 +151,91 @@ namespace net.r_eg.ConariTest
         }
 
         [TestMethod]
+        public void basicTest12()
+        {
+            using(var l = new ConariL(UNLIB_DLL))
+            {
+                Assert.AreEqual(7, l.bindFunc<int>("get_VarSeven", typeof(int))());
+                Assert.AreEqual(null, l.bind("set_VarSeven", typeof(void), typeof(int))(5));
+                Assert.AreEqual(5, l.bind<int>("get_VarSeven", typeof(int))());
+                Assert.AreEqual(null ,l.bind("reset_VarSeven", null)());
+                Assert.AreEqual(-1, (int)l.bind("get_VarSeven", typeof(int))());
+            }
+        }
+
+        [TestMethod]
+        public void basicTest13()
+        {
+            using(var l = new ConariL(UNLIB_DLL))
+            {
+                Assert.AreEqual(7, l.bind<Func<int>>("get_VarSeven")());
+
+                l.bind<Action<int>>("set_VarSeven")(5);
+                Assert.AreEqual(5, l.bind<int>("get_VarSeven", typeof(int))());
+
+                l.bind("reset_VarSeven")();
+                Assert.AreEqual(-1, l.bind<Func<int>>("get_VarSeven")());
+            }
+        }
+
+        [TestMethod]
+        public void basicTest14()
+        {
+            using(var l = new ConariL(UNLIB_DLL))
+            {
+                Assert.AreEqual(7, l.DLR.get_VarSeven<int>());
+                Assert.AreEqual(null, l.DLR.set_VarSeven(5));
+                Assert.AreEqual(5, l.DLR.get_VarSeven<int>());
+                Assert.AreEqual(null ,l.DLR.reset_VarSeven());
+                Assert.AreEqual(-1, l.DLR.get_VarSeven<int>());
+            }
+        }
+
+        [TestMethod]
+        public void basicTest15()
+        {
+            using(var l = new ConariL(UNLIB_DLL))
+            {
+                Assert.AreEqual(7, l.bind(Dynamic.GetMethodInfo(typeof(int)), "get_VarSeven")
+                                        .dynamic
+                                        .Invoke(null, null));
+
+                Assert.AreEqual(null, l.bind(Dynamic.GetMethodInfo(typeof(void), typeof(int)), "set_VarSeven")
+                                        .dynamic
+                                        .Invoke(null, new object[] { 5 }));
+
+                Assert.AreEqual(5, l.bind(Dynamic.GetMethodInfo(typeof(int)), "get_VarSeven")
+                                        .dynamic
+                                        .Invoke(null, new object[0]));
+
+                Assert.AreEqual(null, l.bind(Dynamic.GetMethodInfo(null), "reset_VarSeven")
+                                        .dynamic
+                                        .Invoke(null, null));
+
+                Assert.AreEqual(-1, l.bind(Dynamic.GetMethodInfo(typeof(int)), "get_VarSeven")
+                                        .dynamic
+                                        .Invoke(null, null));
+            }
+        }
+
+        [TestMethod]
+        public void namingTest1()
+        {
+            using(var l = new ConariL(UNLIB_DLL, "apiprefix_"))
+            {
+                Assert.AreEqual(4, l.DLR.GetMagicNum<int>());
+
+                Assert.AreEqual(4, l.bind<Func<int>>("GetMagicNum")());
+                Assert.AreEqual(-1, l.bindFunc<Func<int>>("GetMagicNum")());
+
+                Assert.AreEqual(-1, l.bind(Dynamic.GetMethodInfo(typeof(int)), "GetMagicNum").dynamic.Invoke(null, null));
+
+                Assert.AreEqual(-1, l.bindFunc<int>("GetMagicNum", typeof(int))());
+                Assert.AreEqual(4, l.bind<int>("GetMagicNum", typeof(int))());
+            }
+        }
+
+        [TestMethod]
         public void manglingTest1()
         {
             // bool net::r_eg::Conari::UnLib::API::getD_True(void)

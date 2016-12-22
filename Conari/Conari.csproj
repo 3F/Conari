@@ -87,6 +87,7 @@
     <Compile Include="Types\Action\Ref\ActionRef.cs" />
     <Compile Include="Types\Action\Out\ActionOut.cs" />
     <Compile Include="Types\BSTR.cs" />
+    <Compile Include="Types\Methods\Method.cs" />
     <Compile Include="Types\IBoxed.cs" />
     <Compile Include="Types\INullType.cs" />
     <Compile Include="Types\NullType.cs" />
