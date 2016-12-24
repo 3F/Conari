@@ -54,13 +54,13 @@ namespace net.r_eg.ConariTest
             var l = new ConariL(new Config("") { LazyLoading = true });
 
             try {
-                l.funcName("");
+                l.procName("");
                 Assert.Fail("1");
             }
             catch(Exception ex) { Assert.IsTrue(ex.GetType() == typeof(ArgumentException), ex.GetType().ToString()); }
 
             try {
-                l.funcName(null);
+                l.procName(null);
                 Assert.Fail("2");
             }
             catch(Exception ex) { Assert.IsTrue(ex.GetType() == typeof(ArgumentException), ex.GetType().ToString()); }
@@ -77,10 +77,10 @@ namespace net.r_eg.ConariTest
                 string func = "name1";
 
                 l.Prefix = "test_";
-                Assert.AreEqual($"test_{func}", l.funcName(func));
+                Assert.AreEqual($"test_{func}", l.procName(func));
 
                 l.Prefix = "new_";
-                Assert.AreEqual($"new_{func}", l.funcName(func));
+                Assert.AreEqual($"new_{func}", l.procName(func));
             }
         }
 
@@ -93,10 +93,10 @@ namespace net.r_eg.ConariTest
                                  }, "test3_"))
             {
                 string func = "name2";
-                Assert.AreEqual($"test3_{func}", l.funcName(func));
+                Assert.AreEqual($"test3_{func}", l.procName(func));
 
                 l.Prefix = null;
-                Assert.AreEqual(func, l.funcName(func));
+                Assert.AreEqual(func, l.procName(func));
             }
         }
 

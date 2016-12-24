@@ -60,9 +60,9 @@ namespace net.r_eg.Conari.Core
         bool Mangling { get; set; }
 
         /// <summary>
-        /// Returns full name of exported function.
+        /// Returns full lpProcName with main prefix etc.
         /// </summary>
-        /// <param name="name">short function name.</param>
-        string funcName(string name);
+        /// <param name="name">Exported function or variable name.</param>
+        string procName(string name);
     }
 }

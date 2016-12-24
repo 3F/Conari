@@ -34,7 +34,7 @@ namespace net.r_eg.Conari.Core
     public interface IBinder
     {
         /// <summary>
-        /// Binds the exported function.
+        /// Binds the exported Function. Full name is required.
         /// </summary>
         /// <typeparam name="T">Type of delegate.</typeparam>
         /// <param name="lpProcName">The full name of exported function.</param>
@@ -43,25 +43,27 @@ namespace net.r_eg.Conari.Core
 
         /// <summary>
         /// Alias `bindFunc&lt;Action&gt;(string lpProcName)`
-        /// Binds the exported function.
+        /// Binds the exported Function. Full name is required.
         /// </summary>
         /// <param name="lpProcName">The full name of exported function.</param>
         /// <returns>Delegate of exported function.</returns>
         Action bindFunc(string lpProcName);
 
         /// <summary>
-        /// Binds the exported C API Function.
+        /// Binds the exported Function.
+        /// The main prefix will affects on this result.
         /// </summary>
         /// <typeparam name="T">Type of delegate.</typeparam>
-        /// <param name="func">The name of exported C API function.</param>
+        /// <param name="func">The name of exported function.</param>
         /// <returns>Delegate of exported function.</returns>
         T bind<T>(string func) where T : class;
 
         /// <summary>
         /// Alias `bind&lt;Action&gt;(string func)`
-        /// Binds the exported C API Function.
+        /// Binds the exported Function.
+        /// The main prefix will affects on this result.
         /// </summary>
-        /// <param name="func">The name of exported C API function.</param>
+        /// <param name="func">The name of exported function.</param>
         /// <returns>Delegate of exported function.</returns>
         Action bind(string func);
 
@@ -83,7 +85,7 @@ namespace net.r_eg.Conari.Core
         ///     It's recommended as a more efficient, 
         ///     because it allows caching of all MethodInfo for the same signatures but different function names.
         /// 
-        ///     Use IProvider.funcName() to same control of IProvider.Prefix if needed.
+        ///     Use IProvider.procName() to same control of IProvider.Prefix if needed.
         /// </summary>
         /// <param name="mi">Prepared signature.</param>
         /// <param name="name">Valid function name.</param>

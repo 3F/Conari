@@ -96,7 +96,7 @@ namespace net.r_eg.Conari.Core
         }
 
         /// <summary>
-        /// Binds the exported function.
+        /// Binds the exported Function. Full name is required.
         /// </summary>
         /// <typeparam name="T">Type of delegate.</typeparam>
         /// <param name="lpProcName">The full name of exported function.</param>
@@ -108,7 +108,7 @@ namespace net.r_eg.Conari.Core
 
         /// <summary>
         /// Alias `bindFunc&lt;Action&gt;(string lpProcName)`
-        /// Binds the exported function.
+        /// Binds the exported Function. Full name is required.
         /// </summary>
         /// <param name="lpProcName">The full name of exported function.</param>
         /// <returns>Delegate of exported function.</returns>
@@ -118,21 +118,23 @@ namespace net.r_eg.Conari.Core
         }
 
         /// <summary>
-        /// Binds the exported C API Function.
+        /// Binds the exported Function.
+        /// The main prefix will affects on this result.
         /// </summary>
         /// <typeparam name="T">Type of delegate.</typeparam>
-        /// <param name="func">The name of exported C API function.</param>
+        /// <param name="func">The name of exported function.</param>
         /// <returns>Delegate of exported function.</returns>
         public T bind<T>(string func) where T : class
         {
-            return bindFunc<T>(funcName(func));
+            return bindFunc<T>(procName(func));
         }
 
         /// <summary>
         /// Alias `bind&lt;Action&gt;(string func)`
-        /// Binds the exported C API Function.
+        /// Binds the exported Function.
+        /// The main prefix will affects on this result.
         /// </summary>
-        /// <param name="func">The name of exported C API function.</param>
+        /// <param name="func">The name of exported function.</param>
         /// <returns>Delegate of exported function.</returns>
         public Action bind(string func)
         {
@@ -147,7 +149,7 @@ namespace net.r_eg.Conari.Core
         ///// <returns>Complete information to create delegates or to invoke methods.</returns>
         //public TDyn bind(MethodInfo mi, bool prefix = false)
         //{
-        //    string func = prefix ? funcName(mi.Name) : mi.Name;
+        //    string func = prefix ? procName(mi.Name) : mi.Name;
         //    return wire(mi, func);
         //}
 
@@ -228,14 +230,14 @@ namespace net.r_eg.Conari.Core
         /// <returns>Delegate of exported function.</returns>
         public Method<T, object> bind<T>(string func, Type ret, params Type[] args)
         {
-            return bindFunc<T>(funcName(func), ret, args);
+            return bindFunc<T>(procName(func), ret, args);
         }
 
         /// <summary>
-        /// Returns full name of exported function.
+        /// Returns full lpProcName with main prefix etc.
         /// </summary>
-        /// <param name="name">short function name.</param>
-        public virtual string funcName(string name)
+        /// <param name="name">Exported function or variable name.</param>
+        public virtual string procName(string name)
         {
             if(String.IsNullOrWhiteSpace(name)) {
                 throw new ArgumentException("The function name cannot be empty or null.");
