@@ -50,12 +50,15 @@ namespace net.r_eg.Conari.Native.Core
                 var ret = new List<byte>();
 
                 foreach(var f in Fields) {
-                    byte[] raw = BitConverter.GetBytes(f.value);
-                    ret.AddRange(raw);
+                    ret.AddRange(f.toBytes());
                 }
-
                 return ret.ToArray();
             }
+        }
+
+        public Field getFieldByName(string name)
+        {
+            return Fields.Where(f => f?.name == name).FirstOrDefault();
         }
 
         /// <summary>

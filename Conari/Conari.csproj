@@ -79,6 +79,7 @@
     <Compile Include="Native\Core\Field.cs" />
     <Compile Include="Native\Core\BType.cs" />
     <Compile Include="Native\Core\Raw.cs" />
+    <Compile Include="Native\NativeExtension.cs" />
     <Compile Include="Native\NativeData.cs" />
     <Compile Include="PE\Hole\ExportFunctions.cs" />
     <Compile Include="PE\WinNT\IMAGE_EXPORT_DIRECTORY.cs" />

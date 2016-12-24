@@ -99,11 +99,11 @@ dynamic idd = (new NativeData(data))
 ```
 
 ```csharp
-Raw mt = NativeData
-            ._(ptr)
-            .align<int>(2, "a", "b")
-            .t<IntPtr>("name")
-            .Raw;
+IntPtr ptr ...
+Raw mt = ptr.Native() // v1.3+ / NativeData._(ptr)
+                .align<int>(2, "a", "b")
+                .t<IntPtr>("name")
+                .Raw;
             
 -     {byte[0x0000000c]} byte[]
         [0]    0x05    byte --

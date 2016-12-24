@@ -41,6 +41,9 @@ namespace net.r_eg.Conari.Native.Core
         private int offset;
         private int length;
 
+        /// <summary>
+        /// Final byte-sequence from values (via pointer or local data).
+        /// </summary>
         public byte[] Values
         {
             get
@@ -52,6 +55,9 @@ namespace net.r_eg.Conari.Native.Core
             }
         }
 
+        /// <summary>
+        /// Access to byte-sequence from values (via pointer or local data).
+        /// </summary>
         public IEnumerable<byte> Iter
         {
             get
@@ -63,6 +69,10 @@ namespace net.r_eg.Conari.Native.Core
             }
         }
 
+        /// <summary>
+        /// Generates dynamic type for current data.
+        /// /+DLR
+        /// </summary>
         public BType Type
         {
             get {

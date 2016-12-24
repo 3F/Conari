@@ -219,6 +219,10 @@ namespace net.r_eg.Conari.Native
             throw new NotImplementedException("Not yet implemented.");
         }
 
+        public NativeData t(Type type, string name = null) { return _a(track(name, type)); }
+        public NativeData t(Type[] types, params string[] names) { return _a(track(names, types)); }
+        public NativeData t(int size, string name = null) { return _a(track(name, size)); }
+
         public NativeData t<T>(string name = null) { return _a(track(name, typeof(T))); }
         public NativeData t<T, T2>(params string[] names) { return _a(track(names, typeof(T), typeof(T2))); }
         public NativeData t<T, T2, T3>(params string[] names) { return _a(track(names, typeof(T), typeof(T2), typeof(T3))); }
@@ -255,12 +259,18 @@ namespace net.r_eg.Conari.Native
         /// <param name="ptr">pointer to data structure.</param>
         public NativeData(IntPtr ptr)
         {
+            if(ptr == IntPtr.Zero) {
+                throw new ArgumentException("NativeData: pointer must be non-zero.");
+            }
             pointer = ptr;
         }
 
         /// <param name="bytes">local raw data.</param>
         public NativeData(byte[] bytes)
         {
+            if(bytes == null) {
+                bytes = new byte[0];
+            }
             local = bytes;
         }
 
@@ -279,7 +289,18 @@ namespace net.r_eg.Conari.Native
         protected virtual int track(string name, Type type)
         {
             int size = SizeOf(type);
-            map.Add(new Field(type, size) { name = fieldName(name) });
+            map.Add(new Field(type, size) {
+                name = fieldName(name)
+            });
+
+            return size;
+        }
+
+        protected virtual int track(string name, int size)
+        {
+            map.Add(new Field(typeof(byte[]), size) {
+                name = fieldName(name)
+            });
 
             return size;
         }

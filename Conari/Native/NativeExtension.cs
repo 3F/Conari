@@ -23,47 +23,40 @@
 */
 
 using System;
-using net.r_eg.Conari.Core;
-using net.r_eg.Conari.Log;
 
-namespace net.r_eg.Conari
+namespace net.r_eg.Conari.Native
 {
-    public interface IConari: IBinder, IProvider, ILoader, IDisposable
+    public static class NativeExtension
     {
         /// <summary>
-        /// Access to available configuration data of dynamic DLR.
+        /// To work with native data via pointer.
         /// </summary>
-        IProviderDLR ConfigDLR { get; }
+        /// <param name="ptr">pointer to data structure.</param>
+        /// <returns></returns>
+        public static NativeData Native(this IntPtr ptr)
+        {
+            return NativeData._(ptr);
+        }
 
         /// <summary>
-        /// Provides dynamic features like adding 
-        /// and invoking of new exported-functions at runtime.
+        /// To work with native data via byte-array.
         /// </summary>
-        dynamic DLR { get; }
+        /// <param name="bytes">local raw data.</param>
+        /// <returns></returns>
+        public static NativeData Native(this byte[] bytes)
+        {
+            return NativeData._(bytes);
+        }
 
         /// <summary>
-        /// Access to logger and its events.
+        /// Alias to `NativeData.SizeOf ...`
+        /// Gets size of selected type in bytes that's should be considered as unmanaged type.
         /// </summary>
-        ISender Log { get; }
-
-        /// <summary>
-        /// DLR Features with `__cdecl` calling convention.
-        /// </summary>
-        dynamic __cdecl { get; }
-
-        /// <summary>
-        /// DLR Features with `__stdcall` calling convention.
-        /// </summary>
-        dynamic __stdcall { get; }
-
-        /// <summary>
-        /// DLR Features with `__fastcall` calling convention.
-        /// </summary>
-        dynamic __fastcall { get; }
-
-        /// <summary>
-        /// DLR Features with `__vectorcall` calling convention.
-        /// </summary>
-        dynamic __vectorcall { get; }
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static int NativeSize(this Type type)
+        {
+            return NativeData.SizeOf(type);
+        }
     }
 }

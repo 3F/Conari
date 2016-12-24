@@ -45,6 +45,15 @@ namespace net.r_eg.Conari.Native.Core
         /// </summary>
         public dynamic value;
 
+        /// <summary>
+        /// Get bytes from current field.
+        /// </summary>
+        /// <returns></returns>
+        public byte[] toBytes()
+        {
+            return BitConverter.GetBytes(value);
+        }
+
         public Field(Type type, int tsize)
         {
             this.type   = type;

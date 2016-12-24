@@ -56,6 +56,16 @@ namespace net.r_eg.Conari
         }
 
         /// <summary>
+        /// Access to logger and its events.
+        /// </summary>
+        public ISender Log
+        {
+            get {
+                return LSender._;
+            }
+        }
+
+        /// <summary>
         /// DLR Features with `__cdecl` calling convention.
         /// </summary>
         public dynamic __cdecl
