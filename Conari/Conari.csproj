@@ -44,7 +44,10 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\ExVar.cs" />
+    <Compile Include="Core\IExVar.cs" />
     <Compile Include="Core\IDynamic.cs" />
+    <Compile Include="Core\IProviderSvc.cs" />
     <Compile Include="Core\ProcAddressArgs.cs" />
     <Compile Include="Core\DataArgs.cs" />
     <Compile Include="Core\IMem.cs" />

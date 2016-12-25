@@ -60,6 +60,16 @@ namespace net.r_eg.Conari.Core
         bool Mangling { get; set; }
 
         /// <summary>
+        /// Access to exported variables.
+        /// </summary>
+        IExVar ExVar { get; }
+
+        /// <summary>
+        /// Additional services.
+        /// </summary>
+        IProviderSvc Svc { get; }
+
+        /// <summary>
         /// Returns full lpProcName with main prefix etc.
         /// </summary>
         /// <param name="name">Exported function or variable name.</param>

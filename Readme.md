@@ -100,7 +100,7 @@ dynamic idd = (new NativeData(data))
 
 ```csharp
 IntPtr ptr ...
-Raw mt = ptr.Native() // v1.3+ / NativeData._(ptr)
+Raw mt = ptr.Native()
                 .align<int>(2, "a", "b")
                 .t<IntPtr>("name")
                 .Raw;
@@ -130,6 +130,16 @@ using(var l = new ConariL("Library.dll", CallingConvention.StdCall))
     l.Mangling = true; // _get_SevenStdCall@0 <-> get_SevenStdCall
     l.Convention = CallingConvention.Cdecl;
 }
+```
+
+**Exported Variables & Raw access:**
+
+```csharp
+// v1.3+
+l.ExVar.get<UInt32>("ADDR_SPEC"); // 0x00001CE8
+l.ExVar.getField(typeof(UInt32).NativeSize(), "ADDR_SPEC"); // Native.Core.Field via raw size
+l.Svc.native("lpProcName"); // Raw access via NativeData & Native.Core !
+//v1.0+: Use Provider or ConariL frontend via your custom wrapper.
 ```
 
 **Additional types:**

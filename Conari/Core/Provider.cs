@@ -30,6 +30,7 @@ using System.Reflection.Emit;
 using System.Runtime.InteropServices;
 using net.r_eg.Conari.Exceptions;
 using net.r_eg.Conari.Log;
+using net.r_eg.Conari.Native;
 using net.r_eg.Conari.Types;
 using net.r_eg.Conari.Types.Methods;
 using net.r_eg.Conari.WinAPI;
@@ -93,6 +94,64 @@ namespace net.r_eg.Conari.Core
         {
             get;
             set;
+        }
+
+        /// <summary>
+        /// Access to exported variables.
+        /// </summary>
+        public IExVar ExVar
+        {
+            get {
+                if(exvar == null) {
+                    exvar = new ExVar(this);
+                }
+                return exvar;
+            }
+        }
+        protected IExVar exvar;
+
+        /// <summary>
+        /// Additional services.
+        /// </summary>
+        public IProviderSvc Svc
+        {
+            get {
+                if(svc == null) {
+                    svc = new ProviderSvc(this);
+                }
+                return svc;
+            }
+        }
+        private IProviderSvc svc;
+
+        protected sealed class ProviderSvc: IProviderSvc
+        {
+            private Provider provider;
+            
+            /// <summary>
+            /// Retrieves the address of an exported function or variable.
+            /// </summary>
+            /// <param name="lpProcName">The name of function or variable, or the function's ordinal value.</param>
+            /// <returns>The address if found.</returns>
+            public IntPtr getProcAddr(string lpProcName)
+            {
+                return provider.getProcAddress(lpProcName);
+            }
+
+            /// <summary>
+            /// Prepare NativeData for active provider.
+            /// </summary>
+            /// <param name="lpProcName">The name of function or variable, or the function's ordinal value.</param>
+            /// <returns></returns>
+            public NativeData native(string lpProcName)
+            {
+                return getProcAddr(lpProcName).Native();
+            }
+
+            public ProviderSvc(Provider p)
+            {
+                provider = p;
+            }
         }
 
         /// <summary>
