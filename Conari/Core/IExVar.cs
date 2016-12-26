@@ -26,8 +26,15 @@ using System;
 
 namespace net.r_eg.Conari.Core
 {
+    using DefaultType = Int32;
+
     public interface IExVar
     {
+        /// <summary>
+        /// Provides dynamic features like getting exported-variables at runtime.
+        /// </summary>
+        dynamic DLR { get; }
+
         /// <summary>
         /// Gets value from exported Variable. Full name is required.
         /// </summary>
@@ -37,6 +44,14 @@ namespace net.r_eg.Conari.Core
         T getVar<T>(string lpProcName);
 
         /// <summary>
+        /// Alias to `getVar&lt;T&gt;(string lpProcName)`
+        /// Gets value from exported Variable. Full name is required.
+        /// </summary>
+        /// <param name="lpProcName">The full name of exported variable.</param>
+        /// <returns>The value from exported variable.</returns>
+        DefaultType getVar(string lpProcName);
+
+        /// <summary>
         /// Gets value from exported Variable.
         /// The main prefix will affects on this result.
         /// </summary>
@@ -44,6 +59,16 @@ namespace net.r_eg.Conari.Core
         /// <param name="variable">The name of exported variable.</param>
         /// <returns>The value from exported variable.</returns>
         T get<T>(string variable);
+
+        /// <summary>
+        /// Alias to `get&lt;T&gt;(string variable)`
+        /// 
+        /// Gets value from exported Variable.
+        /// The main prefix will affects on this result.
+        /// </summary>
+        /// <param name="variable">The name of exported variable.</param>
+        /// <returns>The value from exported variable.</returns>
+        DefaultType get(string variable);
 
         /// <summary>
         /// Get field with native data from export table.

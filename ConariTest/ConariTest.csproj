@@ -63,6 +63,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="ExVarTest.cs" />
     <Compile Include="BindingTest.cs" />
     <Compile Include="Native\Core\RawTest.cs" />
     <Compile Include="Native\Core\BReaderTest.cs" />

@@ -23,6 +23,7 @@
 */
 
 using System;
+using System.Text.RegularExpressions;
 
 namespace net.r_eg.Conari.Native.Core
 {
@@ -44,6 +45,25 @@ namespace net.r_eg.Conari.Native.Core
         /// The value of field.
         /// </summary>
         public dynamic value;
+
+        /// <summary>
+        /// User object for any purpose.
+        /// </summary>
+        public object user;
+
+        /// <summary>
+        /// Checks the correct name for DLR features.
+        /// </summary>
+        public bool IsValidForDLR
+        {
+            get
+            {
+                if(String.IsNullOrWhiteSpace(name)) {
+                    return false;
+                }
+                return !Regex.Match(name, "^[a-zA-Z_][a-zA-Z_0-9]*$").Success;
+            }
+        }
 
         /// <summary>
         /// Get bytes from current field.

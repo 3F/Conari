@@ -63,6 +63,11 @@ namespace NS_UNLIB_API_
         return get_True();
     }
 
+    LIBAPI_CPP bool getD_True(bool flag)
+    {
+        return flag ? get_True() : get_False();
+    }
+
     LIBAPI_CPP unsigned short int getD_Seven()
     {
         return get_Seven();
@@ -87,6 +92,13 @@ namespace NS_UNLIB_API_
     {
         return 7;
     }
+
+    /* Exported-Variables */
+
+    LIBAPI DWORD ADDR_SPEC                  = 0x00001CE8;
+    LIBAPI bool apiprefix_GFlag             = false;
+    LIBAPI_CPP const char* eVariableTest    = "Hello World!";
+
 
     /* echo */
 

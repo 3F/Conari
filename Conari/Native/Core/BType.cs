@@ -37,6 +37,16 @@ namespace net.r_eg.Conari.Native.Core
 
         protected byte[] data;
 
+        /// <summary>
+        /// Access to dynamic features like getting of values at runtime from generated fields etc.
+        /// </summary>
+        public dynamic DLR
+        {
+            get {
+                return this;
+            }
+        }
+
         public TFields Fields
         {
             get;

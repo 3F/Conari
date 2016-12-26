@@ -136,6 +136,7 @@ using(var l = new ConariL("Library.dll", CallingConvention.StdCall))
 
 ```csharp
 // v1.3+
+l.ExVar.DLR.ADDR_SPEC // 0x00001CE8
 l.ExVar.get<UInt32>("ADDR_SPEC"); // 0x00001CE8
 l.ExVar.getField(typeof(UInt32).NativeSize(), "ADDR_SPEC"); // Native.Core.Field via raw size
 l.Svc.native("lpProcName"); // Raw access via NativeData & Native.Core !

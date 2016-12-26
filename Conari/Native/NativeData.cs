@@ -26,7 +26,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
 using net.r_eg.Conari.Native.Core;
 
 namespace net.r_eg.Conari.Native
@@ -311,10 +310,15 @@ namespace net.r_eg.Conari.Native
                 return null;
             }
 
-            string rule = "^[a-zA-Z_][a-zA-Z_0-9]*$";
-            if(!Regex.Match(name, rule).Success) {
-                throw new ArgumentException($"The name `{name}` is not valid as field name. Rule: {rule}");
-            }
+            // TODO: now all fields contains IsValidForDLR property, and probably this is more flexible way...
+            //       If use flags ('Sys | Core | Spec' or something else), we need to extract context that is more overhead.
+            //       thus, currently we'll leave it as is.
+
+            //string rule = "^[a-zA-Z_][a-zA-Z_0-9]*$";
+            //if(!Regex.Match(name, rule).Success) {
+            //    throw new ArgumentException($"The name `{name}` is not valid as field name. Rule: {rule}");
+            //}
+
             return name;
         }
 
