@@ -84,7 +84,9 @@
     <Compile Include="Native\Core\Raw.cs" />
     <Compile Include="Native\NativeExtension.cs" />
     <Compile Include="Native\NativeData.cs" />
-    <Compile Include="PE\Hole\ExportFunctions.cs" />
+    <Compile Include="PE\IPE.cs" />
+    <Compile Include="PE\PEFile.cs" />
+    <Compile Include="PE\Hole\ExportDirectory.cs" />
     <Compile Include="PE\WinNT\IMAGE_EXPORT_DIRECTORY.cs" />
     <Compile Include="PE\WinNT\IMAGE_SECTION_HEADER.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

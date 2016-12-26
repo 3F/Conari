@@ -22,36 +22,41 @@
  * THE SOFTWARE.
 */
 
-using System;
-using net.r_eg.Conari.PE;
+using System.Collections.Generic;
+using net.r_eg.Conari.PE.WinNT;
 
-namespace net.r_eg.Conari.Core
+namespace net.r_eg.Conari.PE
 {
-    public interface ILoader
+    public interface IPE
     {
         /// <summary>
-        /// Before unloading a library.
+        /// Get available sections.
+        /// https://msdn.microsoft.com/en-us/library/windows/desktop/ms680341.aspx
+        /// /winnt.h
         /// </summary>
-        event EventHandler<DataArgs<Link>> BeforeUnload;
+        IMAGE_SECTION_HEADER[] Sections { get; }
 
         /// <summary>
-        /// When library has been unloaded.
+        /// Get IMAGE_EXPORT_DIRECTORY record.
+        /// WinNT IMAGE_OPTIONAL_HEADER - IMAGE_DATA_DIRECTORY[IMAGE_DIRECTORY_ENTRY_EXPORT]
         /// </summary>
-        event EventHandler<DataArgs<Link>> AfterUnload;
+        IMAGE_EXPORT_DIRECTORY DExport { get; }
 
         /// <summary>
-        /// When library has been loaded.
+        /// Receives full names of all available exported functions or variables from ExportDirectory 
+        /// (WinNT OPTIONAL_HEADER).
         /// </summary>
-        event EventHandler<DataArgs<Link>> AfterLoad;
+        IEnumerable<string> ExportedProcNames { get; }
 
         /// <summary>
-        /// Active library.
+        /// Full names of all available exported functions or variables from ExportDirectory 
+        /// (WinNT OPTIONAL_HEADER).
         /// </summary>
-        Link Library { get; }
+        string[] ExportedProcNamesArray { get; }
 
         /// <summary>
-        /// PE32/PE32+ features.
+        /// Active pe-file.
         /// </summary>
-        IPE PE { get; }
+        string FileName { get; }
     }
 }

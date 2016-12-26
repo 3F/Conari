@@ -24,7 +24,8 @@
 
 using System;
 using net.r_eg.Conari.Exceptions;
-using net.r_eg.Conari.PE.Hole;
+using net.r_eg.Conari.Log;
+using net.r_eg.Conari.PE;
 using net.r_eg.Conari.WinAPI;
 
 namespace net.r_eg.Conari.Core
@@ -56,19 +57,13 @@ namespace net.r_eg.Conari.Core
         }
 
         /// <summary>
-        /// Gets names of all available export functions from current library.
+        /// PE32/PE32+ features.
         /// </summary>
-        public string[] ExportFunctionNames
+        public IPE PE
         {
-            get
-            {
-                if(_exportFuncNames == null) {
-                    _exportFuncNames = ExportFunctions.GetNames(Library.LibName);
-                }
-                return _exportFuncNames;
-            }
+            get;
+            protected set;
         }
-        private string[] _exportFuncNames;
 
         /// <summary>
         /// Loads library into the address space.
@@ -91,7 +86,7 @@ namespace net.r_eg.Conari.Core
                 throw new LoadLibException($"Failed loading '{Library.LibName}': Check used architecture or existence of file. https://github.com/3F/Conari/issues/4", true);
             }
 
-            _exportFuncNames = null; // to update export list
+            PE = new PEFile(Library.LibName);
 
             AfterLoad(this, new DataArgs<Link>(Library));
             return true;
@@ -108,9 +103,10 @@ namespace net.r_eg.Conari.Core
             return new Link(hModule, lib);
         }
 
-        protected bool unload()
+        protected bool free()
         {
             if(!Library.IsActive) {
+                LSender.Send(this, $"Dispose Library: it's not activated.", Message.Level.Trace);
                 return true;
             }
 
@@ -127,6 +123,11 @@ namespace net.r_eg.Conari.Core
                         new Link(Library.LibName)
                     )
                 );
+
+                if(PE != null) {
+                    LSender.Send(this, $"Dispose PE: file ({PE.FileName})", Message.Level.Debug);
+                    ((IDisposable)PE).Dispose();
+                }
             }
         }
 
@@ -149,7 +150,7 @@ namespace net.r_eg.Conari.Core
             disposed = true;
 
             //...
-            unload();
+            free();
         }
 
         #endregion

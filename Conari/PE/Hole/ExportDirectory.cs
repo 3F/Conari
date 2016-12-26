@@ -40,9 +40,10 @@ namespace net.r_eg.Conari.PE.Hole
     using WORD  = System.UInt16;
 
     /// <summary>
-    /// The export functions from PE file.
+    /// PE32/PE32+ files. Works with records from ExportDirectory: 
+    /// WinNT IMAGE_OPTIONAL_HEADER - IMAGE_DATA_DIRECTORY[IMAGE_DIRECTORY_ENTRY_EXPORT]
     /// </summary>
-    public class ExportFunctions: IDisposable
+    internal class ExportDirectory: IDisposable
     {
         protected BinaryReader reader;
         protected TExInfo exInfo;
@@ -115,7 +116,7 @@ namespace net.r_eg.Conari.PE.Hole
 
         public static string[] GetNames(string pefile)
         {
-            using(var ef = new ExportFunctions(pefile)) {
+            using(var ef = new ExportDirectory(pefile)) {
                 return ef.Names.ToArray();
             }
         }
@@ -126,12 +127,12 @@ namespace net.r_eg.Conari.PE.Hole
                 return GetNames(pefile);
             }
             catch(Exception ex) {
-                LSender.Send<ExportFunctions>(new Message($"GetNames('{pefile}') threw an exception.", ex));
+                LSender.Send<ExportDirectory>(new Message($"GetNames('{pefile}') threw an exception.", ex));
                 return null;
             }
         }
 
-        public ExportFunctions(string pefile)
+        public ExportDirectory(string pefile)
         {
             reader = new BinaryReader(
                 new FileStream(pefile, FileMode.Open, FileAccess.Read, FileShare.Read)
