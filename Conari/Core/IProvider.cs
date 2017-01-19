@@ -23,7 +23,9 @@
 */
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using net.r_eg.Conari.Aliases;
 
 namespace net.r_eg.Conari.Core
 {
@@ -58,6 +60,11 @@ namespace net.r_eg.Conari.Core
         /// Auto name-decoration to find entry points of exported functions.
         /// </summary>
         bool Mangling { get; set; }
+
+        /// <summary>
+        /// The aliases for exported-functions and variables.
+        /// </summary>
+        Dictionary<string, ProcAlias> Aliases { get; }
 
         /// <summary>
         /// Access to exported variables.

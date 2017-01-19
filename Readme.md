@@ -5,7 +5,7 @@
 Binder of Unmanaged code for .NET
 
 The Conari engine represents flexible platform for work with unmanaged code (native C/C++ etc.): Libraries, Executable Modules, other native and binary data.
-Lightweight and powerful binding with any exported functions and much more.
+Lightweight and powerful binding with any exported-functions/variables, and much more.
 
 *Did you know: The [LunaRoad](https://github.com/3F/LunaRoad) project works via Conari engine.*
 
@@ -132,7 +132,7 @@ using(var l = new ConariL("Library.dll", CallingConvention.StdCall))
 }
 ```
 
-**Exported Variables & Raw access:**
+**Exported Variables & Raw access [[?](https://github.com/3F/Conari/issues/7#issuecomment-269123650)]:**
 
 ```csharp
 // v1.3+
@@ -141,6 +141,16 @@ l.ExVar.get<UInt32>("ADDR_SPEC"); // 0x00001CE8
 l.ExVar.getField(typeof(UInt32).NativeSize(), "ADDR_SPEC"); // Native.Core.Field via raw size
 l.Svc.native("lpProcName"); // Raw access via NativeData & Native.Core !
 //v1.0+: Use Provider or ConariL frontend via your custom wrapper.
+```
+
+**Aliases for exported-functions and variables [[?](https://github.com/3F/Conari/issues/9)]:**
+
+```csharp
+// v1.3+
+l.Aliases["getD_True"]  = "?getD_True@API@UnLib@Conari@r_eg@net@@YA_NXZ";
+l.Aliases["getFlag"]    = l.Aliases["getD_True"]; // getFlag -> getD_True -> ...
+// ...
+l.Aliases["a"] = l.Aliases["b"] = l.Aliases["c"] = l.Aliases["d"];
 ```
 
 **Additional types:**

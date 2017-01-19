@@ -44,7 +44,10 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Aliases\IAliasCfg.cs" />
     <Compile Include="Core\ExVar.cs" />
+    <Compile Include="Aliases\ProcAlias.cs" />
+    <Compile Include="Aliases\IAlias.cs" />
     <Compile Include="Core\IExVar.cs" />
     <Compile Include="Core\IDynamic.cs" />
     <Compile Include="Core\IProviderSvc.cs" />

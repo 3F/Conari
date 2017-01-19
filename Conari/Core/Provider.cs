@@ -28,6 +28,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
+using net.r_eg.Conari.Aliases;
 using net.r_eg.Conari.Exceptions;
 using net.r_eg.Conari.Log;
 using net.r_eg.Conari.Native;
@@ -95,6 +96,15 @@ namespace net.r_eg.Conari.Core
             get;
             set;
         }
+
+        /// <summary>
+        /// The aliases for exported-functions and variables.
+        /// </summary>
+        public Dictionary<string, ProcAlias> Aliases
+        {
+            get;
+            protected set;
+        } = new Dictionary<string, ProcAlias>();
 
         /// <summary>
         /// Access to exported variables.
@@ -321,7 +331,7 @@ namespace net.r_eg.Conari.Core
                 throw new LoaderException($"The handle of library is zero. Last loaded library: '{Library.LibName}'");
             }
 
-            return getProcAddress(Library.Handle, lpProcName, Mangling);
+            return getProcAddress(Library.Handle, alias(lpProcName), Mangling);
         }
 
         protected IntPtr getProcAddress(IntPtr hModule, string lpProcName, bool mangling = true)
@@ -353,6 +363,19 @@ namespace net.r_eg.Conari.Core
             }
 
             return getProcAddress(hModule, func, false);
+        }
+
+        protected string alias(string lpProcName)
+        {
+            if(Aliases == null || lpProcName == null 
+                || !Aliases.ContainsKey(lpProcName))
+            {
+                return lpProcName;
+            }
+            IAlias als = Aliases[lpProcName];
+
+            LSender.Send(this, $"Use alias '{als.Name}' instead of '{lpProcName}'", Message.Level.Info);
+            return als.Name;
         }
 
         protected T getDelegate<T>(string lpProcName) where T : class
