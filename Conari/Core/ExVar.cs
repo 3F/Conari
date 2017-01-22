@@ -78,7 +78,7 @@ namespace net.r_eg.Conari.Core
         /// <returns>The value from exported variable.</returns>
         public T get<T>(string variable)
         {
-            return getVar<T>(provider.procName(variable));
+            return getField(typeof(T), provider.Svc.procName(variable, true)).value;
         }
 
         /// <summary>
@@ -103,13 +103,7 @@ namespace net.r_eg.Conari.Core
         /// <returns></returns>
         public Native.Core.Field getField(Type type, string name)
         {
-            return getField(
-                name,
-                provider
-                    .Svc
-                    .native(name)
-                    .t(type, name)
-            );
+            return getField(type, provider.Svc.procName(name, false));
         }
 
         /// <summary>
@@ -136,13 +130,7 @@ namespace net.r_eg.Conari.Core
         /// <returns></returns>
         public Native.Core.Field getField(int size, string name)
         {
-            return getField(
-                name,
-                provider
-                    .Svc
-                    .native(name)
-                    .t(size, name)
-            );
+            return getField(size, provider.Svc.procName(name, false));
         }
 
         /// <summary>
@@ -218,7 +206,11 @@ namespace net.r_eg.Conari.Core
 
         protected dynamic getFieldDLR(Type type, string variable)
         {
-            return getField(type, provider.procName(variable)).value;
+            return getField(
+                type,
+                provider.Svc.tryAlias(variable)
+            )
+            .value;
         }
 
         protected Native.Core.Field getField(string name, NativeData n)
@@ -228,6 +220,24 @@ namespace net.r_eg.Conari.Core
                 throw new KeyNotFoundException($"Field('{name}') was not found inside Raw.Type.");
             }
             return ret;
+        }
+
+        protected Native.Core.Field getField(Type type, LpProcName lpProcName)
+        {
+            return provider
+                    .Svc
+                    .native(lpProcName)
+                    .t(type)
+                    .Raw.Type.FirstField;
+        }
+
+        protected Native.Core.Field getField(int size, LpProcName lpProcName)
+        {
+            return provider
+                    .Svc
+                    .native(lpProcName)
+                    .t(size)
+                    .Raw.Type.FirstField;
         }
 
         private IEnumerable<Type> getGenericArgTypes(InvokeMemberBinder binder)

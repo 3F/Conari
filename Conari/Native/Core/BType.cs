@@ -53,6 +53,13 @@ namespace net.r_eg.Conari.Native.Core
             protected set;
         }
 
+        public Field FirstField
+        {
+            get {
+                return Fields?.FirstOrDefault();
+            }
+        }
+
         public byte[] FieldsBinary
         {
             get

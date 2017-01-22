@@ -44,13 +44,16 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Aliases\AliasCfg.cs" />
     <Compile Include="Aliases\IAliasCfg.cs" />
+    <Compile Include="Aliases\AliasDict.cs" />
     <Compile Include="Core\ExVar.cs" />
     <Compile Include="Aliases\ProcAlias.cs" />
     <Compile Include="Aliases\IAlias.cs" />
     <Compile Include="Core\IExVar.cs" />
     <Compile Include="Core\IDynamic.cs" />
     <Compile Include="Core\IProviderSvc.cs" />
+    <Compile Include="Core\LpProcName.cs" />
     <Compile Include="Core\ProcAddressArgs.cs" />
     <Compile Include="Core\DataArgs.cs" />
     <Compile Include="Core\IMem.cs" />

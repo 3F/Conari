@@ -22,61 +22,17 @@
  * THE SOFTWARE.
 */
 
-using System;
-
 namespace net.r_eg.Conari.Aliases
 {
-    public struct ProcAlias: IAlias
+    public struct AliasCfg: IAliasCfg
     {
         /// <summary>
-        /// The final name.
+        /// Avoids prefix for right operand if it's defined.
         /// </summary>
-        public string Name
-        {
-            get {
-                return _name;
-            }
-            set
-            {
-                if(String.IsNullOrWhiteSpace(value)) {
-                    throw new ArgumentException("The value cannot be null or empty.");
-                }
-                _name = value;
-            }
-        }
-        private string _name;
-
-        /// <summary>
-        /// Configuration of alias.
-        /// </summary>
-        public IAliasCfg Cfg
+        public bool NoPrefixR
         {
             get;
-            private set;
-        }
-
-        public static implicit operator string(ProcAlias pa)
-        {
-            return pa.Name;
-        }
-
-        public static implicit operator ProcAlias(string str)
-        {
-            return new ProcAlias() {
-                Name = str
-            };
-        }
-
-        public ProcAlias(string name)
-            : this()
-        {
-            Name = name;
-        }
-
-        public ProcAlias(string name, IAliasCfg cfg)
-            : this(name)
-        {
-            Cfg = cfg;
+            set;
         }
     }
 }

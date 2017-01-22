@@ -34,13 +34,28 @@ namespace net.r_eg.Conari.Core
         /// </summary>
         /// <param name="lpProcName">The name of function or variable, or the function's ordinal value.</param>
         /// <returns>The address if found.</returns>
-        IntPtr getProcAddr(string lpProcName);
+        IntPtr getProcAddr(LpProcName lpProcName);
 
         /// <summary>
         /// Prepare NativeData for active provider.
         /// </summary>
         /// <param name="lpProcName">The name of function or variable, or the function's ordinal value.</param>
         /// <returns></returns>
-        NativeData native(string lpProcName);
+        NativeData native(LpProcName lpProcName);
+
+        /// <summary>
+        /// Extracts LpProcName.
+        /// </summary>
+        /// <param name="lpProcName">Original lpProcName.</param>
+        /// <param name="prefix">Uses prefix.</param>
+        /// <returns></returns>
+        LpProcName procName(string lpProcName, bool prefix);
+
+        /// <summary>
+        /// Try to get alias.
+        /// </summary>
+        /// <param name="name">Possible alias name.</param>
+        /// <returns></returns>
+        string tryAlias(string name);
     }
 }

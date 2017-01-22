@@ -14,6 +14,8 @@ Lightweight and powerful binding with any exported-functions/variables, and much
 [![License](https://img.shields.io/badge/License-MIT-74A5C2.svg)](https://github.com/3F/Conari/blob/master/LICENSE)
 [![NuGet package](https://img.shields.io/nuget/v/Conari.svg)](https://www.nuget.org/packages/Conari/) 
 
+[ **[Wiki](https://github.com/3F/Conari/wiki)** ]
+
 **Easy to start:**
 
 ```csharp
@@ -143,14 +145,13 @@ l.Svc.native("lpProcName"); // Raw access via NativeData & Native.Core !
 //v1.0+: Use Provider or ConariL frontend via your custom wrapper.
 ```
 
-**Aliases for exported-functions and variables [[?](https://github.com/3F/Conari/issues/9)]:**
+**Aliases for exported-functions and variables [[?](https://github.com/3F/Conari/issues/9#issuecomment-273855381)]:**
 
 ```csharp
 // v1.3+
-l.Aliases["getD_True"]  = "?getD_True@API@UnLib@Conari@r_eg@net@@YA_NXZ";
-l.Aliases["getFlag"]    = l.Aliases["getD_True"]; // getFlag -> getD_True -> ...
+l.Aliases["getFlag"] = l.Aliases["flag"] = l.Aliases["getD_True"]; // getFlag() -> flag() -> getD_True() -> ... 
 // ...
-l.Aliases["a"] = l.Aliases["b"] = l.Aliases["c"] = l.Aliases["d"];
+l.DLR.getFlag<bool>();
 ```
 
 **Additional types:**
@@ -190,7 +191,7 @@ l.BeforeUnload += (object sender, DataArgs<Link> e) =>
 and more !
 
 
-### Samples
+### [Samples](https://github.com/3F/Conari/wiki/Projects)
 
 How about to use [regXwild](https://github.com/3F/regXwild) (Fast and powerful wildcards on C++) in your C# code ? It easy:
 

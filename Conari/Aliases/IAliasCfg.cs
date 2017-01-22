@@ -26,6 +26,11 @@ namespace net.r_eg.Conari.Aliases
 {
     public interface IAliasCfg
     {
+        /// <summary>
+        /// Avoids prefix for right operand if it's defined.
+        /// </summary>
+        bool NoPrefixR { get; set; }
+
         //TODO: PrefixL/R, the rules of mangling, ...
     }
 }

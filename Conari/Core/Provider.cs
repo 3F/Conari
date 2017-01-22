@@ -58,6 +58,8 @@ namespace net.r_eg.Conari.Core
         /// </summary>
         public event EventHandler<ProcAddressArgs> NewProcAddress = delegate(object sender, ProcAddressArgs e) { };
 
+        private AliasDict aliasDict;
+
         /// <summary>
         /// Prefix for exported functions.
         /// </summary>
@@ -102,9 +104,10 @@ namespace net.r_eg.Conari.Core
         /// </summary>
         public Dictionary<string, ProcAlias> Aliases
         {
-            get;
-            protected set;
-        } = new Dictionary<string, ProcAlias>();
+            get {
+                return aliasDict?.Aliases;
+            }
+        }
 
         /// <summary>
         /// Access to exported variables.
@@ -137,25 +140,25 @@ namespace net.r_eg.Conari.Core
         protected sealed class ProviderSvc: IProviderSvc
         {
             private Provider provider;
-            
-            /// <summary>
-            /// Retrieves the address of an exported function or variable.
-            /// </summary>
-            /// <param name="lpProcName">The name of function or variable, or the function's ordinal value.</param>
-            /// <returns>The address if found.</returns>
-            public IntPtr getProcAddr(string lpProcName)
+
+            public IntPtr getProcAddr(LpProcName lpProcName)
             {
                 return provider.getProcAddress(lpProcName);
             }
 
-            /// <summary>
-            /// Prepare NativeData for active provider.
-            /// </summary>
-            /// <param name="lpProcName">The name of function or variable, or the function's ordinal value.</param>
-            /// <returns></returns>
-            public NativeData native(string lpProcName)
+            public NativeData native(LpProcName lpProcName)
             {
                 return getProcAddr(lpProcName).Native();
+            }
+
+            public LpProcName procName(string lpProcName, bool prefix)
+            {
+                return provider.procName(lpProcName, prefix);
+            }
+
+            public string tryAlias(string name)
+            {
+                return provider.tryAlias(procName(name, true));
             }
 
             public ProviderSvc(Provider p)
@@ -172,7 +175,7 @@ namespace net.r_eg.Conari.Core
         /// <returns>Delegate of exported function.</returns>
         public T bindFunc<T>(string lpProcName) where T : class
         {
-            return getDelegate<T>(lpProcName);
+            return getDelegate<T>(procName(lpProcName, false));
         }
 
         /// <summary>
@@ -195,7 +198,7 @@ namespace net.r_eg.Conari.Core
         /// <returns>Delegate of exported function.</returns>
         public T bind<T>(string func) where T : class
         {
-            return bindFunc<T>(procName(func));
+            return getDelegate<T>(procName(func, true));
         }
 
         /// <summary>
@@ -210,18 +213,6 @@ namespace net.r_eg.Conari.Core
             return bind<Action>(func);
         }
 
-        ///// <summary>
-        ///// Binds the exported Function via MethodInfo.
-        ///// </summary>
-        ///// <param name="mi">Prepared signature.</param>
-        ///// <param name="prefix">Add prefix to function name from IProvider.Prefix if true.</param>
-        ///// <returns>Complete information to create delegates or to invoke methods.</returns>
-        //public TDyn bind(MethodInfo mi, bool prefix = false)
-        //{
-        //    string func = prefix ? procName(mi.Name) : mi.Name;
-        //    return wire(mi, func);
-        //}
-
         /// <summary>
         /// Binds the exported Function via MethodInfo and an specific name.
         /// </summary>
@@ -230,19 +221,19 @@ namespace net.r_eg.Conari.Core
         /// <returns>Complete information to create delegates or to invoke methods.</returns>
         public TDyn bind(MethodInfo mi, string name)
         {
-            return wire(mi, name);
+            return wire(mi, procName(name, false));
         }
 
         /// <summary>
         /// Binds the exported Function via MethodInfo, an specific name and CallingConvention.
         /// </summary>
         /// <param name="mi">Prepared signature.</param>
-        /// <param name="name">Valid function name.</param>
+        /// <param name="name">Valid function name. Full name is required.</param>
         /// <param name="conv">How it should be called. It overrides only for current method.</param>
         /// <returns>Complete information to create delegates or to invoke methods.</returns>
         public TDyn bind(MethodInfo mi, string name, CallingConvention conv)
         {
-            return wire(mi, name, conv);
+            return wire(mi, procName(name, false), conv);
         }
 
         /// <summary>
@@ -268,12 +259,7 @@ namespace net.r_eg.Conari.Core
         /// <returns>Delegate of exported function.</returns>
         public Method<T, object> bindFunc<T>(string lpProcName, Type ret, params Type[] args)
         {
-            MethodInfo mi   = Dynamic.GetMethodInfo(lpProcName, ret, args);
-            TDyn dyn        = bind(mi, lpProcName, Convention);
-
-            return delegate (object[] _args) {
-                return (T)dyn.dynamic.Invoke(null, _args);
-            };
+            return bind<T>(procName(lpProcName, false), ret, args);
         }
 
         /// <summary>
@@ -299,7 +285,7 @@ namespace net.r_eg.Conari.Core
         /// <returns>Delegate of exported function.</returns>
         public Method<T, object> bind<T>(string func, Type ret, params Type[] args)
         {
-            return bindFunc<T>(procName(func), ret, args);
+            return bind<T>(procName(func, true), ret, args);
         }
 
         /// <summary>
@@ -309,7 +295,7 @@ namespace net.r_eg.Conari.Core
         public virtual string procName(string name)
         {
             if(String.IsNullOrWhiteSpace(name)) {
-                throw new ArgumentException("The function name cannot be empty or null.");
+                throw new ArgumentException("The name cannot be empty or null.");
             }
             return $"{Prefix}{name}";
         }
@@ -323,15 +309,24 @@ namespace net.r_eg.Conari.Core
             throw new NotImplementedException("Not yet implemented. Please use it from unmanaged code.");
         }
 
+        public Provider()
+        {
+            aliasDict = new AliasDict(this);
+        }
+
         /// <param name="lpProcName">The name of exported function.</param>
         /// <returns>The address of the exported function.</returns>
-        protected IntPtr getProcAddress(string lpProcName)
+        protected IntPtr getProcAddress(LpProcName lpProcName)
         {
             if(!Library.IsActive && !load()) {
                 throw new LoaderException($"The handle of library is zero. Last loaded library: '{Library.LibName}'");
             }
 
-            return getProcAddress(Library.Handle, alias(lpProcName), Mangling);
+            return getProcAddress(
+                Library.Handle,
+                tryAlias(lpProcName), 
+                Mangling
+            );
         }
 
         protected IntPtr getProcAddress(IntPtr hModule, string lpProcName, bool mangling = true)
@@ -365,20 +360,30 @@ namespace net.r_eg.Conari.Core
             return getProcAddress(hModule, func, false);
         }
 
-        protected string alias(string lpProcName)
+        /// <typeparam name="T">The return type for new Delegate should be as T type.</typeparam>
+        /// <param name="lpProcName"></param>
+        /// <param name="ret">The type of return value.</param>
+        /// <param name="args">The type of arguments.</param>
+        /// <returns>Delegate of exported function.</returns>
+        protected Method<T, object> bind<T>(LpProcName lpProcName, Type ret, params Type[] args)
         {
-            if(Aliases == null || lpProcName == null 
-                || !Aliases.ContainsKey(lpProcName))
-            {
-                return lpProcName;
-            }
-            IAlias als = Aliases[lpProcName];
+            MethodInfo mi   = Dynamic.GetMethodInfo((string)lpProcName, ret, args);
+            TDyn dyn        = wire(mi, lpProcName, Convention);
 
-            LSender.Send(this, $"Use alias '{als.Name}' instead of '{lpProcName}'", Message.Level.Info);
-            return als.Name;
+            return delegate(object[] _args) {
+                return (T)dyn.dynamic.Invoke(null, _args);
+            };
         }
 
-        protected T getDelegate<T>(string lpProcName) where T : class
+        protected LpProcName procName(string lpProcName, bool prefix)
+        {
+            return new LpProcName() {
+                origin      = lpProcName,
+                prefixed    = prefix ? procName(lpProcName) : null
+            };
+        }
+
+        protected T getDelegate<T>(LpProcName lpProcName) where T : class
         {
             return getDelegate<T>(getProcAddress(lpProcName));
         }
@@ -396,12 +401,12 @@ namespace net.r_eg.Conari.Core
             return type.dynamic.CreateDelegate(type.declaringType) as T;
         }
 
-        protected TDyn wire(MethodInfo mi, string lpProcName)
+        protected TDyn wire(MethodInfo mi, LpProcName lpProcName)
         {
             return wire(mi, lpProcName, Convention);
         }
 
-        protected TDyn wire(MethodInfo mi, string lpProcName, CallingConvention conv)
+        protected TDyn wire(MethodInfo mi, LpProcName lpProcName, CallingConvention conv)
         {
             return wire(mi, getProcAddress(lpProcName), conv);
         }
@@ -528,6 +533,11 @@ namespace net.r_eg.Conari.Core
         {
             return type.GetMember("op_Implicit", BindingFlags.Public | BindingFlags.Static)
                        .Select(t => (MethodInfo)t);
+        }
+
+        private string tryAlias(LpProcName lpProcName)
+        {
+            return (aliasDict == null) ? (string)lpProcName : aliasDict.use(lpProcName);
         }
     }
 }

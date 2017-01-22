@@ -116,7 +116,12 @@ namespace net.r_eg.Conari.Core
 
             Type[] tGeneric = getGenericArgTypes(binder).ToArray();
             MethodInfo mi   = getmi(binder.Name, tGeneric, tArgs);
-            TDyn dyn        = provider.bind(mi, provider.procName(binder.Name), Convention);
+
+            TDyn dyn = provider.bind(
+                mi,
+                provider.Svc.tryAlias(binder.Name),
+                Convention
+            );
 
             // Boxing types, for example: NullType -> null -> NullType
 

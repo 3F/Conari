@@ -96,7 +96,7 @@ namespace net.r_eg.Conari.Core
         /// Binds the exported Function via MethodInfo, an specific name and CallingConvention.
         /// </summary>
         /// <param name="mi">Prepared signature.</param>
-        /// <param name="name">Valid function name.</param>
+        /// <param name="name">Valid function name. Full name is required.</param>
         /// <param name="conv">How it should be called. It overrides only for current method.</param>
         /// <returns>Complete information to create delegates or to invoke methods.</returns>
         TDyn bind(MethodInfo mi, string name, CallingConvention conv);

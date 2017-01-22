@@ -23,60 +23,58 @@
 */
 
 using System;
+using System.Collections.Generic;
+using net.r_eg.Conari.Core;
+using net.r_eg.Conari.Log;
 
 namespace net.r_eg.Conari.Aliases
 {
-    public struct ProcAlias: IAlias
+    internal sealed class AliasDict
     {
-        /// <summary>
-        /// The final name.
-        /// </summary>
-        public string Name
-        {
-            get {
-                return _name;
-            }
-            set
-            {
-                if(String.IsNullOrWhiteSpace(value)) {
-                    throw new ArgumentException("The value cannot be null or empty.");
-                }
-                _name = value;
-            }
-        }
-        private string _name;
+        private Provider provider;
 
         /// <summary>
-        /// Configuration of alias.
+        /// The aliases for exported-functions and variables.
         /// </summary>
-        public IAliasCfg Cfg
+        public Dictionary<string, ProcAlias> Aliases
         {
             get;
             private set;
+        } = new Dictionary<string, ProcAlias>();
+
+        /// <summary>
+        /// Try to use alias.
+        /// </summary>
+        /// <param name="lpProcName"></param>
+        /// <returns></returns>
+        public string use(LpProcName lpProcName)
+        {
+            if(Aliases == null || lpProcName.origin == null
+                || !Aliases.ContainsKey(lpProcName.origin))
+            {
+                return (string)lpProcName;
+            }
+
+            IAlias als = Aliases[lpProcName.origin];
+            string ret;
+
+            if(als.Cfg != null && als.Cfg.NoPrefixR) {
+                ret = als.Name;
+            }
+            else {
+                ret = provider.procName(als.Name);
+            }
+
+            LSender.Send(this, $"Use alias '{ret}' instead of '{(string)lpProcName}'", Message.Level.Info);
+            return ret;
         }
 
-        public static implicit operator string(ProcAlias pa)
+        public AliasDict(Provider p)
         {
-            return pa.Name;
-        }
-
-        public static implicit operator ProcAlias(string str)
-        {
-            return new ProcAlias() {
-                Name = str
-            };
-        }
-
-        public ProcAlias(string name)
-            : this()
-        {
-            Name = name;
-        }
-
-        public ProcAlias(string name, IAliasCfg cfg)
-            : this(name)
-        {
-            Cfg = cfg;
+            if(p == null) {
+                throw new ArgumentException("Provider cannot be null.");
+            }
+            provider = p;
         }
     }
 }
