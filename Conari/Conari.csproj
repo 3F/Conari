@@ -54,11 +54,12 @@
     <Compile Include="Core\IDynamic.cs" />
     <Compile Include="Core\IProviderSvc.cs" />
     <Compile Include="Core\LpProcName.cs" />
+    <Compile Include="Core\PAddrCache.cs" />
     <Compile Include="Core\ProcAddressArgs.cs" />
     <Compile Include="Core\DataArgs.cs" />
     <Compile Include="Core\IMem.cs" />
     <Compile Include="Core\IProviderDLR.cs" />
-    <Compile Include="Core\MIcache.cs" />
+    <Compile Include="Core\MICache.cs" />
     <Compile Include="Core\TDyn.cs" />
     <Compile Include="Core\IConfig.cs" />
     <Compile Include="Core\Dynamic.cs" />

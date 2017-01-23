@@ -219,6 +219,79 @@ namespace net.r_eg.ConariTest
         }
 
         [TestMethod]
+        public void cacheTest1()
+        {
+            using(var l = new ConariL(UNLIB_DLL))
+            {
+                Assert.AreEqual(7, l.DLR.get_VarSeven<int>());
+                Assert.AreEqual(null, l.DLR.set_VarSeven(1235));
+                Assert.AreEqual(1235, l.DLR.get_VarSeven<int>());
+                Assert.AreEqual(null, l.DLR.set_VarSeven(-44));
+                Assert.AreEqual(-44, l.DLR.get_VarSeven<int>());
+            }
+        }
+
+        [TestMethod]
+        public void cacheTest2()
+        {
+            using(var l = new ConariL(UNLIB_DLL))
+            {
+                Assert.AreEqual(7, l.bindFunc<int>("get_VarSeven", typeof(int))());
+                Assert.AreEqual(null, l.bind("set_VarSeven", typeof(void), typeof(int))(1024));
+                Assert.AreEqual(1024, l.bind<int>("get_VarSeven", typeof(int))());
+                Assert.AreEqual(null, l.bind("set_VarSeven", typeof(void), typeof(int))(-4096));
+                Assert.AreEqual(-4096, l.bind<int>("get_VarSeven", typeof(int))());
+            }
+        }
+
+        [TestMethod]
+        public void cacheTest3()
+        {
+            using(var l = new ConariL(UNLIB_DLL))
+            {
+                Assert.AreEqual(7, l.bindFunc<Func<int>>("get_VarSeven")());
+
+                l.bind<Action<int>>("set_VarSeven")(1024);
+                Assert.AreEqual(1024, l.bind<Func<int>>("get_VarSeven")());
+                
+                l.bind<Action<int>>("set_VarSeven")(-4096);
+                Assert.AreEqual(-4096, l.bind<Func<int>>("get_VarSeven")());
+            }
+        }
+
+        [TestMethod]
+        public void cacheTest4()
+        {
+            /*
+             *  MethodInfo m = typeof(T).GetMethod("Invoke"); - local
+                TDyn type = ...from cache
+                type.dynamic.CreateDelegate(...)
+                   - type.declaringType - failed from another cached TDyn
+                   - m.DeclaringType - should be ok
+
+                see `T getDelegate<T>(IntPtr ptr, CallingConvention conv) where T : class`
+            */
+
+            using(var l = new ConariL(UNLIB_DLL))
+            {
+                Assert.AreEqual(7, l.DLR.get_Seven<ushort>());
+                Assert.AreEqual(7, l.bind<Func<ushort>>("get_Seven")());
+
+                Assert.AreEqual(7, l.DLR.get_Seven<ushort>());
+                Assert.AreEqual(7, l.bind<Func<ushort>>("get_Seven")());
+            }
+
+            using(var l = new ConariL(UNLIB_DLL))
+            {
+                Assert.AreEqual(7, l.bind<Func<ushort>>("get_Seven")());
+                Assert.AreEqual(7, l.DLR.get_Seven<ushort>());
+
+                Assert.AreEqual(7, l.bind<Func<ushort>>("get_Seven")());
+                Assert.AreEqual(7, l.DLR.get_Seven<ushort>());
+            }
+        }
+
+        [TestMethod]
         public void namingTest1()
         {
             using(var l = new ConariL(UNLIB_DLL, "apiprefix_"))

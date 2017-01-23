@@ -47,6 +47,11 @@ namespace net.r_eg.Conari.Core
         event EventHandler<ProcAddressArgs> NewProcAddress;
 
         /// <summary>
+        /// To cache delegates, generated methods, etc.
+        /// </summary>
+        bool Cache { get; set; }
+
+        /// <summary>
         /// Prefix for exported functions.
         /// </summary>
         string Prefix { get; set; }

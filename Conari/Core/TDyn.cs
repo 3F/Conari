@@ -39,6 +39,11 @@ namespace net.r_eg.Conari.Core
 
         public Type returnType;
 
+        /// <summary>
+        /// NOTE: 
+        /// Do not use this type for `dynamic.CreateDelegate(...)` etc. if already used any caching of TDyn.
+        /// Use new type from MethodInfo instead, for example: `typeof(T).GetMethod("Invoke").DeclaringType`
+        /// </summary>
         public Type declaringType;
 
         public CallingConvention convention;

@@ -58,7 +58,29 @@ namespace net.r_eg.Conari.Core
         /// </summary>
         public event EventHandler<ProcAddressArgs> NewProcAddress = delegate(object sender, ProcAddressArgs e) { };
 
+        protected PAddrCache<Delegate> xDelegates = new PAddrCache<Delegate>();
+        protected PAddrCache<TDyn> xTDyn = new PAddrCache<TDyn>();
+
         private AliasDict aliasDict;
+
+        /// <summary>
+        /// To cache delegates, generated methods, etc.
+        /// </summary>
+        public bool Cache
+        {
+            get {
+                return _cache;
+            }
+            set
+            {
+                if(!value) {
+                    xDelegates.Clear();
+                    xTDyn.Clear();
+                }
+                _cache = value;
+            }
+        }
+        protected bool _cache = true;
 
         /// <summary>
         /// Prefix for exported functions.
@@ -395,10 +417,23 @@ namespace net.r_eg.Conari.Core
 
         protected T getDelegate<T>(IntPtr ptr, CallingConvention conv) where T : class
         {
+            if(!Cache) {
+                return getDelegateNoCache<T>(ptr, conv) as T;
+            }
+
+            var key = new PAddrCache<Delegate>.Key(ptr, conv);
+            if(!xDelegates.ContainsKey(key)) {
+                xDelegates[key] = getDelegateNoCache<T>(ptr, conv);
+            }
+            return xDelegates[key] as T;
+        }
+
+        protected Delegate getDelegateNoCache<T>(IntPtr ptr, CallingConvention conv) where T : class
+        {
             MethodInfo m    = typeof(T).GetMethod("Invoke");
             TDyn type       = wire(m, ptr, conv);
 
-            return type.dynamic.CreateDelegate(type.declaringType) as T;
+            return type.dynamic.CreateDelegate(m.DeclaringType);
         }
 
         protected TDyn wire(MethodInfo mi, LpProcName lpProcName)
@@ -417,6 +452,19 @@ namespace net.r_eg.Conari.Core
         }
 
         protected TDyn wire(MethodInfo mi, IntPtr ptr, CallingConvention conv)
+        {
+            if(!Cache) {
+                return wireNoCache(mi, ptr, conv);
+            }
+
+            var key = new PAddrCache<TDyn>.Key(ptr, conv);
+            if(!xTDyn.ContainsKey(key)) {
+                xTDyn[key] = wireNoCache(mi, ptr, conv);
+            }
+            return xTDyn[key];
+        }
+
+        protected TDyn wireNoCache(MethodInfo mi, IntPtr ptr, CallingConvention conv)
         {
             Type[] mParams = mi.GetParameters()
                                .Select(p => p.ParameterType)

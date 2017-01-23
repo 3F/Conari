@@ -67,18 +67,6 @@ namespace net.r_eg.Conari.Core
         /// <returns>Delegate of exported function.</returns>
         Action bind(string func);
 
-        ///// <summary>
-        ///// Binds the exported Function via MethodInfo.
-        ///// </summary>
-        ///// <param name="mi">Prepared signature with valid function name.</param>
-        ///// <param name="prefix">Add prefix to function name from IProvider.Prefix if true.</param>
-        ///// <returns>
-        /////     Complete information to: 
-        /////     * create delegates ~ `dyn.CreateDelegate(type.declaringType) as T`
-        /////     * or to invoke methods ~ `dyn.Invoke(null, mParams)`
-        ///// </returns>
-        //TDyn bind(MethodInfo mi, bool prefix = false);
-
         /// <summary>
         /// Binds the exported Function via MethodInfo and an specific name.
         /// Note: 

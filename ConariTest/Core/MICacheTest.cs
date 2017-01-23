@@ -5,12 +5,12 @@ using net.r_eg.Conari.Core;
 namespace net.r_eg.ConariTest.Core
 {
     [TestClass]
-    public class MIcacheTest
+    public class MICacheTest
     {
         [TestMethod]
         public void ComparerTest1()
         {
-            var cache = new MIcache();
+            var cache = new MICache();
 
             Assert.AreEqual(0, cache.Count);
 

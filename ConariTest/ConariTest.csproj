@@ -74,7 +74,7 @@
     <Compile Include="UserSpecType.cs" />
     <Compile Include="ConariLTest.cs" />
     <Compile Include="Core\DynamicTest.cs" />
-    <Compile Include="Core\MIcacheTest.cs" />
+    <Compile Include="Core\MICacheTest.cs" />
     <Compile Include="Core\LinkTest.cs" />
     <Compile Include="Extensions\IntPtrExtensionTest.cs" />
     <Compile Include="Types\UnmanagedStringTest.cs" />

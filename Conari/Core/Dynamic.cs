@@ -36,7 +36,7 @@ namespace net.r_eg.Conari.Core
         /// </summary>
         public const string METHOD_NAME = "Invoke";
 
-        private MIcache micache = new MIcache();
+        private MICache micache = new MICache();
 
         /// <summary>
         /// Thread-safe getting of this instance.
@@ -85,7 +85,7 @@ namespace net.r_eg.Conari.Core
         /// Extract all valuable types from MethodInfo.
         /// </summary>
         /// <param name="mi"></param>
-        /// <returns>The array of types that can be used for MIcache containers etc.</returns>
+        /// <returns>The array of types that can be used for MICache containers etc.</returns>
         public Type[] getKeyTypes(MethodInfo mi)
         {
             if(mi == null) {

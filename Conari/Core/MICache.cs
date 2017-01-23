@@ -30,7 +30,7 @@ using System.Runtime.Serialization;
 namespace net.r_eg.Conari.Core
 {
     [Serializable]
-    public sealed class MIcache: Dictionary<Type[], MethodInfo>
+    public sealed class MICache: Dictionary<Type[], MethodInfo>
     {
         private class EqTypeArrayComparer: IEqualityComparer<Type[]>
         {
@@ -65,13 +65,13 @@ namespace net.r_eg.Conari.Core
             }
         }
 
-        public MIcache()
+        public MICache()
             : base(new EqTypeArrayComparer())
         {
 
         }
 
-        private MIcache(SerializationInfo info, StreamingContext context)
+        private MICache(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
 
