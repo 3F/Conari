@@ -11,7 +11,7 @@ using net.r_eg.Conari;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Conari")]
-[assembly: AssemblyCopyright("entry.reg@gmail.com")]
+[assembly: AssemblyCopyright("entry.reg@gmail.com - Denis Kuzmin")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -39,6 +39,7 @@ using net.r_eg.Conari;
 //
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion(ConariVersion.S_NUM + ".*")]
+//[assembly: AssemblyVersion(ConariVersion.S_NUM + ".*")]
+[assembly: AssemblyVersion(ConariVersion.S_NUM_REV)]
 //[assembly: AssemblyVersion("1.0.0.0")]
 //[assembly: AssemblyFileVersion("1.0.0.0")]
