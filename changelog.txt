@@ -1,11 +1,73 @@
 - - - -
-Conari
+Conari  :: https://github.com/3F/Conari
 _ _ _ _
+
+[v1.3]
+
+    NEW: Improved speed >80% (DLR) & >90% (Lambda) 
+         `*` results for regXwild x64 (Unicode) via snet tester - https://github.com/3F/regXwild
+         
+    NEW: Improved DLR. Automatic detection for ByRef types & null-values for any reference-types that pushed with out/ref modifier.
+         * +UseCallingContext - To use information about types from CallingContext if it's possible.
+         * +UseByRef - To use ByRef& (reference-types) for all sent types.
+         
+    NEW: Added `NullType<T>` as optional way for work with reference-types. And for other purpose to store additional information about basic type for any null values.
+    NEW: Added IProvider.NewProcAddress event - When handling new non-zero ProcAddress.
+    NEW: Started support of Exported-Variables via IExVar & DLR - Issue #7    
+            ```
+            l.ExVar.DLR.ADDR_SPEC; // 0x00001CE8
+            l.ExVar.get<UInt32>("ADDR_SPEC"); // 0x00001CE8
+            l.ExVar.getField(typeof(UInt32).NativeSize(), "ADDR_SPEC"); // Native.Core.Field via raw size
+            l.Svc.native("lpProcName"); // Raw access via NativeData & Native.Core !
+            ```
+            
+    NEW: Implemented aliases for Exported-Functions and Variables - Issue #9
+            ```
+            l.Aliases["Flag"] = l.Aliases["getFlag"] = l.Aliases["xFunc"]; //Flag() -> getFlag() -> xFunc()->...
+            l.DLR.getFlag<bool>();
+            ```
+            ```
+            l.Aliases["gmn"] = new ProcAlias(
+                "GetMagicNum",
+                new AliasCfg() { NoPrefixR = true } // false by default
+            );
+            ```
+            
+    NEW: Native.Core improvements - Extensions & new `t` signatures for node (raw alignments via size and managed types)
+         +`t(Type type, string name = null)`
+         +`t(Type[] types, params string[] names)`
+         +`t(int size, string name = null)`
+    
+    NEW: Aliases for 'empty' types:
+         +`Action bindFunc(string lpProcName);`
+         +`Action bind(string func);`
+        
+    NEW: New group of binding via regular arguments:
+         +`Method bindFunc(string lpProcName, Type ret, params Type[] args);`
+         +`Method<T, object> bindFunc<T>(string lpProcName, Type ret, params Type[] args);`
+         +`Method bind(string func, Type ret, params Type[] args);`
+         +`Method<T, object> bind<T>(string func, Type ret, params Type[] args);`
+         
+    FIXED: Fixed possible crashes - 'A heap has been corrupted' when use of shared pointer between several UnmanagedStructure.
+    CHANGED: ILoader: minor incompatible changes for PE32/PE32+ features.
+             * New `IPE PE` property for complex work with PE-file.
+             * The `ExportFunctionNames` property has been removed as obsolete. Use same `PE.ExportedProcNamesArray`
+            
+    CHANGED: IProvider minor incompatible changes `funcName()` -> `procName()`
+             `string funcName(string name);` has been renamed to `string procName(string name);`
+              - as a common method for getting full lpProcName with main prefix etc.
+              
+    CHANGED: `TDyn IBinder.bind(MethodInfo mi, bool prefix = false);` removed as a deprecated, because for this can be a lot of misunderstandings. 
+              If you need something, use like: `prefix ? l.procName(mi.Name) : mi.Name` etc. for any available methods with MethodInfo.
+              
+    CHANGED: Added User object (+`user`) for Native.Core.Field. To store any additional information that's related for specific field.
+
 
 [v1.2]
 
     FIXED: Incorrect boolean values from unmanaged code #6
     NEW: Added type for work with unmanaged structures - UnmanagedStructure
+
 
 [v1.1]
 
@@ -29,6 +91,7 @@ _ _ _ _
     FIXED: trivial fixes with implicit conversion for size_t and UIntPtr.
     CHANGED: Updated CharPtr: +BSTR, +WCharPtr & added new UnmanagedString, that allocates strings for unmanaged code.
     CHANGED: Other trivial fixes and improvements.
+
 
 [v1.0]
 

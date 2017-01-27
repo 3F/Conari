@@ -7,7 +7,7 @@ Binder of Unmanaged code for .NET
 The Conari engine represents flexible platform for work with unmanaged code (native C/C++ etc.): Libraries, Executable Modules, other native and binary data.
 Lightweight and powerful binding with any exported-functions/variables, and much more.
 
-*Did you know: The [LunaRoad](https://github.com/3F/LunaRoad) project works via Conari engine.*
+*[List of Projects via Conari engine](https://github.com/3F/Conari/wiki/Projects)*
 
 [![Build status](https://ci.appveyor.com/api/projects/status/qc1d3ofsso8fd67t/branch/master?svg=true)](https://ci.appveyor.com/project/3Fs/conari/branch/master)
 [![release-src](https://img.shields.io/github/release/3F/Conari.svg)](https://github.com/3F/Conari/releases/latest)
@@ -149,25 +149,21 @@ l.Svc.native("lpProcName"); // Raw access via NativeData & Native.Core !
 
 ```csharp
 // v1.3+
-l.Aliases["getFlag"] = l.Aliases["flag"] = l.Aliases["getD_True"]; // getFlag() -> flag() -> getD_True() -> ... 
+l.Aliases["Flag"] = l.Aliases["getFlag"] = l.Aliases["xFunc"]; //Flag() -> getFlag() -> xFunc()->...
 // ...
 l.DLR.getFlag<bool>();
 ```
 
 **Additional types:**
 
-* BSTR, CharPtr, float_t, int_t, ptrdiff_t, size_t, uint_t, WCharPtr
+* BSTR, CharPtr, WCharPtr, float_t, int_t, ptrdiff_t, size_t, uint_t
 * UnmanagedString - to allocation of new unmanaged strings for your unmanaged code.
 * ...
 
 ```csharp
-
 size_t len;
 CharPtr name = c.bind<FuncOut3<int, size_t, IntPtr>>("to")(1, out len);
-...
 string myName += name; // (IntPtr)name; .Raw; .Ansi; .Utf8; ...
-...
-uint_t v = dll.getU(2);
 ```
 
 **Events**:

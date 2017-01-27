@@ -8,12 +8,12 @@ namespace net.r_eg.Conari
     {
         public static readonly Version number = new Version(S_NUM_REV);
 
-        public const string S_NUM = "1.2.0";
-        public const string S_REV = "37964";
+        public const string S_NUM = "1.3.0";
+        public const string S_REV = "39634";
 
         public const string S_NUM_REV = S_NUM + "." + S_REV;
 
-        public const string BRANCH_SHA1 = "ce3e8a9";
+        public const string BRANCH_SHA1 = "aa4e6b1";
         public const string BRANCH_NAME = "master";
         public const string BRANCH_REVC = "45";
 

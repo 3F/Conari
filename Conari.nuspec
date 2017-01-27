@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>Conari</id>
-    <version>1.2.0</version>
+    <version>1.3.0</version>
     <title>[ Conari ] Binder of Unmanaged code for .NET</title>
     <authors>github.com/3F/Conari</authors>
     <owners>reg</owners>
@@ -22,7 +22,7 @@
         ~~~~~~~~
         Get it via GetNuTool:
         ==========================================
-        gnt /p:ngpackages="Conari/1.2.0"
+        gnt /p:ngpackages="Conari/1.3.0"
         ==========================================
         * https://github.com/3F/GetNuTool         
         
