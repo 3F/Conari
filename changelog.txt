@@ -4,7 +4,7 @@ _ _ _ _
 
 [v1.3]
 
-    NEW: Improved speed >80% (DLR) & >90% (Lambda) 
+    NEW: Improved speed >80% (DLR) & >90% (Lambda) - Issue #10
          `*` results for regXwild x64 (Unicode) via snet tester - https://github.com/3F/regXwild
          
     NEW: Improved DLR. Automatic detection for ByRef types & null-values for any reference-types that pushed with out/ref modifier.

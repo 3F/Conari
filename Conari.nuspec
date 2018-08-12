@@ -1,9 +1,9 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>Conari</id>
     <version>1.3.0</version>
-    <title>[ Conari ] Binder of Unmanaged code for .NET</title>
+    <title>[ Conari ] Binder of Unmanaged data</title>
     <authors>github.com/3F/Conari</authors>
     <owners>reg</owners>
     <licenseUrl>https://github.com/3F/Conari/blob/master/LICENSE</licenseUrl>
@@ -11,11 +11,10 @@
     <iconUrl>https://raw.githubusercontent.com/3F/Conari/master/Conari/Resources/Conari_v1.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>
-    
-        Binder of Unmanaged code for .NET
-        
-        The Conari engine represents flexible platform for work with unmanaged code (native C/C++ etc.): Libraries, Executable Modules, other native and binary data.
-        Lightweight and powerful binding with any exported functions and much more.
+        Conari engine represents powerful platform for work with unmanaged memory, pe-modules, and their data: Libraries, Executable Modules, other native (C/C++, ...) and binary data.
+
+        Lightweight and flexible binding, even accessing to complex types like structures without their declaration at all. 
+        Also contains wrappers for types like unmanaged structures, unmanaged strings, and much more.
         _ _ _ _ _ _
         Source code and all details here: https://github.com/3F/Conari
         
@@ -27,10 +26,10 @@
         * https://github.com/3F/GetNuTool         
         
     </description>
-    <summary>Binder of Unmanaged code for .NET :: Powerful engine for work with unmanaged code (native C/C++ etc.): Libraries, Executable Modules, other native and binary data ... https://github.com/3F/Conari</summary>
-    <tags>exported-function unmanaged-code unmanaged-function exported-c-function unmanaged exports native c-func export API dll cpp c .net c# csharp Lua 7z 7zip DLR Lambda-expressions Conari</tags>
+    <summary>Powerful platform for work with unmanaged memory, pe-modules, and their data: Libraries, Executable Modules, other native (C/C++, ...) and binary data ... github.com/3F/Conari</summary>
+    <tags>memory unmanaged-memory exported-function DllExport unmanaged exports native c-func DllImport unmanaged-code binder binding pe-modules unmanaged-function exported-c-function export API dll cpp c .net c# csharp Lua 7z 7zip Conari</tags>
     <releaseNotes></releaseNotes>
-    <copyright>Copyright (c) 2016  Denis Kuzmin [entry.reg@gmail.com] </copyright>
+    <copyright>Copyright (c) 2016-2018  Denis Kuzmin [entry.reg@gmail.com] </copyright>
     <references>
       <reference file="Conari.dll" />
     </references>

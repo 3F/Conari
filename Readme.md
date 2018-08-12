@@ -2,29 +2,32 @@
 
 [![](https://raw.githubusercontent.com/3F/Conari/master/Conari/Resources/Conari_v1.png)](https://github.com/3F/Conari)
 
-Binder of Unmanaged code for .NET
+Conari engine represents powerful platform for work with unmanaged memory, pe-modules, and their data: Libraries, Executable Modules, other native (C/C++, ...) and binary data.
 
-The Conari engine represents flexible platform for work with unmanaged code (native C/C++ etc.): Libraries, Executable Modules, other native and binary data.
-Lightweight and powerful binding with any exported-functions/variables, and much more.
-
-*[List of Projects via Conari engine](https://github.com/3F/Conari/wiki/Projects)*
+Lightweight and flexible binding, even accessing to complex types like structures without their declaration at all. Also contains wrappers for types like unmanaged structures, unmanaged strings, and much more.
 
 [![Build status](https://ci.appveyor.com/api/projects/status/qc1d3ofsso8fd67t/branch/master?svg=true)](https://ci.appveyor.com/project/3Fs/conari/branch/master)
 [![release-src](https://img.shields.io/github/release/3F/Conari.svg)](https://github.com/3F/Conari/releases/latest)
 [![License](https://img.shields.io/badge/License-MIT-74A5C2.svg)](https://github.com/3F/Conari/blob/master/LICENSE)
 [![NuGet package](https://img.shields.io/nuget/v/Conari.svg)](https://www.nuget.org/packages/Conari/) 
 
-[ **[Wiki](https://github.com/3F/Conari/wiki)** ]
+
+> 1:[ ***[Quick start](https://github.com/3F/Conari/wiki/Quick-start)*** ] 2:[ [Basic examples for C++ and C#](https://www.youtube.com/watch?v=9Hyg3_WE9Ks) ] 3:[ [Complex types and Strings](https://www.youtube.com/watch?v=QXMj9-8XJnY) ]
+> -> { **[Wiki](https://github.com/3F/Conari/wiki)** }
+
+
+[![](https://raw.githubusercontent.com/3F/Conari/master/Conari/Resources/screencast_Complex_types.jpg)](https://www.youtube.com/watch?v=QXMj9-8XJnY)
+
 
 **Easy to start:**
 
 ```csharp
-using(IConari l = new ConariL("Library.dll")) {
+using(var l = new ConariL("Library.dll")) {
     // ...
 }
 ```
 
-Conari is ready for any exported functions immediately via:
+Conari is ready for any exported functions and variables immediately via ...
 
 **Dynamic features** / **DLR** - *fully automatic way*:
 
@@ -49,7 +52,7 @@ using(var c = new ConariL("Library.dll"))
 }
 ```
 
-This also does not require the creation of any additional **delegate**. Just use `bind<>` methods with additional types and have fun !
+This also does not require the creation of any additional delegates. Just use `bind<>` methods with additional types and have fun!
 
 ```csharp
 c.bind<...>("function")
@@ -157,7 +160,7 @@ l.DLR.getFlag<bool>();
 **Additional types:**
 
 * BSTR, CharPtr, WCharPtr, float_t, int_t, ptrdiff_t, size_t, uint_t
-* UnmanagedString - to allocation of new unmanaged strings for your unmanaged code.
+* UnmanagedString - allocation of the new unmanaged strings.
 * ...
 
 ```csharp
@@ -187,9 +190,12 @@ l.BeforeUnload += (object sender, DataArgs<Link> e) =>
 and more !
 
 
-### [Samples](https://github.com/3F/Conari/wiki/Projects)
+### [Examples](https://github.com/3F/Conari/wiki/Examples)
 
-How about to use [regXwild](https://github.com/3F/regXwild) (Fast and powerful wildcards on C++) in your C# code ? It easy:
+* *[List of real usage via Conari engine](https://github.com/3F/Conari/wiki/Projects)*
+
+#### Sample for DLR
+How about to use [regXwild](https://github.com/3F/regXwild) (Fast and powerful wildcards on native C++) in your C# code ? It's easy:
 
 ```csharp
 using(var l = new ConariL("regXwild.dll")) {
@@ -199,7 +205,7 @@ using(var l = new ConariL("regXwild.dll")) {
     }
 }
 ```
-yes, you don't need to do anything else ! The Conari will prepare all required operations and binding with native method instead of you:
+yes, you don't need to do anything else! Conari will prepare all required operations and binding with native method instead of you:
 
 ```cpp
 REGXWILD_API bool searchEssC(const TCHAR* data, const TCHAR* filter, bool ignoreCase);
@@ -215,20 +221,19 @@ have fun !
 The [MIT License (MIT)](https://github.com/3F/Conari/blob/master/LICENSE)
 
 ```
-Copyright (c) 2016-2017  Denis Kuzmin <entry.reg@gmail.com>
+Copyright (c) 2016-2018  Denis Kuzmin < entry.reg@gmail.com > :: github.com/3F
 ```
 
-##
+[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif) ☕](https://3F.github.io/Donation/)
 
-### How to Get
+## How to Get
 
 Available variants:
 
 * NuGet PM: `Install-Package Conari`
-* [GetNuTool](https://github.com/3F/GetNuTool): `msbuild gnt.core /p:ngpackages="Conari"` or **[gnt](https://github.com/3F/GetNuTool/releases/download/v1.6/gnt.bat)** /p:ngpackages="Conari"
+* [GetNuTool](https://github.com/3F/GetNuTool): `msbuild gnt.core /p:ngpackages="Conari"` or **[gnt](https://3F.github.io/GetNuTool/releases/latest/gnt/)** /p:ngpackages="Conari"
 * NuGet Commandline: `nuget install Conari`
-* [/releases](https://github.com/3F/Conari/releases) ( [latest](https://github.com/3F/Conari/releases/latest) )
+* [/releases](https://github.com/3F/Conari/releases) [ [latest stable](https://github.com/3F/Conari/releases/latest) ]
 * [Nightly builds](https://ci.appveyor.com/project/3Fs/conari/history) (`/artifacts` page). But remember: It can be unstable or not work at all. Use this for tests of latest changes.
+  * Artifacts [older than 6 months](https://www.appveyor.com/docs/packaging-artifacts/#artifacts-retention-policy) you can also find as `Pre-release` with mark `🎲 Nightly build` on [GitHub Releases](https://github.com/3F/conari/releases) page.
 
-
-[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=entry%2ereg%40gmail%2ecom&lc=US&item_name=3F%2dOpenSource%20%5b%20github%2ecom%2f3F&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted)
