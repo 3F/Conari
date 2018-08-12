@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2047
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{F23EF90C-E980-4827-8107-6FAC6F1B24EF}"
 	ProjectSection(SolutionItems) = preProject
@@ -10,7 +10,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{F23EF90C-E
 		build.bat = build.bat
 		changelog.txt = changelog.txt
 		Conari.nuspec = Conari.nuspec
-		gnt.bat = gnt.bat
 		LICENSE = LICENSE
 		packages.config = packages.config
 		Readme.md = Readme.md
@@ -26,6 +25,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenDelegates", "GenDelegates\GenDelegates.csproj", "{40CCC613-93D0-4F80-A99B-36112BD5D815}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnLib", "UnLib\UnLib.vcxproj", "{CC2B5ECA-0D15-4BC8-A779-C6013FA0A11B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{22D2B796-CD0B-4253-B0BC-316374D90F71}"
+	ProjectSection(SolutionItems) = preProject
+		tools\gnt.bat = tools\gnt.bat
+		tools\hMSBuild.bat = tools\hMSBuild.bat
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -115,5 +120,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DF66F8FA-D7CE-44F3-A431-F1548AE77BAE}
 	EndGlobalSection
 EndGlobal
