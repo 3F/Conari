@@ -36,7 +36,7 @@ namespace net.r_eg.Conari.Native
     {
         protected Fields map = new Fields();
         protected byte[] local;
-        private IntPtr pointer;
+        private readonly IntPtr pointer;
 
         /// <summary>
         /// Get raw-data of complex native structure.

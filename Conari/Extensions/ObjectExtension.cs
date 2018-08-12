@@ -66,7 +66,7 @@ namespace net.r_eg.Conari.Extension
 
                 return new Act(
                     mi != null,
-                    mi?.Invoke(obj, (args == null) ? new object[0] : args)
+                    mi?.Invoke(obj, args ?? new object[0])
                 );
             },
             obj, name);

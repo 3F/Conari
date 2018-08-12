@@ -142,8 +142,7 @@ namespace net.r_eg.Conari.Native.Core
         /// <exception cref="IndexOutOfRangeException"></exception>
         public dynamic next(Type type, int tsize)
         {
-            dynamic value;
-            if(tryNext(type, tsize, out value)) {
+            if(tryNext(type, tsize, out dynamic value)) {
                 return value;
             }
 

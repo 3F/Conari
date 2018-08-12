@@ -30,7 +30,6 @@ using net.r_eg.Conari.Log;
 
 namespace net.r_eg.Conari
 {
-    [SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly", Justification = "Bug. False positive. The IDisposable is already implemented correctly !")]
     public class ConariL: Provider, IConari, ILoader, IProvider, IBinder, IDisposable
     {
         protected IConfig config;
@@ -171,11 +170,7 @@ namespace net.r_eg.Conari
 
         protected void init(IConfig cfg)
         {
-            if(cfg == null) {
-                throw new ArgumentNullException("Configuration cannot be null.");
-            }
-
-            config      = cfg;
+            config      = cfg ?? throw new ArgumentNullException("Configuration cannot be null.");
             Mangling    = cfg.Mangling;
 
             if(cfg.LazyLoading) {
@@ -200,5 +195,15 @@ namespace net.r_eg.Conari
             DLR = newDLR(e.Data);
             LSender.Send(sender, $"DLR has been updated with new CallingConvention: {e.Data}", Message.Level.Info);
         }
+
+        #region IDisposable
+
+        // CA1063
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+        }
+
+        #endregion
     }
 }

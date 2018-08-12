@@ -198,10 +198,7 @@ namespace net.r_eg.Conari.Core
 
         public ExVar(IProvider p)
         {
-            if(p == null) {
-                throw new ArgumentException("Provider cannot be null.");
-            }
-            provider = p;
+            provider = p ?? throw new ArgumentException("Provider cannot be null.");
         }
 
         protected dynamic getFieldDLR(Type type, string variable)
