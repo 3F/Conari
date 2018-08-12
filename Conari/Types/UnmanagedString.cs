@@ -31,12 +31,28 @@ namespace net.r_eg.Conari.Types
     [DebuggerDisplay("{managed} [ {\"0x\" + Pointer.ToString(\"X\")} ]")]
     public sealed class UnmanagedString: IDisposable
     {
-        private string managed;
-
         /// <summary>
         /// Pointer to allocated string.
         /// </summary>
         public IntPtr Pointer
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Who is the owner for unmanaged string.
+        /// </summary>
+        public bool Owner
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Access to managed or unmanaged string data.
+        /// </summary>
+        public string Data
         {
             get;
             private set;
@@ -79,55 +95,100 @@ namespace net.r_eg.Conari.Types
 
         public UnmanagedString(string str, SType type = SType.Auto)
         {
-            managed     = str;
-            Type        = type;
+            Data    = str ?? throw new ArgumentNullException(nameof(str));
+            Type    = type;
 
             alloc();
         }
 
+        public UnmanagedString(IntPtr ptr, SType type)
+        {
+            if(ptr == IntPtr.Zero) {
+                throw new ArgumentException("Pointer must be non-zero for UnmanagedString.");
+            }
+
+            Type = type;
+            Data = alloc(ptr);
+        }
+
+        private string alloc(IntPtr ptr)
+        {
+            Pointer = ptr;
+            Owner   = false;
+
+            switch(Type)
+            {
+                case SType.Ansi: {
+                    return (CharPtr)ptr;
+                }
+                case SType.Unicode: {
+                    return (WCharPtr)ptr;
+                }
+                case SType.BSTR: {
+                    return (BSTR)ptr;
+                }
+            }
+
+            //TODO: SType.Auto
+            throw new NotImplementedException($"the type '{Type}' is not implemented yet.");
+        }
+
         private void alloc()
         {
+            Owner = true;
+
             switch(Type)
             {
                 case SType.Auto: {
-                    Pointer = Marshal.StringToHGlobalAuto(managed);
+                    Pointer = Marshal.StringToHGlobalAuto(Data);
                     return;
                 }
                 case SType.Ansi: {
-                    Pointer = Marshal.StringToHGlobalAnsi(managed);
+                    Pointer = Marshal.StringToHGlobalAnsi(Data);
                     return;
                 }
                 case SType.Unicode: {
-                    Pointer = Marshal.StringToHGlobalUni(managed);
+                    Pointer = Marshal.StringToHGlobalUni(Data);
                     return;
                 }
                 case SType.BSTR: {
-                    Pointer = Marshal.StringToBSTR(managed);
+                    Pointer = Marshal.StringToBSTR(Data);
                     return;
                 }
             }
-            throw new NotImplementedException($"the type '{Type}' is not yet implemented.");
+            throw new NotImplementedException($"the type '{Type}' is not implemented yet.");
         }
 
-        private void free()
+        private void free(IntPtr ptr, SType type)
         {
-            switch(Type)
+            if(ptr == IntPtr.Zero) {
+                return;
+            }
+
+            switch(type)
             {
                 case SType.Auto:
                 case SType.Ansi:
                 case SType.Unicode: {
-                    Marshal.FreeHGlobal(Pointer);
+                    Marshal.FreeHGlobal(ptr);
                     break;
                 }
                 case SType.BSTR: {
-                    Marshal.FreeBSTR(Pointer);
+                    Marshal.FreeBSTR(ptr);
                     break;
                 }
+            }
+        }
+
+        private void free()
+        {
+            if(Owner) {
+                free(Pointer, Type);
             }
 
             // but we still can try to get data from this offset :)
             Pointer = IntPtr.Zero;
-            managed = null;
+            Data = null;
         }
 
         #region IDisposable

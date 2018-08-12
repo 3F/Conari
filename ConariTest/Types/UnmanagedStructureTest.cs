@@ -46,7 +46,7 @@ namespace net.r_eg.ConariTest.Types
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void allocFreeTest3()
+        public void ctorTest1()
         {
             new UnmanagedStructure(null);
         }
