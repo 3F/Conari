@@ -2,7 +2,7 @@
 
 [![](https://raw.githubusercontent.com/3F/Conari/master/Conari/Resources/Conari_v1.png)](https://github.com/3F/Conari)
 
-Conari engine represents powerful platform for work with unmanaged memory, pe-modules, and their data: Libraries, Executable Modules, other native (C/C++, ...) and binary data.
+Conari engine represents powerful platform for work with unmanaged memory, pe-modules, and their data: Libraries, Executable Modules, other native (C/C++, ...) and raw binary data.
 
 Lightweight and flexible binding, even accessing to complex types like structures without their declaration at all. Also contains wrappers for types like unmanaged structures, unmanaged strings, and much more.
 
@@ -10,13 +10,33 @@ Lightweight and flexible binding, even accessing to complex types like structure
 [![release-src](https://img.shields.io/github/release/3F/Conari.svg)](https://github.com/3F/Conari/releases/latest)
 [![License](https://img.shields.io/badge/License-MIT-74A5C2.svg)](https://github.com/3F/Conari/blob/master/LICENSE)
 [![NuGet package](https://img.shields.io/nuget/v/Conari.svg)](https://www.nuget.org/packages/Conari/) 
+[![Tests](https://img.shields.io/appveyor/tests/3Fs/conari/master.svg)](https://ci.appveyor.com/project/3Fs/conari/build/tests)
 
+[![Build history](https://buildstats.info/appveyor/chart/3Fs/conari?buildCount=10&includeBuildsFromPullRequest=true&showStats=true)](https://ci.appveyor.com/project/3Fs/conari/history)
 
 > 1:[ ***[Quick start](https://github.com/3F/Conari/wiki/Quick-start)*** ] 2:[ [Basic examples for C++ and C#](https://www.youtube.com/watch?v=9Hyg3_WE9Ks) ] 3:[ [Complex types and Strings](https://www.youtube.com/watch?v=QXMj9-8XJnY) ]
 > -> { **[Wiki](https://github.com/3F/Conari/wiki)** }
 
 
 [![](https://raw.githubusercontent.com/3F/Conari/master/Conari/Resources/screencast_Complex_types.jpg)](https://www.youtube.com/watch?v=QXMj9-8XJnY)
+
+
+## License
+
+The [MIT License (MIT)](https://github.com/3F/Conari/blob/master/LICENSE)
+
+```
+Copyright (c) 2013-2019  Denis Kuzmin < entry.reg@gmail.com > GitHub/3F
+```
+
+[ [ ☕ Donate ](https://3F.github.com/Donation/) ]
+
+Conari contributors: https://github.com/3F/Conari/graphs/contributors
+
+We're waiting for your awesome contributions!
+
+
+## Why Conari ?
 
 
 **Easy to start:**
@@ -211,29 +231,12 @@ yes, you don't need to do anything else! Conari will prepare all required operat
 REGXWILD_API bool searchEssC(const TCHAR* data, const TCHAR* filter, bool ignoreCase);
 ```
 
-have fun !
-
-----
+have fun!
 
 
-## License
+## How to get Conari
 
-The [MIT License (MIT)](https://github.com/3F/Conari/blob/master/LICENSE)
-
-```
-Copyright (c) 2016-2018  Denis Kuzmin < entry.reg@gmail.com > :: github.com/3F
-```
-
-[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif) ☕](https://3F.github.io/Donation/)
-
-## How to Get
-
-Available variants:
-
-* NuGet PM: `Install-Package Conari`
-* [GetNuTool](https://github.com/3F/GetNuTool): `msbuild gnt.core /p:ngpackages="Conari"` or **[gnt](https://3F.github.io/GetNuTool/releases/latest/gnt/)** /p:ngpackages="Conari"
-* NuGet Commandline: `nuget install Conari`
-* [/releases](https://github.com/3F/Conari/releases) [ [latest stable](https://github.com/3F/Conari/releases/latest) ]
-* [Nightly builds](https://ci.appveyor.com/project/3Fs/conari/history) (`/artifacts` page). But remember: It can be unstable or not work at all. Use this for tests of latest changes.
-  * Artifacts [older than 6 months](https://www.appveyor.com/docs/packaging-artifacts/#artifacts-retention-policy) you can also find as `Pre-release` with mark `🎲 Nightly build` on [GitHub Releases](https://github.com/3F/conari/releases) page.
-
+* NuGet: [![NuGet package](https://img.shields.io/nuget/v/Conari.svg)](https://www.nuget.org/packages/Conari/)
+* [GetNuTool](https://github.com/3F/GetNuTool): `msbuild gnt.core /p:ngpackages="Conari"` or **[gnt](https://3f.github.io/GetNuTool/releases/latest/gnt/)** /p:ngpackages="Conari"
+* [GitHub Releases](https://github.com/3F/Conari/releases) [ [latest](https://github.com/3F/Conari/releases/latest) ]
+* CI builds: [`CI /artifacts`](https://ci.appveyor.com/project/3Fs/conari/history) or find `🎲 CI build` on [GitHub Releases](https://github.com/3F/Conari/releases) page.
