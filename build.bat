@@ -1,17 +1,15 @@
 @echo off
 
-set reltype=%1
-set _msbuild=tools/hMSBuild
+set cim=packages\vsSolutionBuildEvent\cim.cmd
 set _gnt=tools/gnt
 
+set reltype=%1
 if "%reltype%"=="" (
     set reltype=Release
 )
 
-
 call %_gnt% /p:wpath="%cd%" /p:ngconfig="packages.config" /nologo /v:m /m:4 || goto err
-call %_msbuild% -notamd64 "Conari.sln" /v:normal /l:"packages\vsSBE.CI.MSBuild\bin\CI.MSBuild.dll" /m:4 /t:Rebuild /p:Configuration=%reltype% || goto err
-
+call %cim% "Conari.sln" /v:m /m:4 /p:Configuration="%reltype%" || goto err
 
 goto exit
 

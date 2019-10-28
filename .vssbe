@@ -23,7 +23,7 @@
       "Enabled": true
     },
     {
-      "ClassName": "OWPComponent",
+      "ClassName": "OwpComponent",
       "Enabled": true
     },
     {
@@ -39,7 +39,7 @@
       "Enabled": true
     },
     {
-      "ClassName": "DTEComponent",
+      "ClassName": "DteComponent",
       "Enabled": true
     },
     {
@@ -59,7 +59,7 @@
       "Enabled": true
     },
     {
-      "ClassName": "MSBuildComponent",
+      "ClassName": "EvMSBuildComponent",
       "Enabled": true
     },
     {
@@ -91,18 +91,32 @@
       "Mode": {
         "$type": "net.r_eg.vsSBE.Events.ModeScript, vsSolutionBuildEvent",
         "Type": "Script",
-        "Command": "$(revDeltaBase = \"2017/01/01\")\n$(revDeltaMin = $([System.Math]::Pow(10, 3)))\n$$(revDeltaMax = $([System.Math]::Pow(10, 5)))\n$(revDeltaMax   = 65534) #[\" limit of AssemblyVersion - 65534 max allowed ! that is 65536 (0-65535) is not a correct range, (2^16 - 2) \"]\n\n#[$(dbin    = \"bin/$(Configuration)/\")]\n$(netstamp  = $(TargetFrameworkVersion.Replace('v', '').Replace('.', '')))\n\n$(pConari   = \"Conari\")\n$(odir      = \"$(dbin)raw/\")\n\n#[IO delete.directory(\"$(dbin)\", true)]\n#[IO copy.directory(\"\", \"$(dbin)\", true)]",
+        "Command": "#[($(Configuration) == \"PublicRelease\") {\n    #[$(cfgname = 'Release')]\n    $(isCIBuild = true)\n}\nelse{\n    #[$(cfgname = $(Configuration))]\n}]\n\n#[$(dbin = \"bin/$(cfgname)/\")]\n\n$(revDeltaBase = \"2017/06/22\")\n$(revDeltaMin = $([System.Math]::Pow(10, 3)))\n$(revDeltaMax   = 65534) #[\" limit of AssemblyVersion - 65534 max allowed ! that is 65536 (0-65535) is not a correct range, (2^16 - 2) \"]\n\n\n$(netstamp  = $(TargetFrameworkVersion.Replace('v', '').Replace('.', '')))\n\n$(pDir  = \"Conari\")\n$(odir  = \"$(dbin)raw\")\n\n#[var +revBuild]\n#[var +bSha1]\n#[var +bName]\n#[var +bRevc]\n\n#[IO delete.directory(\"$(dbin)\", true)]\n#[IO copy.directory(\"\", \"$(dbin)\", true)]",
         "Command__": [
-          "$(revDeltaBase = \"2017/01/01\")",
+          "#[($(Configuration) == \"PublicRelease\") {",
+          "    #[$(cfgname = 'Release')]",
+          "    $(isCIBuild = true)",
+          "}",
+          "else{",
+          "    #[$(cfgname = $(Configuration))]",
+          "}]",
+          "",
+          "#[$(dbin = \"bin/$(cfgname)/\")]",
+          "",
+          "$(revDeltaBase = \"2017/06/22\")",
           "$(revDeltaMin = $([System.Math]::Pow(10, 3)))",
-          "$$(revDeltaMax = $([System.Math]::Pow(10, 5)))",
           "$(revDeltaMax   = 65534) #[\" limit of AssemblyVersion - 65534 max allowed ! that is 65536 (0-65535) is not a correct range, (2^16 - 2) \"]",
           "",
-          "#[$(dbin    = \"bin/$(Configuration)/\")]",
+          "",
           "$(netstamp  = $(TargetFrameworkVersion.Replace('v', '').Replace('.', '')))",
           "",
-          "$(pConari   = \"Conari\")",
-          "$(odir      = \"$(dbin)raw/\")",
+          "$(pDir  = \"Conari\")",
+          "$(odir  = \"$(dbin)raw\")",
+          "",
+          "#[var +revBuild]",
+          "#[var +bSha1]",
+          "#[var +bName]",
+          "#[var +bRevc]",
           "",
           "#[IO delete.directory(\"$(dbin)\", true)]",
           "#[IO copy.directory(\"\", \"$(dbin)\", true)]"
@@ -132,11 +146,13 @@
       "Mode": {
         "$type": "net.r_eg.vsSBE.Events.ModeScript, vsSolutionBuildEvent",
         "Type": "Script",
-        "Command": "#[var pVer = #[File get(\".version\")]]\n\n##[IO replace.Regexp(\"$(pConari)/ConariVersion.cs\", \"(S_NUM\\s+=).+?\\\";\", \"$1 \\\"$(pVer)\\\";\")]\n\n#[IO replace.Regexp(\"Conari.nuspec\", \"<version>.+?</version>\", \"<version>$(pVer)</version>\")]\n#[IO replace.Regexp(\"Conari.nuspec\", \"\\\"Conari/[0-9.]+\\\"\", \"\\\"Conari/$(pVer)\\\"\")]",
+        "Command": "#[var pVer = #[File get(\".version\")]]\n\n#[( ! $(isCIBuild) ) {\n    #[IO replace.Regex(\"$(pDir)/ConariVersion.cs\", \"(S_NUM\\s+=).+?\\\";\", \"$1 \\\"$(pVer)\\\";\")]\n}]\n\n#[IO replace.Regexp(\"Conari.nuspec\", \"<version>.+?</version>\", \"<version>$(pVer)</version>\")]\n#[IO replace.Regexp(\"Conari.nuspec\", \"\\\"Conari/[0-9.]+\\\"\", \"\\\"Conari/$(pVer)\\\"\")]",
         "Command__": [
           "#[var pVer = #[File get(\".version\")]]",
           "",
-          "##[IO replace.Regexp(\"$(pConari)/ConariVersion.cs\", \"(S_NUM\\s+=).+?\\\";\", \"$1 \\\"$(pVer)\\\";\")]",
+          "#[( ! $(isCIBuild) ) {",
+          "    #[IO replace.Regex(\"$(pDir)/ConariVersion.cs\", \"(S_NUM\\s+=).+?\\\";\", \"$1 \\\"$(pVer)\\\";\")]",
+          "}]",
           "",
           "#[IO replace.Regexp(\"Conari.nuspec\", \"<version>.+?</version>\", \"<version>$(pVer)</version>\")]",
           "#[IO replace.Regexp(\"Conari.nuspec\", \"\\\"Conari/[0-9.]+\\\"\", \"\\\"Conari/$(pVer)\\\"\")]"
@@ -170,7 +186,7 @@
       "Mode": {
         "$type": "net.r_eg.vsSBE.Events.ModeScript, vsSolutionBuildEvent",
         "Type": "Script",
-        "Command": "#[var tpl = // This code was generated by a vsSolutionBuildEvent. \n// Changes to this file may cause incorrect behavior and will be lost if the code is regenerated.\nnamespace net.r_eg.Conari\n{\n    using System;\n\n    public struct ConariVersion\n    {\n        public static readonly Version number = new Version(S_NUM_REV);\n\n        public const string S_NUM = \"%S_NUM%\";\n        public const string S_REV = \"%S_REV%\";\n\n        public const string S_NUM_REV = S_NUM + \".\" + S_REV;\n\n        public const string BRANCH_SHA1 = \"%B_SHA1%\";\n        public const string BRANCH_NAME = \"%B_NAME%\";\n        public const string BRANCH_REVC = \"%B_REVC%\";\n\n        internal const string S_INFO        = S_NUM_REV + \" [ \" + BRANCH_SHA1 + \" ]\";\n        internal const string S_INFO_FULL   = S_INFO + \" /'\" + BRANCH_NAME + \"':\" + BRANCH_REVC;\n    }\n}]\n\n#[\" \n    Calculate revision\n\"]\n#[var tBase     = $([System.DateTime]::Parse('$(revDeltaBase)').ToBinary())]\n#[var tNow      = $([System.DateTime]::UtcNow.Ticks)]\n#[var revBuild  = #[$(\n                    [System.TimeSpan]::FromTicks('$(\n                        [MSBuild]::Subtract($(tNow), $(tBase))\n                    )')\n                    .TotalMinutes.ToString('0'))]]\n                     \n#[var revBuild  = #[$(\n                    [MSBuild]::Add(\n                        $(revDeltaMin), \n                        $([MSBuild]::Modulo(\n                            $(revBuild), \n                            $([MSBuild]::Subtract(\n                                $(revDeltaMax), $(revDeltaMin)\n                             ))\n                         ))\n                     )\n                   )]\n]\n\n#[\" \n    Remove placeholders\n\"]\n#[var tpl = $(tpl.Replace(\"%S_NUM%\", \"$(pVer)\").Replace(\"%S_REV%\", \"$(revBuild)\"))]\n\n#[\" \n    Checking of the git folder +tool & define sha1, branch name, etc.\n\"]\n#[( #[IO exists.directory(\".git\")] && #[IO exists.file(\"git.exe\", true)] )\n{\n    #[var bSha1 = #[IO sout(\"git\", \"rev-parse --short HEAD\")]]\n    #[var bName = #[IO sout(\"git\", \"rev-parse --abbrev-ref HEAD\")]]\n    #[var bRevc = #[IO sout(\"git\", \"rev-list HEAD --count\")]]\n    \n    #[($(bName) == \"HEAD\") {\n        #[var bName = $(APPVEYOR_REPO_BRANCH)]\n    }]    \n    \n    #[var tpl = #[$(tpl.Replace(\"%B_SHA1%\", \"#[var bSha1]\")\n                       .Replace(\"%B_NAME%\", \"#[var bName]\")\n                       .Replace(\"%B_REVC%\", \"#[var bRevc]\") )]]\n}\nelse {\n    #[var tpl = #[$(tpl.Replace(\"%B_SHA1%\", \"-\")\n                       .Replace(\"%B_NAME%\", \"-\")\n                       .Replace(\"%B_REVC%\", \"-\") )]]\n}]\n\n#[\" \n    Save result\n\"]\n#[File write(\"$(pConari)/ConariVersion.cs\"):#[var tpl]]",
+        "Command": "#[var tpl = // This code was generated by a vsSolutionBuildEvent. \n// Changes to this file may cause incorrect behavior and will be lost if the code is regenerated.\nnamespace net.r_eg.Conari\n{\n    using System;\n\n    public struct ConariVersion\n    {\n        public static readonly Version number = new Version(S_NUM_REV);\n\n        public const string S_NUM = \"%S_NUM%\";\n        public const string S_REV = \"%S_REV%\";\n\n        public const string S_NUM_REV = S_NUM + \".\" + S_REV;\n\n        public const string BRANCH_SHA1 = \"%B_SHA1%\";\n        public const string BRANCH_NAME = \"%B_NAME%\";\n        public const string BRANCH_REVC = \"%B_REVC%\";\n\n        internal const string S_INFO        = S_NUM_REV + \"+\" + BRANCH_SHA1;\n        internal const string S_INFO_FULL   = S_INFO + \":\" + BRANCH_NAME + \"-\" + BRANCH_REVC;\n    }\n}]\n\n#[\" \n    Calculate revision\n\"]\n#[var tBase     = $([System.DateTime]::Parse('$(revDeltaBase)').ToBinary())]\n#[var tNow      = $([System.DateTime]::UtcNow.Ticks)]\n#[var revBuild  = #[$(\n                    [System.TimeSpan]::FromTicks('$(\n                        [MSBuild]::Subtract($(tNow), $(tBase))\n                    )')\n                    .TotalMinutes.ToString('0'))]]\n                     \n#[var revBuild  = #[$(\n                    [MSBuild]::Add(\n                        $(revDeltaMin), \n                        $([MSBuild]::Modulo(\n                            $(revBuild), \n                            $([MSBuild]::Subtract(\n                                $(revDeltaMax), $(revDeltaMin)\n                             ))\n                         ))\n                     )\n                   )]\n]\n\n#[\" \n    Remove placeholders\n\"]\n#[var tpl = $(tpl.Replace(\"%S_NUM%\", \"$(pVer)\").Replace(\"%S_REV%\", \"$(revBuild)\"))]\n\n#[\" \n    Checking of the git to define sha1, branch name, etc.\n\"]\n#[var isGit = #[IO cmd(\"git rev-parse 2>&1\")]]\n#[( $(isGit) == \"\" )\n{\n    #[var bSha1 = #[IO sout(\"git\", \"rev-parse --short HEAD\")]]\n    #[var bName = #[IO sout(\"git\", \"rev-parse --abbrev-ref HEAD\")]]\n    #[var bRevc = #[IO sout(\"git\", \"rev-list HEAD --count\")]]\n    \n    #[($(bName) == \"HEAD\") {\n        #[var bName = $(APPVEYOR_REPO_BRANCH)]\n    }]\n}\nelse {\n    #[$(bSha1 = '-')] #[$(bName = '-')] #[$(bRevc = '-')]\n}]\n\n#[var tpl = #[$(tpl.Replace(\"%B_SHA1%\", \"#[var bSha1]\")\n                   .Replace(\"%B_NAME%\", \"#[var bName]\")\n                   .Replace(\"%B_REVC%\", \"#[var bRevc]\") )]]\n\n#[\" \n    Save result\n\"]\n#[File write(\"$(pDir)/ConariVersion.cs\"):#[var tpl]]",
         "Command__": [
           "#[var tpl = // This code was generated by a vsSolutionBuildEvent. ",
           "// Changes to this file may cause incorrect behavior and will be lost if the code is regenerated.",
@@ -191,8 +207,8 @@
           "        public const string BRANCH_NAME = \"%B_NAME%\";",
           "        public const string BRANCH_REVC = \"%B_REVC%\";",
           "",
-          "        internal const string S_INFO        = S_NUM_REV + \" [ \" + BRANCH_SHA1 + \" ]\";",
-          "        internal const string S_INFO_FULL   = S_INFO + \" /'\" + BRANCH_NAME + \"':\" + BRANCH_REVC;",
+          "        internal const string S_INFO        = S_NUM_REV + \"+\" + BRANCH_SHA1;",
+          "        internal const string S_INFO_FULL   = S_INFO + \":\" + BRANCH_NAME + \"-\" + BRANCH_REVC;",
           "    }",
           "}]",
           "",
@@ -226,9 +242,10 @@
           "#[var tpl = $(tpl.Replace(\"%S_NUM%\", \"$(pVer)\").Replace(\"%S_REV%\", \"$(revBuild)\"))]",
           "",
           "#[\" ",
-          "    Checking of the git folder +tool & define sha1, branch name, etc.",
+          "    Checking of the git to define sha1, branch name, etc.",
           "\"]",
-          "#[( #[IO exists.directory(\".git\")] && #[IO exists.file(\"git.exe\", true)] )",
+          "#[var isGit = #[IO cmd(\"git rev-parse 2>&1\")]]",
+          "#[( $(isGit) == \"\" )",
           "{",
           "    #[var bSha1 = #[IO sout(\"git\", \"rev-parse --short HEAD\")]]",
           "    #[var bName = #[IO sout(\"git\", \"rev-parse --abbrev-ref HEAD\")]]",
@@ -236,22 +253,83 @@
           "    ",
           "    #[($(bName) == \"HEAD\") {",
           "        #[var bName = $(APPVEYOR_REPO_BRANCH)]",
-          "    }]    ",
-          "    ",
-          "    #[var tpl = #[$(tpl.Replace(\"%B_SHA1%\", \"#[var bSha1]\")",
-          "                       .Replace(\"%B_NAME%\", \"#[var bName]\")",
-          "                       .Replace(\"%B_REVC%\", \"#[var bRevc]\") )]]",
+          "    }]",
           "}",
           "else {",
-          "    #[var tpl = #[$(tpl.Replace(\"%B_SHA1%\", \"-\")",
-          "                       .Replace(\"%B_NAME%\", \"-\")",
-          "                       .Replace(\"%B_REVC%\", \"-\") )]]",
+          "    #[$(bSha1 = '-')] #[$(bName = '-')] #[$(bRevc = '-')]",
           "}]",
+          "",
+          "#[var tpl = #[$(tpl.Replace(\"%B_SHA1%\", \"#[var bSha1]\")",
+          "                   .Replace(\"%B_NAME%\", \"#[var bName]\")",
+          "                   .Replace(\"%B_REVC%\", \"#[var bRevc]\") )]]",
           "",
           "#[\" ",
           "    Save result",
           "\"]",
-          "#[File write(\"$(pConari)/ConariVersion.cs\"):#[var tpl]]"
+          "#[File write(\"$(pDir)/ConariVersion.cs\"):#[var tpl]]"
+        ]
+      }
+    },
+    {
+      "Enabled": true,
+      "Name": "ActInfo",
+      "Caption": "Compile info",
+      "SupportMSBuild": true,
+      "SupportSBEScripts": true,
+      "IgnoreIfBuildFailed": false,
+      "BuildType": "Common",
+      "Confirmation": false,
+      "ToConfiguration": [],
+      "ExecutionOrder": {
+        "$type": "net.r_eg.vsSBE.Events.ExecutionOrder[], vsSolutionBuildEvent",
+        "$values": []
+      },
+      "Process": {
+        "$type": "net.r_eg.vsSBE.Events.EventProcess, vsSolutionBuildEvent",
+        "Waiting": true,
+        "Hidden": true,
+        "TimeLimit": 30
+      },
+      "Mode": {
+        "$type": "net.r_eg.vsSBE.Events.ModeScript, vsSolutionBuildEvent",
+        "Type": "Script",
+        "Command": "#[var buildInfo =  $([System.String]::Concat(\"  \"))\n    S_NUM:          #[$(pVer)]\n    \n    S_REV:          #[$(revBuild)]\n    \n    S_NUM_REV:      #[$(pVer)].#[$(revBuild)]\n    \n    bSha1:          #[$(bSha1)]\n    \n    bName:          #[$(bName)]\n    \n    bRevc:          #[$(bRevc)]\n    \n    Configuration:  #[$(Configuration)]\n    \n    Platforms:      #[$(TargetFrameworks)]\n    \n    revDeltaBase:   #[$(revDeltaBase)]\n    \n    revDeltaMin:    #[$(revDeltaMin)]\n    \n    revDeltaMax:    #[$(revDeltaMax)]\n    \n    \n                    :: generated by a vsSolutionBuildEvent v#[$(vsSolutionBuildEvent)]\n]\n\n#[( $(isCIBuild) ) { \n    ##[IO replace.Regex(\"$(pDir)/Conari.csproj\", \"<BuildInfoVSSBE>[\\s\\S]*?</BuildInfoVSSBE>\", \"<BuildInfoVSSBE>$(buildInfo)</BuildInfoVSSBE>\")]\n}else{\n    ##[IO replace.Regex(\"$(pDir)/Conari.csproj\", \"<BuildInfoVSSBE>[\\s\\S]*?</BuildInfoVSSBE>\", \"<BuildInfoVSSBE></BuildInfoVSSBE>\")]\n}]\n\n\n",
+        "Command__": [
+          "#[var buildInfo =  $([System.String]::Concat(\"  \"))",
+          "    S_NUM:          #[$(pVer)]",
+          "    ",
+          "    S_REV:          #[$(revBuild)]",
+          "    ",
+          "    S_NUM_REV:      #[$(pVer)].#[$(revBuild)]",
+          "    ",
+          "    bSha1:          #[$(bSha1)]",
+          "    ",
+          "    bName:          #[$(bName)]",
+          "    ",
+          "    bRevc:          #[$(bRevc)]",
+          "    ",
+          "    Configuration:  #[$(Configuration)]",
+          "    ",
+          "    Platforms:      #[$(TargetFrameworks)]",
+          "    ",
+          "    revDeltaBase:   #[$(revDeltaBase)]",
+          "    ",
+          "    revDeltaMin:    #[$(revDeltaMin)]",
+          "    ",
+          "    revDeltaMax:    #[$(revDeltaMax)]",
+          "    ",
+          "    ",
+          "                    :: generated by a vsSolutionBuildEvent v#[$(vsSolutionBuildEvent)]",
+          "]",
+          "",
+          "#[( $(isCIBuild) ) { ",
+          "    ##[IO replace.Regex(\"$(pDir)/Conari.csproj\", \"<BuildInfoVSSBE>[\\s\\S]*?</BuildInfoVSSBE>\", \"<BuildInfoVSSBE>$(buildInfo)</BuildInfoVSSBE>\")]",
+          "}else{",
+          "    ##[IO replace.Regex(\"$(pDir)/Conari.csproj\", \"<BuildInfoVSSBE>[\\s\\S]*?</BuildInfoVSSBE>\", \"<BuildInfoVSSBE></BuildInfoVSSBE>\")]",
+          "}]",
+          "",
+          "",
+          ""
         ]
       }
     }
@@ -280,7 +358,7 @@
       "Mode": {
         "$type": "net.r_eg.vsSBE.Events.ModeScript, vsSolutionBuildEvent",
         "Type": "Script",
-        "Command": "[IO copy.file(\n            \"$(SolutionDir)tools/*.*\", \n            \"$(odir)/tools/\", \n            true, \n            {\"*.nuspec\"})]\n            \n#[IO copy.file(\"Conari.nuspec\", \"$(odir)/Conari.nuspec\", true)]\n#[IO copy.file(\"$(pConari)/$(OutDir:$(pConari))/*.*\", \n               \"$(odir)/lib/net$(netstamp)/\", true)]\n\n#[IO copy.file(\"LICENSE\", \"$(odir)/License.txt\", true)]\n#[IO copy.file(\"Readme.md\", \"$(odir)/\", true)]\n#[IO copy.file(\"changelog.txt\", \"$(odir)/\", true)]",
+        "Command": "[IO copy.file(\n            \"$(SolutionDir)tools/*.*\", \n            \"$(odir)/tools/\", \n            true, \n            {\"*.nuspec\"})]\n            \n#[IO copy.file(\"Conari.nuspec\", \"$(odir)/Conari.nuspec\", true)]\n#[IO copy.file(\"$(pDir)/bin/$(Configuration:Conari)/*.*\", \n               \"$(odir)/lib/net$(netstamp)/\", true)]\n\n#[IO copy.file(\"LICENSE\", \"$(odir)/License.txt\", true)]\n#[IO copy.file({ \"Readme.md\", \"changelog.txt\" }, \"$(odir)\", true)]\n\n#[IO writeLine(\"$(odir)/build-info.txt\"):#[var buildInfo]]",
         "Command__": [
           "[IO copy.file(",
           "            \"$(SolutionDir)tools/*.*\", ",
@@ -289,12 +367,13 @@
           "            {\"*.nuspec\"})]",
           "            ",
           "#[IO copy.file(\"Conari.nuspec\", \"$(odir)/Conari.nuspec\", true)]",
-          "#[IO copy.file(\"$(pConari)/$(OutDir:$(pConari))/*.*\", ",
+          "#[IO copy.file(\"$(pDir)/bin/$(Configuration:Conari)/*.*\", ",
           "               \"$(odir)/lib/net$(netstamp)/\", true)]",
           "",
           "#[IO copy.file(\"LICENSE\", \"$(odir)/License.txt\", true)]",
-          "#[IO copy.file(\"Readme.md\", \"$(odir)/\", true)]",
-          "#[IO copy.file(\"changelog.txt\", \"$(odir)/\", true)]"
+          "#[IO copy.file({ \"Readme.md\", \"changelog.txt\" }, \"$(odir)\", true)]",
+          "",
+          "#[IO writeLine(\"$(odir)/build-info.txt\"):#[var buildInfo]]"
         ]
       }
     },
