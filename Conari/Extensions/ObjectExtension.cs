@@ -108,6 +108,20 @@ namespace net.r_eg.Conari.Extension
             obj, name);
         }
 
+        internal static bool TryGetFieldValue(this object obj, out object value, string name, bool nonPublic = false)
+        {
+            FieldInfo fi = obj.GetType().GetField(name, DefaultFlags(nonPublic, false));
+
+            if(fi == null)
+            {
+                value = null;
+                return false;
+            }
+            
+            value = fi.GetValue(obj);
+            return true;
+        }
+
         /// <summary>
         /// Get property value from unspecified object.
         /// </summary>
@@ -119,6 +133,20 @@ namespace net.r_eg.Conari.Extension
         public static object GetPropertyValue(this Object obj, string name, bool nonPublic = false, bool isStatic = false)
         {
             return GetPropertyValue(obj, name, DefaultFlags(nonPublic, isStatic));
+        }
+
+        internal static bool TryGetPropertyValue(this object obj, out object value, string name, bool nonPublic = false)
+        {
+            PropertyInfo pi = obj?.GetType().GetProperty(name, DefaultFlags(nonPublic, false));
+
+            if(pi == null)
+            {
+                value = null;
+                return false;
+            }
+
+            value = pi.GetValue(obj, null);
+            return true;
         }
 
         /// <summary>

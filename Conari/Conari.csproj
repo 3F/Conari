@@ -1,138 +1,125 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{27152FD4-7B94-4AF0-A7ED-BE7E7A196D57}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <Version>1.3.0</Version>
+    <BuildInfoVSSBE></BuildInfoVSSBE>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFrameworks>net40;net472;netcoreapp2.1;netstandard2.1</TargetFrameworks>
     <RootNamespace>net.r_eg.Conari</RootNamespace>
     <AssemblyName>Conari</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Copyright>Copyright (c) 2016-2019  Denis Kuzmin &lt; entry.reg@gmail.com &gt; GitHub/3F</Copyright>
+    <Title>[ Conari ] Binder of Unmanaged native data</Title>
+    <PackageIcon>Conari_v1.png</PackageIcon>
+    <IconUrl>https://raw.githubusercontent.com/3F/Conari/master/Conari/Resources/Conari_v1.png</IconUrl>
+    <Description>
+        Conari engine represents powerful platform for work with unmanaged memory, pe-modules, and their data: Libraries, Executable Modules, other native (C/C++, ...) and raw binary data.
+
+        Lightweight and flexible binding, even accessing to complex types like structures without their declaration at all.
+        Also contains wrappers for types like unmanaged structures, unmanaged strings, and much more.
+
+        ```
+          using(var l = new ConariL("...")) {
+              // ...
+          }
+        ```
+        ```
+          // DLR and unmanaged functions:
+          d.test&lt;IntPtr&gt;();
+          d.avcodec_find_encoder&lt;IntPtr&gt;(AV_CODEC_ID_MP2);
+          d.push();
+          d.create&lt;int&gt;(ref cid, out data);
+        ```
+        ```
+          // custom lambda requests:
+          l.bind&lt;Action&lt;int, int&gt;&gt;("call")(2, 1);
+          double num = l.bind&lt;Func&lt;IntPtr, int, double&gt;&gt;("tonumber")(L, 4);
+        ```
+
+        . . . And more: https://github.com/3F/Conari
+
+        _ _ _ _ _ _
+        MIT License! Enjoy.
+        
+        
+    =======================================
+    gnt /p:ngpackages="Conari/$(Version)"
+    ================== https://github.com/3F/GetNuTool
+
+    Build info:
+
+    $(BuildInfoVSSBE)
+    </Description>
+    <PackageOwners>reg</PackageOwners>
+    <PackageProjectUrl>https://github.com/3F/Conari</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/3F/Conari</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>memory unmanaged-memory exported-function DllExport unmanaged exports native c-func DllImport unmanaged-code binder binding pe-modules unmanaged-function exported-c-function export API dll cpp clang dotnet csharp pe32 pe64 pemodule Lua 7z 7zip Conari</PackageTags>
+    <PackageReleaseNotes> changelog: https://github.com/3F/Conari/blob/master/changelog.txt </PackageReleaseNotes>
+    <Authors>github.com/3F/Conari</Authors>
+    <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <NoWarn>1701;1702;CS1591;IDE1006</NoWarn>
+    <LangVersion>latest</LangVersion>
+    <PackageIconUrl>https://raw.githubusercontent.com/3F/Conari/master/Conari/Resources/Conari_v1.png</PackageIconUrl>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+
+  <PropertyGroup>
+    <IsNetCoreFamilyTarget>false</IsNetCoreFamilyTarget>
+    <IsNetCoreFamilyTarget Condition="$(TargetFramework.StartsWith('nets')) Or $(TargetFramework.StartsWith('netc'))">true</IsNetCoreFamilyTarget>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <NoWarn>IDE1006</NoWarn>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' Or '$(Configuration)' == 'PublicRelease' ">
+    <DefineConstants />
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>
-    </DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\Conari.XML</DocumentationFile>
-    <NoWarn>CS1591,IDE1006</NoWarn>
   </PropertyGroup>
-  <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
+
+  <PropertyGroup Condition="'$(IsNetCoreFamilyTarget)' == 'true'">
+    <DefineConstants>$(DefineConstants);NETCORE</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
+
   <ItemGroup>
+    <None Include="..\LICENSE" Pack="true" PackagePath="" />
+    <None Include="..\Readme.md" Pack="true" PackagePath="" />
+    <None Include="..\changelog.txt" Pack="true" PackagePath="" />
+    <None Include="..\.version" Pack="true" PackagePath="" />
+    <None Include="obj\build-info.txt" Condition="Exists('obj\build-info.txt')" Pack="true" PackagePath="" />
+    <None Include="Resources/Conari_v1.png" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\tools\hMSBuild.bat">
+      <Visible>false</Visible>
+      <Pack>True</Pack>
+      <PackagePath>tools\</PackagePath>
+    </None>
+    <None Include="..\tools\gnt.bat">
+      <Visible>false</Visible>
+      <Pack>True</Pack>
+      <PackagePath>tools\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(IsNetCoreFamilyTarget)' != 'true'">
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Aliases\AliasCfg.cs" />
-    <Compile Include="Aliases\IAliasCfg.cs" />
-    <Compile Include="Aliases\AliasDict.cs" />
-    <Compile Include="Core\ExVar.cs" />
-    <Compile Include="Aliases\ProcAlias.cs" />
-    <Compile Include="Aliases\IAlias.cs" />
-    <Compile Include="Core\IExVar.cs" />
-    <Compile Include="Core\IDynamic.cs" />
-    <Compile Include="Core\IProviderSvc.cs" />
-    <Compile Include="Core\LpProcName.cs" />
-    <Compile Include="Core\PAddrCache.cs" />
-    <Compile Include="Core\ProcAddressArgs.cs" />
-    <Compile Include="Core\DataArgs.cs" />
-    <Compile Include="Core\IMem.cs" />
-    <Compile Include="Core\IProviderDLR.cs" />
-    <Compile Include="Core\MICache.cs" />
-    <Compile Include="Core\TDyn.cs" />
-    <Compile Include="Core\IConfig.cs" />
-    <Compile Include="Core\Dynamic.cs" />
-    <Compile Include="Core\ProviderDLR.cs" />
-    <Compile Include="Exceptions\PECorruptDataException.cs" />
-    <Compile Include="Extensions\ObjectExtension.cs" />
-    <Compile Include="Extensions\IntPtrExtension.cs" />
-    <Compile Include="IConari.cs" />
-    <Compile Include="Core\IBinder.cs" />
-    <Compile Include="Core\IProvider.cs" />
-    <Compile Include="Core\Link.cs" />
-    <Compile Include="Core\Config.cs" />
-    <Compile Include="ConariVersion.cs" />
-    <Compile Include="Core\Provider.cs" />
-    <Compile Include="Exceptions\LoaderException.cs" />
-    <Compile Include="Exceptions\LoadLibException.cs" />
-    <Compile Include="Exceptions\WinFuncFailException.cs" />
-    <Compile Include="Exceptions\CommonException.cs" />
-    <Compile Include="Core\ILoader.cs" />
-    <Compile Include="Core\Loader.cs" />
-    <Compile Include="ConariL.cs" />
-    <Compile Include="Log\ISender.cs" />
-    <Compile Include="Log\Message.cs" />
-    <Compile Include="Log\LSender.cs" />
-    <Compile Include="Mangling\C.cs" />
-    <Compile Include="Native\Core\BReader.cs" />
-    <Compile Include="Native\Core\Field.cs" />
-    <Compile Include="Native\Core\BType.cs" />
-    <Compile Include="Native\Core\Raw.cs" />
-    <Compile Include="Native\NativeExtension.cs" />
-    <Compile Include="Native\NativeData.cs" />
-    <Compile Include="PE\IPE.cs" />
-    <Compile Include="PE\PEFile.cs" />
-    <Compile Include="PE\Hole\ExportDirectory.cs" />
-    <Compile Include="PE\WinNT\IMAGE_EXPORT_DIRECTORY.cs" />
-    <Compile Include="PE\WinNT\IMAGE_SECTION_HEADER.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Types\Action\Ref\ActionRef.cs" />
-    <Compile Include="Types\Action\Out\ActionOut.cs" />
-    <Compile Include="Types\BSTR.cs" />
-    <Compile Include="Types\Methods\Method.cs" />
-    <Compile Include="Types\IBoxed.cs" />
-    <Compile Include="Types\INullType.cs" />
-    <Compile Include="Types\NullType.cs" />
-    <Compile Include="Types\UnmanagedStructure.cs" />
-    <Compile Include="Types\WCharPtr.cs" />
-    <Compile Include="Types\UnmanagedString.cs" />
-    <Compile Include="Types\Func\Ref\FuncRef.cs" />
-    <Compile Include="Types\Func\Out\FuncOut.cs" />
-    <Compile Include="Types\CharPtr.cs" />
-    <Compile Include="Types\int_t.cs" />
-    <Compile Include="Types\ptrdiff_t.cs" />
-    <Compile Include="Types\NativeTypeAttribute.cs" />
-    <Compile Include="Types\uint_t.cs" />
-    <Compile Include="Types\size_t.cs" />
-    <Compile Include="Types\float_t.cs" />
-    <Compile Include="WinAPI\LoadLibraryFlags.cs" />
-    <Compile Include="WinAPI\NativeMethods.cs" />
+
+  <ItemGroup Condition="'$(IsNetCoreFamilyTarget)' == 'true'">
+    <PackageReference Include="Microsoft.CSharp" Version="4.6.0" />
+    <PackageReference Include="System.Reflection.Emit" Version="4.6.0" />
+    <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.6.0" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="key.snk" />
-    <None Include="Resources\License.md" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Resources\Conari_v1.png" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>

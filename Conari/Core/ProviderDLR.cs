@@ -179,7 +179,7 @@ namespace net.r_eg.Conari.Core
         private MethodInfo getmi(string name, Type[] generic, Type[] args)
         {
             if(generic?.Length > 1) {
-                throw new ArgumentException("Allowed only one type (as a return type) for this generic method.");
+                throw new ArgumentException("Only one non-null type is allowed (as a return type) for this generic method.");
             }
 
             return Dynamic.GetMethodInfo(
@@ -245,9 +245,14 @@ namespace net.r_eg.Conari.Core
         private IEnumerable<Type> getGenericArgTypes(InvokeMemberBinder binder)
         {
             // FIXME: avoid access to private members
-            return binder
-                    .GetPropertyValue("Microsoft.CSharp.RuntimeBinder.ICSharpInvokeOrInvokeMemberBinder.TypeArguments", true)
-                    as IEnumerable<Type>;
+            if(binder.TryGetPropertyValue(out object types, "TypeArguments", true) 
+                || binder.TryGetPropertyValue(out types, "Microsoft.CSharp.RuntimeBinder.ICSharpInvokeOrInvokeMemberBinder.TypeArguments", true)
+                || binder.TryGetFieldValue(out types, "Microsoft.CSharp.RuntimeBinder.CSharpInvokeMemberBinder.typeArguments", true))
+            {
+                return types as IEnumerable<Type>;
+            }
+
+            throw new ArgumentException("Internal incorrect behaviour when accessing generic arg types. Please report: https://github.com/3F/Conari");
         }
 
         private Type[] getTypesFromCallingContext(InvokeMemberBinder binder)

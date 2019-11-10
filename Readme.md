@@ -42,48 +42,44 @@ We're waiting for your awesome contributions!
 **Easy to start:**
 
 ```csharp
-using(var l = new ConariL("Library.dll")) {
+using(var l = new ConariL("...")) {
     // ...
 }
 ```
 
-Conari is ready for any exported functions and variables immediately via ...
-
-**Dynamic features** / **DLR** - *fully automatic way*:
+**Dynamic features** (**DLR**, *fully automatic way*) when using of *unmanaged* code:
 
 ```csharp
-var ptr     = d.test<IntPtr>(); //Lambda variant: l.bind<Func<IntPtr>>("test")();
-var codec   = d.avcodec_find_encoder<IntPtr>(AV_CODEC_ID_MP2); //Lambda variant: l.bind<Func<ulong, IntPtr>>("avcodec_find_encoder")(AV_CODEC_ID_MP2);
-              d.push(); //Lambda variant: l.bind<Action>("push")();
-              d.create<int>(ref cid, out data); //Lambda variant: l.bind<MyFunc<Guid, object>>("create")(ref cid, out data);
+var ptr     = d.test<IntPtr>(); //lambda ~ bind<Func<IntPtr>>("test")();
+var codec   = d.avcodec_find_encoder<IntPtr>(AV_CODEC_ID_MP2); //lambda ~ bind<Func<ulong, IntPtr>>("avcodec_find_encoder")(AV_CODEC_ID_MP2);
+              d.push(); //lambda ~ bind<Action>("push")();
+              d.create<int>(ref cid, out data); //lambda ~ bind<MyFunc<Guid, object>>("create")(ref cid, out data);
 ```
 
-It does not require the any configuration from you, because Conari will do it **automatically**. *Easy and works well.*
+It does not require the any configuration from you, because Conari will do it **automatically**. *Works perfectly for most popular libraries like: Lua, 7-zip, FFmpeg, ...*
 
-*This works perfectly for most popular libraries like: Lua, 7-zip, FFmpeg, ...*
-
-**Lambda expressions** - *semi-automatic way*:
+Custom **Lambda expressions** (*semi-automatic way*) when using of *unmanaged* code:
 
 ```csharp
-using(var c = new ConariL("Library.dll"))
+using(var l = new ConariL("Library.dll"))
 {
-    c.bind<Action<int, int>>("call")(2, 1); 
-    double num = c.bind<Func<IntPtr, int, double>>("tonumber")(L, 4);
+    l.bind<Action<int, int>>("call")(2, 1); 
+    double num = l.bind<Func<IntPtr, int, double>>("tonumber")(L, 4);
 }
 ```
 
 This also does not require the creation of any additional delegates. Just use `bind<>` methods with additional types and have fun!
 
 ```csharp
-c.bind<...>("function")
+l.bind<...>("function")
 ```
 
 ```csharp
 // you already may invoke it immediately as above:
-c.bind<Action<int, string>>("set")(-1, "Hello from Conari !");
+l.bind<Action<int, string>>("set")(-1, "Hello from Conari !");
 
 // or later:
-var set = c.bind<Action<int, string>>("set");
+var set = l.bind<Action<int, string>>("set");
 ...
 set(-1, "Hello from Conari !");
 ```
@@ -215,7 +211,7 @@ and more !
 * *[List of real usage via Conari engine](https://github.com/3F/Conari/wiki/Projects)*
 
 #### Sample for DLR
-How about to use [regXwild](https://github.com/3F/regXwild) (Fast and powerful wildcards on native C++) in your C# code ? It's easy:
+How about to use [regXwild](https://github.com/3F/regXwild) (Fast and powerful wildcards on native unmanaged C++) in your C# code ? It's easy:
 
 ```csharp
 using(var l = new ConariL("regXwild.dll")) {
