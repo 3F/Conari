@@ -110,7 +110,7 @@ namespace net.r_eg.Conari.Extension
 
         internal static bool TryGetFieldValue(this object obj, out object value, string name, bool nonPublic = false)
         {
-            FieldInfo fi = obj.GetType().GetField(name, DefaultFlags(nonPublic, false));
+            FieldInfo fi = obj?.GetType().GetField(name, DefaultFlags(nonPublic, false));
 
             if(fi == null)
             {

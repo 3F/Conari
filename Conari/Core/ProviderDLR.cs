@@ -115,7 +115,7 @@ namespace net.r_eg.Conari.Core
                 tArgs = args.Select(a => a.GetType()).ToArray();
             }
 
-            Type[] tGeneric = getGenericArgTypes(binder).ToArray();
+            Type[] tGeneric = binder.GetGenericArgTypes().ToArray();
             MethodInfo mi   = getmi(binder.Name, tGeneric, tArgs);
 
             TDyn dyn = provider.bind(
@@ -135,11 +135,7 @@ namespace net.r_eg.Conari.Core
 
         public ProviderDLR(IProvider provider, CallingConvention conv)
         {
-            if(provider == null) {
-                throw new ArgumentException("Provider cannot be null.");
-            }
-
-            this.provider   = provider;
+            this.provider   = provider ?? throw new ArgumentException("Provider cannot be null.");
             Convention      = conv;
         }
 
@@ -242,28 +238,10 @@ namespace net.r_eg.Conari.Core
             return tArgs;
         }
 
-        private IEnumerable<Type> getGenericArgTypes(InvokeMemberBinder binder)
-        {
-            // FIXME: avoid access to private members
-            if(binder.TryGetPropertyValue(out object types, "TypeArguments", true) 
-                || binder.TryGetPropertyValue(out types, "Microsoft.CSharp.RuntimeBinder.ICSharpInvokeOrInvokeMemberBinder.TypeArguments", true)
-                || binder.TryGetFieldValue(out types, "Microsoft.CSharp.RuntimeBinder.CSharpInvokeMemberBinder.typeArguments", true))
-            {
-                return types as IEnumerable<Type>;
-            }
-
-            throw new ArgumentException("Internal incorrect behaviour when accessing generic arg types. Please report: https://github.com/3F/Conari");
-        }
-
         private Type[] getTypesFromCallingContext(InvokeMemberBinder binder)
         {
-            // FIXME: avoid access to private members
-
-            // +ICSharpInvokeOrInvokeMemberBinder.CallingContext
-            var cache = binder.GetFieldValue("Cache", true) as Dictionary<Type, object>;
-            Type type = cache?.FirstOrDefault().Key;
-
-            return type?.GetMethod("Invoke")?
+            return binder.GetCallingContext()?
+                            .GetMethod("Invoke")?
                             .GetParameters()
                             .Skip(2) // service args
                             .Select(t => t.ParameterType)
@@ -272,13 +250,7 @@ namespace net.r_eg.Conari.Core
 
         private CSharpArgumentInfoFlags[] getArgFlags(InvokeMemberBinder binder)
         {
-            // FIXME: avoid access to private members
-
-            var info = binder
-                        .GetPropertyValue("Microsoft.CSharp.RuntimeBinder.ICSharpInvokeOrInvokeMemberBinder.ArgumentInfo", true)
-                        as IEnumerable<CSharpArgumentInfo>;
-
-            return info
+            return binder.GetArgInfo()
                     .Select(i => (CSharpArgumentInfoFlags)i.GetPropertyValue("Flags", true))
                     .Skip(1) // service args
                     .ToArray();

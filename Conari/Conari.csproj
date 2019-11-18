@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFrameworks>net40;net472;netcoreapp2.1;netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>net40;net472;netstandard2.0;netcoreapp2.1;netstandard2.1</TargetFrameworks>
     <RootNamespace>net.r_eg.Conari</RootNamespace>
     <AssemblyName>Conari</AssemblyName>
     <SignAssembly>true</SignAssembly>
@@ -88,6 +88,7 @@
 
   <PropertyGroup Condition="'$(IsNetCoreFamilyTarget)' == 'true'">
     <DefineConstants>$(DefineConstants);NETCORE</DefineConstants>
+    <DefineConstants Condition=" '$(TargetFramework)' == 'netstandard2.0' ">$(DefineConstants);NETSTD20</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -95,21 +96,14 @@
     <None Include="..\Readme.md" Pack="true" PackagePath="" />
     <None Include="..\changelog.txt" Pack="true" PackagePath="" />
     <None Include="..\.version" Pack="true" PackagePath="" />
-    <None Include="obj\build-info.txt" Condition="Exists('obj\build-info.txt')" Pack="true" PackagePath="" />
+    <!-- NuGet bug when naming with 'build' keyword: https://github.com/NuGet/Home/issues/8810 -->
+    <None Include="obj\release-info.txt" Condition="Exists('obj\release-info.txt')" Pack="true" PackagePath="" />
     <None Include="Resources/Conari_v1.png" Pack="true" PackagePath="" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\tools\hMSBuild.bat">
-      <Visible>false</Visible>
-      <Pack>True</Pack>
-      <PackagePath>tools\</PackagePath>
-    </None>
-    <None Include="..\tools\gnt.bat">
-      <Visible>false</Visible>
-      <Pack>True</Pack>
-      <PackagePath>tools\</PackagePath>
-    </None>
+    <None Include="..\tools\hMSBuild.bat" Pack="true" PackagePath="tools\" />
+    <None Include="..\tools\gnt.bat" Pack="true" PackagePath="tools\" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(IsNetCoreFamilyTarget)' != 'true'">
