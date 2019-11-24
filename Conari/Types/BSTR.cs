@@ -46,6 +46,8 @@ namespace net.r_eg.Conari.Types
     {
         private IntPtr ptr;
 
+        public static int PtrSize => IntPtr.Size;
+
         /// <summary>
         /// Raw byte-sequence
         /// </summary>

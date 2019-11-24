@@ -691,7 +691,7 @@ namespace ConariTest
                 var TSpecPtr = NativeData
                                     ._(ptr1)
                                     .t<int, int>("a", "b")
-                                    .t<IntPtr>("name");
+                                    .t<CharPtr>("name");
                                     //.AlignSizeByMax; // byte = 4 / int = 4 / ptrx64 = 8
 
                 byte[] bytes    = TSpecPtr.Raw.Values;
@@ -718,8 +718,8 @@ namespace ConariTest
 
                 // name
                 Assert.Equal("name", fields[2].name);
-                Assert.Equal(IntPtr.Size, fields[2].tsize);
-                Assert.Equal(typeof(IntPtr), fields[2].type);
+                Assert.Equal(CharPtr.PtrSize, fields[2].tsize);
+                Assert.Equal(typeof(CharPtr), fields[2].type);
                 Assert.Equal(expName, (CharPtr)fields[2].value);
 
                 // DLR
@@ -731,7 +731,7 @@ namespace ConariTest
                 var br = new BReader(bytes);
                 Assert.Equal(expA, br.next<int>(NativeData.SizeOf<int>()));
                 Assert.Equal(expB, br.next<int>(NativeData.SizeOf<int>()));
-                Assert.Equal(expName, (CharPtr)br.next<IntPtr>(NativeData.SizeOf<IntPtr>()));
+                Assert.Equal(expName, (CharPtr)br.next<CharPtr>(NativeData.SizeOf<CharPtr>()));
             }
         }
 

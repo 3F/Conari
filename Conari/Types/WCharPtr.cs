@@ -34,7 +34,9 @@ namespace net.r_eg.Conari.Types
     [DebuggerDisplay("{(string)this} [ {\"0x\" + ptr.ToString(\"X\")} Length: {Length} ]")]
     public struct WCharPtr
     {
-        private IntPtr ptr;
+        private readonly IntPtr ptr;
+
+        public static int PtrSize => IntPtr.Size;
 
         /// <summary>
         /// Raw byte-sequence

@@ -24,6 +24,7 @@
 */
 
 using System;
+using net.r_eg.Conari.Types;
 
 namespace net.r_eg.Conari.Native.Core
 {
@@ -108,7 +109,11 @@ namespace net.r_eg.Conari.Native.Core
                 return BitConverter.ToChar(val, 0);
             }
 
-            if(type == typeof(String)) {
+            if(type == typeof(string) 
+                || type == typeof(CharPtr)
+                || type == typeof(WCharPtr)
+                || type == typeof(BSTR)) 
+            {
                 //return new Types.CharPtr((IntPtr)field.value);
                 return asIntPtr(val);
             }

@@ -173,10 +173,10 @@ namespace ConariTest
 
                 string exp = "Hello World !";
 
-                Assert.Equal(exp, (CharPtr)l.DLR.HelloWorld<IntPtr>());
+                Assert.Equal(exp, l.DLR.HelloWorld<CharPtr>());
 
                 l.Prefix = "";
-                Assert.Equal(exp, (CharPtr)l.DLR.HelloWorld<IntPtr>());
+                Assert.Equal(exp, l.DLR.HelloWorld<CharPtr>());
             }
         }
 

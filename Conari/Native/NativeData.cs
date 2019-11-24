@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using net.r_eg.Conari.Native.Core;
+using net.r_eg.Conari.Types;
 
 namespace net.r_eg.Conari.Native
 {
@@ -96,8 +97,12 @@ namespace net.r_eg.Conari.Native
         /// <returns>the size in bytes.</returns>
         public static int SizeOf(Type type)
         {
-            if(type == typeof(string)) {
-                type = typeof(IntPtr); // i.e. we will use pointer to allocated data, like char* etc.
+            if(type == typeof(string) 
+                || type == typeof(CharPtr) 
+                || type == typeof(WCharPtr) 
+                || type == typeof(BSTR)) 
+            {
+                type = typeof(IntPtr); // aligned pointer to allocated data: char* and so on.
             }
 
             return Marshal.SizeOf(type);
