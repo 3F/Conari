@@ -93,6 +93,11 @@ namespace net.r_eg.Conari.Types
             return new BSTR(ptr);
         }
 
+        public static implicit operator BSTR(Int64 val)
+        {
+            return new BSTR((IntPtr)val);
+        }
+
         public static implicit operator BSTR(Int32 val)
         {
             return new BSTR((IntPtr)val);

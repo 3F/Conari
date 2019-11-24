@@ -91,7 +91,7 @@
       "Mode": {
         "$type": "net.r_eg.vsSBE.Events.ModeScript, vsSolutionBuildEvent",
         "Type": "Script",
-        "Command": "#[($(Configuration) == \"PublicRelease\") {\n    #[$(cfgname = 'Release')]\n    $(isCIBuild = true)\n}\nelse{\n    #[$(cfgname = $(Configuration))]\n}]\n\n#[$(dbin = \"bin/$(cfgname)/\")]\n\n$(revDeltaBase = \"2017/06/22\")\n$(revDeltaMin = $([System.Math]::Pow(10, 3)))\n$(revDeltaMax   = 65534) #[\" limit of AssemblyVersion - 65534 max allowed ! that is 65536 (0-65535) is not a correct range, (2^16 - 2) \"]\n\n\n$(netstamp  = $(TargetFrameworkVersion.Replace('v', '').Replace('.', '')))\n\n$(pDir  = \"Conari\")\n$(odir  = \"$(dbin)raw\")\n\n#[var +revBuild]\n#[var +bSha1]\n#[var +bName]\n#[var +bRevc]\n\n#[IO delete.directory(\"$(dbin)\", true)]\n#[IO copy.directory(\"\", \"$(dbin)\", true)]",
+        "Command": "#[($(Configuration) == \"PublicRelease\") {\n    #[$(cfgname = 'Release')]\n    $(isCIBuild = true)\n}\nelse{\n    #[$(cfgname = $(Configuration))]\n}]\n\n#[$(dbin = \"bin/$(cfgname)/\")]\n\n$(revDeltaBase  = \"2017/01/01\")\n$(revDeltaMin   = $([System.Math]::Pow(10, 3)))\n$(revDeltaMax   = 65534)\n\n\n$(netstamp  = $(TargetFrameworkVersion.Replace('v', '').Replace('.', '')))\n\n$(pDir  = \"Conari\")\n$(odir  = \"$(dbin)raw\")\n\n$(pConariTest = \"ConariTest\")\n$(pUnLib = \"UnLib\")\n\n#[var +revBuild]\n#[var +bSha1]\n#[var +bName]\n#[var +bRevc]\n\n#[var pVer = #[File get(\".version\")]]\n\n##[IO delete.directory(\"$(dbin)\", true)]\n#[IO copy.directory(\"\", \"$(dbin)\", true)]",
         "Command__": [
           "#[($(Configuration) == \"PublicRelease\") {",
           "    #[$(cfgname = 'Release')]",
@@ -103,9 +103,9 @@
           "",
           "#[$(dbin = \"bin/$(cfgname)/\")]",
           "",
-          "$(revDeltaBase = \"2017/06/22\")",
-          "$(revDeltaMin = $([System.Math]::Pow(10, 3)))",
-          "$(revDeltaMax   = 65534) #[\" limit of AssemblyVersion - 65534 max allowed ! that is 65536 (0-65535) is not a correct range, (2^16 - 2) \"]",
+          "$(revDeltaBase  = \"2017/01/01\")",
+          "$(revDeltaMin   = $([System.Math]::Pow(10, 3)))",
+          "$(revDeltaMax   = 65534)",
           "",
           "",
           "$(netstamp  = $(TargetFrameworkVersion.Replace('v', '').Replace('.', '')))",
@@ -113,20 +113,25 @@
           "$(pDir  = \"Conari\")",
           "$(odir  = \"$(dbin)raw\")",
           "",
+          "$(pConariTest = \"ConariTest\")",
+          "$(pUnLib = \"UnLib\")",
+          "",
           "#[var +revBuild]",
           "#[var +bSha1]",
           "#[var +bName]",
           "#[var +bRevc]",
           "",
-          "#[IO delete.directory(\"$(dbin)\", true)]",
+          "#[var pVer = #[File get(\".version\")]]",
+          "",
+          "##[IO delete.directory(\"$(dbin)\", true)]",
           "#[IO copy.directory(\"\", \"$(dbin)\", true)]"
         ]
       }
     },
     {
       "Enabled": true,
-      "Name": "ActVer",
-      "Caption": "Update version number 'as is' - TODO: ",
+      "Name": "ModulesAndPkg",
+      "Caption": "Submodules and dep packages",
       "SupportMSBuild": true,
       "SupportSBEScripts": true,
       "IgnoreIfBuildFailed": false,
@@ -146,16 +151,51 @@
       "Mode": {
         "$type": "net.r_eg.vsSBE.Events.ModeScript, vsSolutionBuildEvent",
         "Type": "Script",
-        "Command": "#[var pVer = #[File get(\".version\")]]\n\n#[( ! $(isCIBuild) ) {\n    #[IO replace.Regex(\"$(pDir)/ConariVersion.cs\", \"(S_NUM\\s+=).+?\\\";\", \"$1 \\\"$(pVer)\\\";\")]\n}]\n\n#[IO replace.Regexp(\"Conari.nuspec\", \"<version>.+?</version>\", \"<version>$(pVer)</version>\")]\n#[IO replace.Regexp(\"Conari.nuspec\", \"\\\"Conari/[0-9.]+\\\"\", \"\\\"Conari/$(pVer)\\\"\")]",
+        "Command": "#[\" Packages \"]\n\n#[( !(#[IO exists.file(\"packages/__checked\")]) )\n{\n    #[File call(\"tools\\hmsbuild.bat\", \"-vsw-priority Microsoft.NetCore.Component.SDK -t:restore /v:q /nologo /p:Configuration=$(Configuration) /p:Platform=\\\"Any CPU\\\"\", 1000)]\n        \n    \n    #[IO copy.directory(\"\", \"packages/\", true)]\n    #[File write(\"packages/__checked\"): ]\n}]",
         "Command__": [
-          "#[var pVer = #[File get(\".version\")]]",
+          "#[\" Packages \"]",
           "",
+          "#[( !(#[IO exists.file(\"packages/__checked\")]) )",
+          "{",
+          "    #[File call(\"tools\\hmsbuild.bat\", \"-vsw-priority Microsoft.NetCore.Component.SDK -t:restore /v:q /nologo /p:Configuration=$(Configuration) /p:Platform=\\\"Any CPU\\\"\", 1000)]",
+          "        ",
+          "    ",
+          "    #[IO copy.directory(\"\", \"packages/\", true)]",
+          "    #[File write(\"packages/__checked\"): ]",
+          "}]"
+        ]
+      }
+    },
+    {
+      "Enabled": true,
+      "Name": "ActVer",
+      "Caption": "Update version number ...",
+      "SupportMSBuild": true,
+      "SupportSBEScripts": true,
+      "IgnoreIfBuildFailed": false,
+      "BuildType": "Common",
+      "Confirmation": false,
+      "ToConfiguration": [],
+      "ExecutionOrder": {
+        "$type": "net.r_eg.vsSBE.Events.ExecutionOrder[], vsSolutionBuildEvent",
+        "$values": []
+      },
+      "Process": {
+        "$type": "net.r_eg.vsSBE.Events.EventProcess, vsSolutionBuildEvent",
+        "Waiting": true,
+        "Hidden": true,
+        "TimeLimit": 30
+      },
+      "Mode": {
+        "$type": "net.r_eg.vsSBE.Events.ModeScript, vsSolutionBuildEvent",
+        "Type": "Script",
+        "Command": "#[( ! $(isCIBuild) ) {\n    #[IO replace.Regex(\"$(pDir)/ConariVersion.cs\", \"(\\sS_NUM\\s=).+?\\\";\", \"$1 \\\"$(pVer)\\\";\")]\n}]\n\n#[IO replace.Regex(\"$(pDir)/Conari.csproj\", \"<Version>.+?</Version>\", \"<Version>$(pVer)</Version>\")]",
+        "Command__": [
           "#[( ! $(isCIBuild) ) {",
-          "    #[IO replace.Regex(\"$(pDir)/ConariVersion.cs\", \"(S_NUM\\s+=).+?\\\";\", \"$1 \\\"$(pVer)\\\";\")]",
+          "    #[IO replace.Regex(\"$(pDir)/ConariVersion.cs\", \"(\\sS_NUM\\s=).+?\\\";\", \"$1 \\\"$(pVer)\\\";\")]",
           "}]",
           "",
-          "#[IO replace.Regexp(\"Conari.nuspec\", \"<version>.+?</version>\", \"<version>$(pVer)</version>\")]",
-          "#[IO replace.Regexp(\"Conari.nuspec\", \"\\\"Conari/[0-9.]+\\\"\", \"\\\"Conari/$(pVer)\\\"\")]"
+          "#[IO replace.Regex(\"$(pDir)/Conari.csproj\", \"<Version>.+?</Version>\", \"<Version>$(pVer)</Version>\")]"
         ]
       }
     },
@@ -293,7 +333,7 @@
       "Mode": {
         "$type": "net.r_eg.vsSBE.Events.ModeScript, vsSolutionBuildEvent",
         "Type": "Script",
-        "Command": "#[var buildInfo =  $([System.String]::Concat(\"  \"))\n    S_NUM:          #[$(pVer)]\n    \n    S_REV:          #[$(revBuild)]\n    \n    S_NUM_REV:      #[$(pVer)].#[$(revBuild)]\n    \n    bSha1:          #[$(bSha1)]\n    \n    bName:          #[$(bName)]\n    \n    bRevc:          #[$(bRevc)]\n    \n    Configuration:  #[$(Configuration)]\n    \n    Platforms:      #[$(TargetFrameworks)]\n    \n    revDeltaBase:   #[$(revDeltaBase)]\n    \n    revDeltaMin:    #[$(revDeltaMin)]\n    \n    revDeltaMax:    #[$(revDeltaMax)]\n    \n    \n                    :: generated by a vsSolutionBuildEvent v#[$(vsSolutionBuildEvent)]\n]\n\n#[( $(isCIBuild) ) { \n    ##[IO replace.Regex(\"$(pDir)/Conari.csproj\", \"<BuildInfoVSSBE>[\\s\\S]*?</BuildInfoVSSBE>\", \"<BuildInfoVSSBE>$(buildInfo)</BuildInfoVSSBE>\")]\n}else{\n    ##[IO replace.Regex(\"$(pDir)/Conari.csproj\", \"<BuildInfoVSSBE>[\\s\\S]*?</BuildInfoVSSBE>\", \"<BuildInfoVSSBE></BuildInfoVSSBE>\")]\n}]\n\n\n",
+        "Command": "#[var buildInfo =  $([System.String]::Concat(\"  \"))\n    S_NUM:          #[$(pVer)]\n    \n    S_REV:          #[$(revBuild)]\n    \n    S_NUM_REV:      #[$(pVer)].#[$(revBuild)]\n    \n    bSha1:          #[$(bSha1)]\n    \n    bName:          #[$(bName)]\n    \n    bRevc:          #[$(bRevc)]\n    \n    Configuration:  #[$(Configuration)]\n    \n    Platforms:      #[$(TargetFrameworks)]\n    \n    revDeltaBase:   #[$(revDeltaBase)]\n    \n    revDeltaMin:    #[$(revDeltaMin)]\n    \n    revDeltaMax:    #[$(revDeltaMax)]\n    \n    \n                    :: generated by a vsSolutionBuildEvent v#[$(vsSolutionBuildEvent)]\n]\n\n#[( $(isCIBuild) ) { \n    #[IO replace.Regex(\"$(pDir)/Conari.csproj\", \"<BuildInfoVSSBE>[\\s\\S]*?</BuildInfoVSSBE>\", \"<BuildInfoVSSBE>$(buildInfo)</BuildInfoVSSBE>\")]\n}else{\n    #[IO replace.Regex(\"$(pDir)/Conari.csproj\", \"<BuildInfoVSSBE>[\\s\\S]*?</BuildInfoVSSBE>\", \"<BuildInfoVSSBE></BuildInfoVSSBE>\")]\n}]\n\n#[IO copy.directory(\"\", \"$(pDir)/obj/\", true)]\n#[IO writeLine(\"$(pDir)/obj/release-info.txt\"):#[var buildInfo]]",
         "Command__": [
           "#[var buildInfo =  $([System.String]::Concat(\"  \"))",
           "    S_NUM:          #[$(pVer)]",
@@ -323,13 +363,13 @@
           "]",
           "",
           "#[( $(isCIBuild) ) { ",
-          "    ##[IO replace.Regex(\"$(pDir)/Conari.csproj\", \"<BuildInfoVSSBE>[\\s\\S]*?</BuildInfoVSSBE>\", \"<BuildInfoVSSBE>$(buildInfo)</BuildInfoVSSBE>\")]",
+          "    #[IO replace.Regex(\"$(pDir)/Conari.csproj\", \"<BuildInfoVSSBE>[\\s\\S]*?</BuildInfoVSSBE>\", \"<BuildInfoVSSBE>$(buildInfo)</BuildInfoVSSBE>\")]",
           "}else{",
-          "    ##[IO replace.Regex(\"$(pDir)/Conari.csproj\", \"<BuildInfoVSSBE>[\\s\\S]*?</BuildInfoVSSBE>\", \"<BuildInfoVSSBE></BuildInfoVSSBE>\")]",
+          "    #[IO replace.Regex(\"$(pDir)/Conari.csproj\", \"<BuildInfoVSSBE>[\\s\\S]*?</BuildInfoVSSBE>\", \"<BuildInfoVSSBE></BuildInfoVSSBE>\")]",
           "}]",
           "",
-          "",
-          ""
+          "#[IO copy.directory(\"\", \"$(pDir)/obj/\", true)]",
+          "#[IO writeLine(\"$(pDir)/obj/release-info.txt\"):#[var buildInfo]]"
         ]
       }
     }
@@ -358,57 +398,47 @@
       "Mode": {
         "$type": "net.r_eg.vsSBE.Events.ModeScript, vsSolutionBuildEvent",
         "Type": "Script",
-        "Command": "[IO copy.file(\n            \"$(SolutionDir)tools/*.*\", \n            \"$(odir)/tools/\", \n            true, \n            {\"*.nuspec\"})]\n            \n#[IO copy.file(\"Conari.nuspec\", \"$(odir)/Conari.nuspec\", true)]\n#[IO copy.file(\"$(pDir)/bin/$(Configuration:Conari)/*.*\", \n               \"$(odir)/lib/net$(netstamp)/\", true)]\n\n#[IO copy.file(\"LICENSE\", \"$(odir)/License.txt\", true)]\n#[IO copy.file({ \"Readme.md\", \"changelog.txt\" }, \"$(odir)\", true)]\n\n#[IO writeLine(\"$(odir)/build-info.txt\"):#[var buildInfo]]",
+        "Command": "#[IO copy.file(\"LICENSE\", \"$(odir)/License.txt\", true)]\n#[IO copy.file(\n    {\"Readme.md\", \"3rd-party.txt\", \"changelog.txt\", \".version\", \"$(pDir)/obj/release-info.txt\"}, \n    \"$(odir)/\", true\n)]\n\n#[( $(cfgname) == \"Release\" )\n{\n\n    #[$(_targets = $(TargetFrameworks:Conari))]\n    #[$(_loop = true)]\n    \n    #[Box iterate(i = 0; $(_loop); i += 1): \n      #[try\n      {\n        \n        #[$(_target = $(_targets.Split(\";\")[$(i)]))]\n        \n        #[IO copy.file\n        (\n            \"$(pDir)/$(OutputPath:$(pDir))/$(_target)/*.*\", \n            \"$(odir)/lib/$(_target)/\", \n            true,\n            {\"*.json\"}\n        )]\n      }\n      catch { $(_loop = false) }]\n    ]\n    \n}]\n\n#[IO copy.file(\"$(pUnLib)\\bin\\$(cfgname)\\*.dll\", \"$(pConariTest)\\bin\\$(cfgname)\\\\\", true)]\n",
         "Command__": [
-          "[IO copy.file(",
-          "            \"$(SolutionDir)tools/*.*\", ",
-          "            \"$(odir)/tools/\", ",
-          "            true, ",
-          "            {\"*.nuspec\"})]",
-          "            ",
-          "#[IO copy.file(\"Conari.nuspec\", \"$(odir)/Conari.nuspec\", true)]",
-          "#[IO copy.file(\"$(pDir)/bin/$(Configuration:Conari)/*.*\", ",
-          "               \"$(odir)/lib/net$(netstamp)/\", true)]",
-          "",
           "#[IO copy.file(\"LICENSE\", \"$(odir)/License.txt\", true)]",
-          "#[IO copy.file({ \"Readme.md\", \"changelog.txt\" }, \"$(odir)\", true)]",
+          "#[IO copy.file(",
+          "    {\"Readme.md\", \"3rd-party.txt\", \"changelog.txt\", \".version\", \"$(pDir)/obj/release-info.txt\"}, ",
+          "    \"$(odir)/\", true",
+          ")]",
           "",
-          "#[IO writeLine(\"$(odir)/build-info.txt\"):#[var buildInfo]]"
+          "#[( $(cfgname) == \"Release\" )",
+          "{",
+          "",
+          "    #[$(_targets = $(TargetFrameworks:Conari))]",
+          "    #[$(_loop = true)]",
+          "    ",
+          "    #[Box iterate(i = 0; $(_loop); i += 1): ",
+          "      #[try",
+          "      {",
+          "        ",
+          "        #[$(_target = $(_targets.Split(\";\")[$(i)]))]",
+          "        ",
+          "        #[IO copy.file",
+          "        (",
+          "            \"$(pDir)/$(OutputPath:$(pDir))/$(_target)/*.*\", ",
+          "            \"$(odir)/lib/$(_target)/\", ",
+          "            true,",
+          "            {\"*.json\"}",
+          "        )]",
+          "      }",
+          "      catch { $(_loop = false) }]",
+          "    ]",
+          "    ",
+          "}]",
+          "",
+          "#[IO copy.file(\"$(pUnLib)\\bin\\$(cfgname)\\*.dll\", \"$(pConariTest)\\bin\\$(cfgname)\\\\\", true)]",
+          ""
         ]
       }
     },
     {
       "Enabled": true,
       "Name": "ActPack",
-      "Caption": "Packing with GetNuTool ...",
-      "SupportMSBuild": true,
-      "SupportSBEScripts": true,
-      "IgnoreIfBuildFailed": true,
-      "BuildType": "Common",
-      "Confirmation": false,
-      "ToConfiguration": [],
-      "ExecutionOrder": {
-        "$type": "net.r_eg.vsSBE.Events.ExecutionOrder[], vsSolutionBuildEvent",
-        "$values": []
-      },
-      "Process": {
-        "$type": "net.r_eg.vsSBE.Events.EventProcess, vsSolutionBuildEvent",
-        "Waiting": true,
-        "Hidden": true,
-        "TimeLimit": 30
-      },
-      "Mode": {
-        "$type": "net.r_eg.vsSBE.Events.ModeScript, vsSolutionBuildEvent",
-        "Type": "Script",
-        "Command": "#[NuGet gnt.raw(\"/t:pack /p:ngin=\\\"$(odir)\\\" /p:ngout=\\\"$(dbin)\\\"\")]",
-        "Command__": [
-          "#[NuGet gnt.raw(\"/t:pack /p:ngin=\\\"$(odir)\\\" /p:ngout=\\\"$(dbin)\\\"\")]"
-        ]
-      }
-    },
-    {
-      "Enabled": true,
-      "Name": "Distributives",
       "Caption": "zip archives etc.",
       "SupportMSBuild": true,
       "SupportSBEScripts": true,
@@ -429,14 +459,29 @@
       "Mode": {
         "$type": "net.r_eg.vsSBE.Events.ModeScript, vsSolutionBuildEvent",
         "Type": "Script",
-        "Command": "#[7z pack.files({ \n        \"$(odir)\\\\lib\\\\net$(netstamp)\\\\*.*\",\n        \"$(odir)\\\\*.*\"\n    }, \n    \"$(dbin)\\\\Conari_v$(pVer).zip\", \n    { \"$(odir)\\\\*.nuspec\" })]",
+        "Command": "#[( $(cfgname) == \"Release\" )\n{\n    \n    #[($(revBuild) == \"\" || $(revBuild) ~= \"*\") {\n        #[$(zipname = \"Conari.$(pVer).zip\")]\n    }\n    else {\n        #[$(zipname = \"Conari.$(pVer).$(revBuild)+$(bSha1).zip\")]\n    }]\n    \n    #[7z pack.directory(\"$(odir)\", \"$(dbin)\\\\$(zipname)\")]\n\n}]\n\n\n#[IO copy.file\n(\n    \"$(pDir)/$(OutputPath:$(pDir))/*$(pVer).nupkg\",\n    \"$(dbin)/\", \n    true \n)]",
         "Command__": [
-          "#[7z pack.files({ ",
-          "        \"$(odir)\\\\lib\\\\net$(netstamp)\\\\*.*\",",
-          "        \"$(odir)\\\\*.*\"",
-          "    }, ",
-          "    \"$(dbin)\\\\Conari_v$(pVer).zip\", ",
-          "    { \"$(odir)\\\\*.nuspec\" })]"
+          "#[( $(cfgname) == \"Release\" )",
+          "{",
+          "    ",
+          "    #[($(revBuild) == \"\" || $(revBuild) ~= \"*\") {",
+          "        #[$(zipname = \"Conari.$(pVer).zip\")]",
+          "    }",
+          "    else {",
+          "        #[$(zipname = \"Conari.$(pVer).$(revBuild)+$(bSha1).zip\")]",
+          "    }]",
+          "    ",
+          "    #[7z pack.directory(\"$(odir)\", \"$(dbin)\\\\$(zipname)\")]",
+          "",
+          "}]",
+          "",
+          "",
+          "#[IO copy.file",
+          "(",
+          "    \"$(pDir)/$(OutputPath:$(pDir))/*$(pVer).nupkg\",",
+          "    \"$(dbin)/\", ",
+          "    true ",
+          ")]"
         ]
       }
     }

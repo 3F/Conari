@@ -36,7 +36,7 @@ namespace net.r_eg.Conari.Core
 
     public class ExVar: DynamicObject, IExVar
     {
-        private IProvider provider;
+        private readonly IProvider provider;
 
         /// <summary>
         /// Access to dynamic features like getting exported-variables at runtime.
@@ -172,7 +172,7 @@ namespace net.r_eg.Conari.Core
             if(args?.Length > 0) {
                 throw new ArgumentException("Arguments are not allowed for this method.");
             }
-            Type[] generic = getGenericArgTypes(binder).ToArray();
+            Type[] generic = binder.GetGenericArgTypes().ToArray();
 
             if(generic.Length > 1) {
                 throw new ArgumentException("No more than one type (as a return type) allowed for this method.");
@@ -236,14 +236,6 @@ namespace net.r_eg.Conari.Core
                     .native(lpProcName)
                     .t(size)
                     .Raw.Type.FirstField;
-        }
-
-        private IEnumerable<Type> getGenericArgTypes(InvokeMemberBinder binder)
-        {
-            // FIXME: avoid access to private members
-            return binder
-                    .GetPropertyValue("Microsoft.CSharp.RuntimeBinder.ICSharpInvokeOrInvokeMemberBinder.TypeArguments", true)
-                    as IEnumerable<Type>;
         }
     }
 }

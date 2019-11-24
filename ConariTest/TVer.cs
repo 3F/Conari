@@ -1,4 +1,4 @@
-﻿namespace net.r_eg.ConariTest
+﻿namespace ConariTest
 {
     struct TVer
     {

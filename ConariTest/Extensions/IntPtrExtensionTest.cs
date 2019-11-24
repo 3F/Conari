@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using net.r_eg.Conari.Extension;
 using net.r_eg.Conari.Types;
+using Xunit;
 
-namespace net.r_eg.ConariTest.Extensions
+namespace ConariTest.Extensions
 {
-    [TestClass]
     public class IntPtrExtensionTest
     {
-        [TestMethod]
+        [Fact]
         public void GetStringLengthTest1()
         {
             const int BSIZE = 1;
@@ -18,11 +17,11 @@ namespace net.r_eg.ConariTest.Extensions
 
             using(var uns = new UnmanagedString(managed, UnmanagedString.SType.Ansi)) {
                 IntPtr ptr = uns;
-                Assert.AreEqual(managed.Length * BSIZE, ptr.GetStringLength(BSIZE));
+                Assert.Equal(managed.Length * BSIZE, ptr.GetStringLength(BSIZE));
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void GetStringLengthTest2()
         {
             const int BSIZE = 2;
@@ -30,11 +29,11 @@ namespace net.r_eg.ConariTest.Extensions
 
             using(var uns = new UnmanagedString(managed, UnmanagedString.SType.Unicode)) {
                 IntPtr ptr = uns;
-                Assert.AreEqual(managed.Length * BSIZE, ptr.GetStringLength(BSIZE));
+                Assert.Equal(managed.Length * BSIZE, ptr.GetStringLength(BSIZE));
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void GetStringLengthTest3()
         {
             const int BSIZE = 2;
@@ -42,11 +41,11 @@ namespace net.r_eg.ConariTest.Extensions
 
             using(var uns = new UnmanagedString(managed, UnmanagedString.SType.BSTR)) {
                 IntPtr ptr = uns;
-                Assert.AreEqual(managed.Length * BSIZE, ptr.GetStringLength(BSIZE));
+                Assert.Equal(managed.Length * BSIZE, ptr.GetStringLength(BSIZE));
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void GetStringBytesTest1()
         {
             string managed = " mystring ";
@@ -54,16 +53,16 @@ namespace net.r_eg.ConariTest.Extensions
             using(var uns = new UnmanagedString(managed, UnmanagedString.SType.Ansi)) {
                 IntPtr ptr = uns;
 
-                Assert.AreEqual(0, ptr.GetStringBytes(-1).Length);
-                Assert.AreEqual(0, ptr.GetStringBytes(0).Length);
-                Assert.AreEqual(5, ptr.GetStringBytes(5).Length);
+                Assert.Empty(ptr.GetStringBytes(-1));
+                Assert.Empty(ptr.GetStringBytes(0));
+                Assert.Equal(5, ptr.GetStringBytes(5).Length);
 
                 var a = Encoding.UTF8.GetBytes(managed).Take(3).ToArray();
                 var b = ptr.GetStringBytes(3);
 
-                Assert.AreEqual(a[0], b[0]);
-                Assert.AreEqual(a[1], b[1]);
-                Assert.AreEqual(a[2], b[2]);
+                Assert.Equal(a[0], b[0]);
+                Assert.Equal(a[1], b[1]);
+                Assert.Equal(a[2], b[2]);
             }
         }
     }

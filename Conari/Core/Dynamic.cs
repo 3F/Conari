@@ -240,22 +240,34 @@ namespace net.r_eg.Conari.Core
                 throw new ArgumentException("The name cannot be null or empty.");
             }
 
-            AssemblyName asm        = new AssemblyName("DynamicAsm");
-            AssemblyBuilder dynAsm  = AppDomain.CurrentDomain.DefineDynamicAssembly(asm, AssemblyBuilderAccess.RunAndCollect);
+            AssemblyName asm = new AssemblyName("DynamicAsm");
+
+#if NETCORE
+
+            AssemblyBuilder dynAsm = AssemblyBuilder.DefineDynamicAssembly(asm, AssemblyBuilderAccess.RunAndCollect);
+#else
+            AssemblyBuilder dynAsm = AppDomain.CurrentDomain.DefineDynamicAssembly(asm, AssemblyBuilderAccess.RunAndCollect);
+#endif
 
             ModuleBuilder module    = dynAsm.DefineDynamicModule(asm.Name);
             TypeBuilder tbuild      = module.DefineType("DynamicType", TypeAttributes.Public);
 
-            MethodBuilder m = tbuild.DefineMethod(
-                                        name,
-                                        MethodAttributes.Public | MethodAttributes.Static,
-                                        NullV(ret),
-                                        args);
+            MethodBuilder m = tbuild.DefineMethod
+            (
+                name,
+                MethodAttributes.Public | MethodAttributes.Static,
+                NullV(ret),
+                args
+            );
 
             ILGenerator il = m.GetILGenerator();
             il.Emit(OpCodes.Ret);
 
+#if NETCORE
+            return tbuild.CreateTypeInfo()?.AsType();
+#else
             return tbuild.CreateType();
+#endif
         }
 
         public static dynamic DCast(Type type, dynamic obj)

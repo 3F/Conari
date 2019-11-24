@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Reflection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using net.r_eg.Conari;
 using net.r_eg.Conari.Core;
+using Xunit;
 
-namespace net.r_eg.ConariTest.Core
+namespace ConariTest.Core
 {
-    [TestClass]
     public class DynamicTest
     {
-        [TestMethod]
+        [Fact]
         public void CreateEmptyTypeTest1()
         {
             var expRetType = typeof(void);
@@ -17,12 +16,12 @@ namespace net.r_eg.ConariTest.Core
             Type type   = Dynamic.CreateEmptyType(expRetType);
             var mi      = type.GetMethod(Dynamic.METHOD_NAME);
 
-            Assert.AreNotEqual(null, mi);
-            Assert.AreEqual(expRetType, mi.ReturnType);
-            Assert.AreEqual(0, mi.GetParameters().Length);
+            Assert.NotNull(mi);
+            Assert.Equal(expRetType, mi.ReturnType);
+            Assert.Empty(mi.GetParameters());
         }
 
-        [TestMethod]
+        [Fact]
         public void CreateEmptyTypeTest2()
         {
             var expRetType  = typeof(bool);
@@ -33,40 +32,42 @@ namespace net.r_eg.ConariTest.Core
             Type type   = Dynamic.CreateEmptyType("MyFunc", expRetType, expArg0Type, expArg1Type, expArg2Type);
             var mi      = type.GetMethod("MyFunc");
 
-            Assert.AreEqual(3, mi.GetParameters().Length);
-            Assert.AreEqual(expArg0Type, mi.GetParameters()[0].ParameterType);
-            Assert.AreEqual(expArg1Type, mi.GetParameters()[1].ParameterType);
-            Assert.AreEqual(expArg2Type, mi.GetParameters()[2].ParameterType);
+            Assert.Equal(3, mi.GetParameters().Length);
+            Assert.Equal(expArg0Type, mi.GetParameters()[0].ParameterType);
+            Assert.Equal(expArg1Type, mi.GetParameters()[1].ParameterType);
+            Assert.Equal(expArg2Type, mi.GetParameters()[2].ParameterType);
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [Fact]
         public void CreateEmptyTypeTest3()
         {
-            Dynamic.CreateEmptyType((string)null, typeof(void));
+            Assert.Throws<ArgumentException>(() => 
+                Dynamic.CreateEmptyType((string)null, typeof(void))
+            );
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [Fact]
         public void CreateEmptyTypeTest4()
         {
-            Dynamic.CreateEmptyType(" ", typeof(void));
+            Assert.Throws<ArgumentException>(() =>
+                Dynamic.CreateEmptyType(" ", typeof(void))
+            );
         }
 
-        [TestMethod]
+        [Fact]
         public void GetMethodInfoTest1()
         {
             var expRetType = typeof(void);
 
             MethodInfo mi = Dynamic.GetMethodInfo(false, expRetType);
 
-            Assert.AreNotEqual(null, mi);
-            Assert.AreEqual(Dynamic.METHOD_NAME, mi.Name);
-            Assert.AreEqual(expRetType, mi.ReturnType);
-            Assert.AreEqual(0, mi.GetParameters().Length);
+            Assert.NotNull(mi);
+            Assert.Equal(Dynamic.METHOD_NAME, mi.Name);
+            Assert.Equal(expRetType, mi.ReturnType);
+            Assert.Empty(mi.GetParameters());
         }
 
-        [TestMethod]
+        [Fact]
         public void GetMethodInfoTest2()
         {
             var expRetType  = typeof(IntPtr);
@@ -75,33 +76,32 @@ namespace net.r_eg.ConariTest.Core
 
             MethodInfo mi = Dynamic.GetMethodInfo("MyFunc", expRetType, expArg0Type, expArg1Type);
 
-            Assert.AreEqual(2, mi.GetParameters().Length);
-            Assert.AreEqual("MyFunc", mi.Name);
-            Assert.AreEqual(expArg0Type, mi.GetParameters()[0].ParameterType);
-            Assert.AreEqual(expArg1Type, mi.GetParameters()[1].ParameterType);
+            Assert.Equal(2, mi.GetParameters().Length);
+            Assert.Equal("MyFunc", mi.Name);
+            Assert.Equal(expArg0Type, mi.GetParameters()[0].ParameterType);
+            Assert.Equal(expArg1Type, mi.GetParameters()[1].ParameterType);
         }
 
-        [TestMethod]
-        //[ExpectedException(typeof(ArgumentException))] - this behaviour has been changed.
+        [Fact]
         public void GetMethodInfoTest3()
         {
-            Assert.AreEqual(Dynamic.METHOD_NAME, Dynamic.GetMethodInfo((string)null, false, typeof(void)).Name);
-            Assert.AreEqual(Dynamic.METHOD_NAME, Dynamic.GetMethodInfo(" ", false, typeof(void)).Name);
+            Assert.Equal(Dynamic.METHOD_NAME, Dynamic.GetMethodInfo((string)null, false, typeof(void)).Name);
+            Assert.Equal(Dynamic.METHOD_NAME, Dynamic.GetMethodInfo(" ", false, typeof(void)).Name);
         }
 
-        [TestMethod]
+        [Fact]
         public void CastTest1()
         {
-            Assert.AreEqual(0x3F, Dynamic.Cast<byte>(0x3F));
-            Assert.AreEqual(3, Dynamic.DCast(typeof(int), 3.14f));
+            Assert.Equal(0x3F, Dynamic.Cast<byte>(0x3F));
+            Assert.Equal(3, Dynamic.DCast(typeof(int), 3.14f));
 
-            Assert.AreEqual(typeof(IntPtr), Dynamic.DCast(typeof(IntPtr), 17).GetType());
-            Assert.AreEqual(typeof(char), Dynamic.DCast(typeof(char), (byte)0x3F).GetType());
+            Assert.Equal(typeof(IntPtr), Dynamic.DCast(typeof(IntPtr), 17).GetType());
+            Assert.Equal(typeof(char), Dynamic.DCast(typeof(char), (byte)0x3F).GetType());
 
-            Assert.AreEqual(null, Dynamic.DCast(typeof(void), 17));
+            Assert.Equal(null, Dynamic.DCast(typeof(void), 17));
         }
 
-        [TestMethod]
+        [Fact]
         public void cacheTest1()
         {
             using(var l = new ConariL(
@@ -111,11 +111,11 @@ namespace net.r_eg.ConariTest.Core
             {
                 Dynamic._.UseCache = true;
 
-                Assert.AreEqual("m1", Dynamic.GetMethodInfo("m1", false, typeof(bool), typeof(int)).Name);
-                Assert.AreEqual("m2", Dynamic.GetMethodInfo("m2", typeof(bool), typeof(int)).Name);
-                Assert.AreEqual("m2", Dynamic.GetMethodInfo("m3", typeof(bool), typeof(int)).Name);
-                Assert.AreEqual("m2", Dynamic.GetMethodInfo(typeof(bool), typeof(int)).Name);
-                Assert.AreEqual("m4", Dynamic.GetMethodInfo("m4", false, typeof(bool), typeof(int)).Name);
+                Assert.Equal("m1", Dynamic.GetMethodInfo("m1", false, typeof(bool), typeof(int)).Name);
+                Assert.Equal("m2", Dynamic.GetMethodInfo("m2", typeof(bool), typeof(int)).Name);
+                Assert.Equal("m2", Dynamic.GetMethodInfo("m3", typeof(bool), typeof(int)).Name);
+                Assert.Equal("m2", Dynamic.GetMethodInfo(typeof(bool), typeof(int)).Name);
+                Assert.Equal("m4", Dynamic.GetMethodInfo("m4", false, typeof(bool), typeof(int)).Name);
             }
         }
     }
