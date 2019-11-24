@@ -88,6 +88,11 @@ namespace net.r_eg.Conari.Types
             return new CharPtr(ptr);
         }
 
+        public static implicit operator CharPtr(Int64 val)
+        {
+            return new CharPtr((IntPtr)val);
+        }
+
         public static implicit operator CharPtr(Int32 val)
         {
             return new CharPtr((IntPtr)val);

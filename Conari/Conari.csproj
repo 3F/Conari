@@ -94,6 +94,7 @@
   <ItemGroup>
     <None Include="..\LICENSE" Pack="true" PackagePath="" />
     <None Include="..\Readme.md" Pack="true" PackagePath="" />
+    <None Include="..\3rd-party.txt" Pack="true" PackagePath="" />
     <None Include="..\changelog.txt" Pack="true" PackagePath="" />
     <None Include="..\.version" Pack="true" PackagePath="" />
     <!-- NuGet bug when naming with 'build' keyword: https://github.com/NuGet/Home/issues/8810 -->

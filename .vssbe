@@ -91,7 +91,7 @@
       "Mode": {
         "$type": "net.r_eg.vsSBE.Events.ModeScript, vsSolutionBuildEvent",
         "Type": "Script",
-        "Command": "#[($(Configuration) == \"PublicRelease\") {\n    #[$(cfgname = 'Release')]\n    $(isCIBuild = true)\n}\nelse{\n    #[$(cfgname = $(Configuration))]\n}]\n\n#[$(dbin = \"bin/$(cfgname)/\")]\n\n$(revDeltaBase  = \"2017/01/01\")\n$(revDeltaMin   = $([System.Math]::Pow(10, 3)))\n$(revDeltaMax   = 65534)\n\n\n$(netstamp  = $(TargetFrameworkVersion.Replace('v', '').Replace('.', '')))\n\n$(pDir  = \"Conari\")\n$(odir  = \"$(dbin)raw\")\n\n#[var +revBuild]\n#[var +bSha1]\n#[var +bName]\n#[var +bRevc]\n\n#[var pVer = #[File get(\".version\")]]\n\n##[IO delete.directory(\"$(dbin)\", true)]\n#[IO copy.directory(\"\", \"$(dbin)\", true)]",
+        "Command": "#[($(Configuration) == \"PublicRelease\") {\n    #[$(cfgname = 'Release')]\n    $(isCIBuild = true)\n}\nelse{\n    #[$(cfgname = $(Configuration))]\n}]\n\n#[$(dbin = \"bin/$(cfgname)/\")]\n\n$(revDeltaBase  = \"2017/01/01\")\n$(revDeltaMin   = $([System.Math]::Pow(10, 3)))\n$(revDeltaMax   = 65534)\n\n\n$(netstamp  = $(TargetFrameworkVersion.Replace('v', '').Replace('.', '')))\n\n$(pDir  = \"Conari\")\n$(odir  = \"$(dbin)raw\")\n\n$(pConariTest = \"ConariTest\")\n$(pUnLib = \"UnLib\")\n\n#[var +revBuild]\n#[var +bSha1]\n#[var +bName]\n#[var +bRevc]\n\n#[var pVer = #[File get(\".version\")]]\n\n##[IO delete.directory(\"$(dbin)\", true)]\n#[IO copy.directory(\"\", \"$(dbin)\", true)]",
         "Command__": [
           "#[($(Configuration) == \"PublicRelease\") {",
           "    #[$(cfgname = 'Release')]",
@@ -112,6 +112,9 @@
           "",
           "$(pDir  = \"Conari\")",
           "$(odir  = \"$(dbin)raw\")",
+          "",
+          "$(pConariTest = \"ConariTest\")",
+          "$(pUnLib = \"UnLib\")",
           "",
           "#[var +revBuild]",
           "#[var +bSha1]",
@@ -395,18 +398,18 @@
       "Mode": {
         "$type": "net.r_eg.vsSBE.Events.ModeScript, vsSolutionBuildEvent",
         "Type": "Script",
-        "Command": "#[IO copy.file(\"LICENSE\", \"$(odir)/License.txt\", true)]\n#[IO copy.file(\n    {\"Readme.md\", \"changelog.txt\", \".version\", \"$(pDir)/obj/release-info.txt\"}, \n    \"$(odir)/\", true\n)]\n\n#[( $(cfgname) == \"Release\" )\n{\n\n    #[$(_targets = $(TargetFrameworks))]\n    #[$(_loop = true)]\n    \n    #[Box iterate(i = 0; $(_loop); i += 1): \n      #[try\n      {\n        \n        #[$(_target = $(_targets.Split(\";\")[$(i)]))]\n        \n        #[IO copy.file\n        (\n            \"$(pDir)/$(OutputPath:$(pDir))/$(_target)/*.*\", \n            \"$(odir)/lib/$(_target)/\", \n            true,\n            {\"*.json\"}\n        )]\n      }\n      catch { $(_loop = false) }]\n    ]\n    \n}]",
+        "Command": "#[IO copy.file(\"LICENSE\", \"$(odir)/License.txt\", true)]\n#[IO copy.file(\n    {\"Readme.md\", \"3rd-party.txt\", \"changelog.txt\", \".version\", \"$(pDir)/obj/release-info.txt\"}, \n    \"$(odir)/\", true\n)]\n\n#[( $(cfgname) == \"Release\" )\n{\n\n    #[$(_targets = $(TargetFrameworks:Conari))]\n    #[$(_loop = true)]\n    \n    #[Box iterate(i = 0; $(_loop); i += 1): \n      #[try\n      {\n        \n        #[$(_target = $(_targets.Split(\";\")[$(i)]))]\n        \n        #[IO copy.file\n        (\n            \"$(pDir)/$(OutputPath:$(pDir))/$(_target)/*.*\", \n            \"$(odir)/lib/$(_target)/\", \n            true,\n            {\"*.json\"}\n        )]\n      }\n      catch { $(_loop = false) }]\n    ]\n    \n}]\n\n#[IO copy.file(\"$(pUnLib)\\bin\\$(cfgname)\\*.dll\", \"$(pConariTest)\\bin\\$(cfgname)\\\\\", true)]\n",
         "Command__": [
           "#[IO copy.file(\"LICENSE\", \"$(odir)/License.txt\", true)]",
           "#[IO copy.file(",
-          "    {\"Readme.md\", \"changelog.txt\", \".version\", \"$(pDir)/obj/release-info.txt\"}, ",
+          "    {\"Readme.md\", \"3rd-party.txt\", \"changelog.txt\", \".version\", \"$(pDir)/obj/release-info.txt\"}, ",
           "    \"$(odir)/\", true",
           ")]",
           "",
           "#[( $(cfgname) == \"Release\" )",
           "{",
           "",
-          "    #[$(_targets = $(TargetFrameworks))]",
+          "    #[$(_targets = $(TargetFrameworks:Conari))]",
           "    #[$(_loop = true)]",
           "    ",
           "    #[Box iterate(i = 0; $(_loop); i += 1): ",
@@ -426,7 +429,10 @@
           "      catch { $(_loop = false) }]",
           "    ]",
           "    ",
-          "}]"
+          "}]",
+          "",
+          "#[IO copy.file(\"$(pUnLib)\\bin\\$(cfgname)\\*.dll\", \"$(pConariTest)\\bin\\$(cfgname)\\\\\", true)]",
+          ""
         ]
       }
     },

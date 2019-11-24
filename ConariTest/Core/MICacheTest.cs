@@ -1,18 +1,17 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using net.r_eg.Conari.Core;
+using Xunit;
 
-namespace net.r_eg.ConariTest.Core
+namespace ConariTest.Core
 {
-    [TestClass]
     public class MICacheTest
     {
-        [TestMethod]
+        [Fact]
         public void ComparerTest1()
         {
             var cache = new MICache();
 
-            Assert.AreEqual(0, cache.Count);
+            Assert.Empty(cache);
 
             Type[] types1 = new Type[] { typeof(int), typeof(int) };
             Type[] types2 = new Type[] { typeof(int), typeof(bool) };
@@ -24,16 +23,17 @@ namespace net.r_eg.ConariTest.Core
             cache[types3] = null;
             cache[types4] = null;
 
-            Assert.AreEqual(4, cache.Count);
+            Assert.Equal(4, cache.Count);
 
-            Assert.AreEqual(true, cache.ContainsKey(types1));
-            Assert.AreEqual(true, cache.ContainsKey(types2));
-            Assert.AreEqual(true, cache.ContainsKey(types3));
-            Assert.AreEqual(true, cache.ContainsKey(types4));
-            Assert.AreEqual(false, cache.ContainsKey(new[] { typeof(int), typeof(Int64) }));
-            Assert.AreEqual(false, cache.ContainsKey(new[] { typeof(void), typeof(int) }));
-            Assert.AreEqual(false, cache.ContainsKey(new[] { typeof(int) }));
-            Assert.AreEqual(false, cache.ContainsKey(new Type[0]));
+            Assert.True(cache.ContainsKey(types1));
+            Assert.True(cache.ContainsKey(types2));
+            Assert.True(cache.ContainsKey(types3));
+            Assert.True(cache.ContainsKey(types4));
+
+            Assert.False(cache.ContainsKey(new[] { typeof(int), typeof(Int64) }));
+            Assert.False(cache.ContainsKey(new[] { typeof(void), typeof(int) }));
+            Assert.False(cache.ContainsKey(new[] { typeof(int) }));
+            Assert.False(cache.ContainsKey(new Type[0]));
         }
     }
 }

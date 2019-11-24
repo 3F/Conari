@@ -1,0 +1,30 @@
+Conari  [ https://github.com/3F/Conari ]
+- - - - - - - - - - - - - - - - - - - - -
+
+# Third-party software components
+
+
+## Conari and its various packages may* include or reference:
+    (*- specific target platforms or some complex archives)
+        
+    * hMSBuild
+        https://github.com/3F/hMSBuild
+        
+    * GetNuTool
+        https://github.com/3F/GetNuTool
+        
+    
+## Dev Dependencies includes the following tools for src:
+    
+    * vsSolutionBuildEvent
+        https://github.com/3F/vsSolutionBuildEvent
+        
+    * xUnit.net
+        https://github.com/xunit/xunit
+        
+    * hMSBuild
+        https://github.com/3F/hMSBuild
+        
+    * GetNuTool
+        https://github.com/3F/GetNuTool
+

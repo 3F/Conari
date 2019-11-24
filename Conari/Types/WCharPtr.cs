@@ -88,6 +88,11 @@ namespace net.r_eg.Conari.Types
             return new WCharPtr(ptr);
         }
 
+        public static implicit operator WCharPtr(Int64 val)
+        {
+            return new WCharPtr((IntPtr)val);
+        }
+
         public static implicit operator WCharPtr(Int32 val)
         {
             return new WCharPtr((IntPtr)val);

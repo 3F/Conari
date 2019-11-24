@@ -1,10 +1,10 @@
 ﻿using net.r_eg.Conari.Types;
 
-namespace net.r_eg.ConariTest
+namespace ConariTest
 {
     struct UserSpecUintType
     {
-        private uint val;
+        private readonly uint val;
 
         [NativeType]
         public static implicit operator uint(UserSpecUintType number)

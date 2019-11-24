@@ -1,13 +1,12 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using net.r_eg.Conari.Types;
+using Xunit;
 
-namespace net.r_eg.ConariTest.Types
+namespace ConariTest.Types
 {
-    [TestClass]
     public class UnmanagedStructureTest
     {
-        [TestMethod]
+        [Fact]
         public void allocFreeTest1()
         {
             var managed = new TVer(0, 32, 1024);
@@ -15,14 +14,14 @@ namespace net.r_eg.ConariTest.Types
             UnmanagedStructure uv;
             using(uv = new UnmanagedStructure(managed))
             {
-                Assert.AreNotEqual(0, uv.SizeOf);
-                Assert.AreNotEqual(null, uv.Managed);
+                Assert.NotEqual(0, uv.SizeOf);
+                Assert.NotNull(uv.Managed);
             }
 
-            Assert.AreEqual(IntPtr.Zero, (IntPtr)uv);
+            Assert.Equal(IntPtr.Zero, (IntPtr)uv);
         }
 
-        [TestMethod]
+        [Fact]
         public void allocFreeTest2()
         {
             var managed = new TVer(0, 32, 1024);
@@ -36,19 +35,22 @@ namespace net.r_eg.ConariTest.Types
                 
                 TVer managed2 = (TVer)uv2.Managed;
 
-                Assert.AreEqual(((TVer)uv.Managed).major, managed2.major);
-                Assert.AreEqual(((TVer)uv.Managed).minor, managed2.minor);
-                Assert.AreEqual(((TVer)uv.Managed).patch, managed2.patch);
+                Assert.Equal(((TVer)uv.Managed).major, managed2.major);
+                Assert.Equal(((TVer)uv.Managed).minor, managed2.minor);
+                Assert.Equal(((TVer)uv.Managed).patch, managed2.patch);
+
+                uv2.Dispose();
             }
 
-            Assert.AreEqual(IntPtr.Zero, (IntPtr)uv);
+            Assert.Equal(IntPtr.Zero, (IntPtr)uv);
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [Fact]
         public void ctorTest1()
         {
-            new UnmanagedStructure(null);
+            Assert.Throws<ArgumentNullException>(() => 
+                new UnmanagedStructure(null)
+            );
         }
         
     }
