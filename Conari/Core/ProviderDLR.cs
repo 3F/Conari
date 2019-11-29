@@ -24,7 +24,6 @@
 */
 
 using System;
-using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Reflection;
@@ -38,29 +37,20 @@ namespace net.r_eg.Conari.Core
 {
     public sealed class ProviderDLR: DynamicObject, IProviderDLR
     {
-        private IProvider provider;
+        private readonly IProvider provider;
 
         /// <summary>
         /// Access to used IDynamic object.
         /// </summary>
-        public IDynamic DynCfg
-        {
-            get {
-                return Dynamic._;
-            }
-        }
+        public IDynamic DynCfg => new Dynamic();
 
         /// <summary>
         /// To use cache for dynamic types etc.
         /// </summary>
         public bool Cache
         {
-            get {
-                return DynCfg.UseCache;
-            }
-            set {
-                DynCfg.UseCache = value;
-            }
+            get => DynCfg.UseCache;
+            set => DynCfg.UseCache = value;
         }
 
         /// <summary>
@@ -107,19 +97,21 @@ namespace net.r_eg.Conari.Core
         {
             Type[] tArgs;
 
-            try {
+            try
+            {
                 tArgs = getArgTypes(binder, args);
             }
-            catch(ArgumentException ex) {
+            catch(ArgumentException ex)
+            {
                 LSender.Send(this, $"Problem with arguments. DLR for '{binder.Name}': {ex.Message}", Message.Level.Warn);
                 tArgs = args.Select(a => a.GetType()).ToArray();
             }
 
             Type[] tGeneric = binder.GetGenericArgTypes().ToArray();
-            MethodInfo mi   = getmi(binder.Name, tGeneric, tArgs);
 
-            TDyn dyn = provider.bind(
-                mi,
+            TDyn dyn = provider.bind
+            (
+                getmi(binder.Name, tGeneric, tArgs),
                 provider.Svc.tryAlias(binder.Name),
                 Convention
             );
@@ -127,7 +119,18 @@ namespace net.r_eg.Conari.Core
             // Boxing types, for example: NullType -> null -> NullType
 
             object[] unboxed = unbox(args);
-            result = Dynamic.DCast(dyn.returnType, dyn.dynamic.Invoke(null, unboxed));
+
+            object odv = dyn.dynamic.Invoke(null, unboxed);
+
+            if(dyn.returnType == typeof(void)) // points to generic type in func<returnType>()
+            {
+                result = odv; // return 'as is' due to unspecified behaviour from user space^
+            }
+            else
+            {
+                result = Dynamic.DCast(dyn.returnType, odv);
+            }
+
             boxing(unboxed, args);
 
             return true;
@@ -135,7 +138,7 @@ namespace net.r_eg.Conari.Core
 
         public ProviderDLR(IProvider provider, CallingConvention conv)
         {
-            this.provider   = provider ?? throw new ArgumentException("Provider cannot be null.");
+            this.provider   = provider ?? throw new ArgumentNullException(nameof(provider));
             Convention      = conv;
         }
 

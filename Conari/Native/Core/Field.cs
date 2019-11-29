@@ -62,7 +62,7 @@ namespace net.r_eg.Conari.Native.Core
                 if(String.IsNullOrWhiteSpace(name)) {
                     return false;
                 }
-                return !Regex.Match(name, "^[a-zA-Z_][a-zA-Z_0-9]*$").Success;
+                return Regex.Match(name, "^[a-zA-Z_][a-zA-Z_0-9]*$").Success;
             }
         }
 

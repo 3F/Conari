@@ -37,16 +37,25 @@ namespace net.r_eg.Conari.Core
         /// </summary>
         public const string METHOD_NAME = "Invoke";
 
-        private MICache micache = new MICache();
+        private static readonly Lazy<Dynamic> _this = new Lazy<Dynamic>(() => new Dynamic());
 
-        /// <summary>
-        /// Thread-safe getting of this instance.
-        /// </summary>
-        public static IDynamic _
+        private static readonly Lazy<ModuleBuilder> module = new Lazy<ModuleBuilder>(() => 
         {
-            get { return _lazy.Value; }
-        }
-        private static readonly Lazy<Dynamic> _lazy = new Lazy<Dynamic>(() => new Dynamic());
+            AssemblyName asm = new AssemblyName("__dynamic_asm_Conari");
+
+#if NETCORE
+
+            AssemblyBuilder dynAsm = AssemblyBuilder.DefineDynamicAssembly(asm, AssemblyBuilderAccess.RunAndCollect);
+#else
+            AssemblyBuilder dynAsm = AppDomain.CurrentDomain.DefineDynamicAssembly(asm, AssemblyBuilderAccess.RunAndCollect);
+#endif
+
+            return dynAsm.DefineDynamicModule(asm.Name);
+        });
+
+        private readonly MICache micache = new MICache();
+
+        public static IDynamic _ => _this.Value;
 
         /// <summary>
         /// To cache dynamic types by default with similar signatures:
@@ -236,21 +245,11 @@ namespace net.r_eg.Conari.Core
         /// <returns>The type that contains signature as `{ret} {name}({args})`</returns>
         public static Type CreateEmptyType(string name, Type ret = null, params Type[] args)
         {
-            if(String.IsNullOrWhiteSpace(name)) {
-                throw new ArgumentException("The name cannot be null or empty.");
+            if(string.IsNullOrWhiteSpace(name)) {
+                throw new ArgumentNullException(nameof(name));
             }
 
-            AssemblyName asm = new AssemblyName("DynamicAsm");
-
-#if NETCORE
-
-            AssemblyBuilder dynAsm = AssemblyBuilder.DefineDynamicAssembly(asm, AssemblyBuilderAccess.RunAndCollect);
-#else
-            AssemblyBuilder dynAsm = AppDomain.CurrentDomain.DefineDynamicAssembly(asm, AssemblyBuilderAccess.RunAndCollect);
-#endif
-
-            ModuleBuilder module    = dynAsm.DefineDynamicModule(asm.Name);
-            TypeBuilder tbuild      = module.DefineType("DynamicType", TypeAttributes.Public);
+            TypeBuilder tbuild = module.Value.DefineType(Guid.NewGuid().ToString(), TypeAttributes.Public);
 
             MethodBuilder m = tbuild.DefineMethod
             (
@@ -287,7 +286,10 @@ namespace net.r_eg.Conari.Core
             return (T)obj;
         }
 
-        private Dynamic() { }
+        public Dynamic()
+        {
+
+        }
 
         private static Type NullV(Type type)
         {

@@ -29,7 +29,7 @@ using System.Runtime.InteropServices;
 
 namespace net.r_eg.Conari.Types
 {
-    [DebuggerDisplay("{managed} [ {\"0x\" + Pointer.ToString(\"X\")} ]")]
+    [DebuggerDisplay("{Data} [ {\"0x\" + Pointer.ToString(\"X\")} ]")]
     public sealed class UnmanagedString: IDisposable
     {
         /// <summary>

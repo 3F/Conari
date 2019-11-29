@@ -41,7 +41,7 @@ namespace ConariTest.Core
         [Fact]
         public void CreateEmptyTypeTest3()
         {
-            Assert.Throws<ArgumentException>(() => 
+            Assert.Throws<ArgumentNullException>(() => 
                 Dynamic.CreateEmptyType((string)null, typeof(void))
             );
         }
@@ -49,7 +49,7 @@ namespace ConariTest.Core
         [Fact]
         public void CreateEmptyTypeTest4()
         {
-            Assert.Throws<ArgumentException>(() =>
+            Assert.Throws<ArgumentNullException>(() =>
                 Dynamic.CreateEmptyType(" ", typeof(void))
             );
         }
