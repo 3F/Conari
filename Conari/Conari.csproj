@@ -12,38 +12,62 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>Conari</PackageId>
     <Copyright>Copyright (c) 2016-2019  Denis Kuzmin &lt; entry.reg@gmail.com &gt; GitHub/3F</Copyright>
-    <Title>[ Conari ] Binder of Unmanaged native data</Title>
+    <Title>[ Conari ] platform for unmanaged memory, pe-modules, PInvoke and more</Title>
     <PackageIcon>Conari_v1.png</PackageIcon>
     <IconUrl>https://raw.githubusercontent.com/3F/Conari/master/Conari/Resources/Conari_v1.png</IconUrl>
     <Description>
-        Conari engine represents powerful platform for work with unmanaged memory, pe-modules, and their data: Libraries, Executable Modules, other native (C/C++, ...) and raw binary data.
+        🧬 Conari engine represents powerful platform for work with unmanaged memory, pe-modules, related PInvoke features,
+        and more for: Libraries, Executable Modules, enjoying of the unmanaged native C/C++ in .NET world, and other raw binary data.
+        Even accessing to complex types like structures without their declaration at all.
 
-        Lightweight and flexible binding, even accessing to complex types like structures without their declaration at all.
-        Also contains wrappers for types like unmanaged structures, unmanaged strings, and much more.
+        ## Why Conari ?
+
+        It was designed to be loyal to your needs on the fly.
+
+        🔍 Easy to start:
 
         ```
-          using(var l = new ConariL("...")) {
-              // ...
-          }
+        using(var l = new ConariL("...")) {
+            // ...
+        }
         ```
+
+        🚀 Awesome speed:
+
+        test of regXwild's algorithms [[340x10000 Unicode](https://github.com/3F/regXwild/blob/d9e4cd18e6f3fbc29b271b1feb4d8c659aa14bd7/Readme.md#speed-comparison)]
+
+        🔨 Its amazing DLR features:
+
         ```
-          // DLR and unmanaged functions:
-          d.test&lt;IntPtr&gt;();
-          d.avcodec_find_encoder&lt;IntPtr&gt;(AV_CODEC_ID_MP2);
-          d.push();
-          d.create&lt;int&gt;(ref cid, out data);
+        using(dynamic l = new ConariX("..."))
+        {
+            // just everything is yours ~
+            l.curl_easy_setopt(curl, 10002, "http://example.com");
+        }
         ```
+
+        🔧 Raw accessibility to any binary data in unmanaged memory:
+
         ```
-          // custom lambda requests:
-          l.bind&lt;Action&lt;int, int&gt;&gt;("call")(2, 1);
-          double num = l.bind&lt;Func&lt;IntPtr, int, double&gt;&gt;("tonumber")(L, 4);
+        ptr.Native().align&lt;int&gt;(2, "x", "y")
+                    .t&lt;IntPtr&gt;("data")
+                    .Raw;
         ```
+
+        🔖 Modern **.NET Core**
+
+        Conari is ready for .NET Core starting from 1.4.
+
+        But we have even more, again. https://github.com/3F/Conari/issues/13
+        Conari also provides support for [ .NET Standard 2.0 ] layer which does not cover unmanaged EmitCalli due to missed implementation for System.Private.CoreLib.
+
+        🍰 MIT License! Enjoy.
 
         . . . And more: https://github.com/3F/Conari
 
         _ _ _ _ _ _
-        MIT License! Enjoy.
         
         
     =======================================

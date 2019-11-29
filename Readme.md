@@ -2,17 +2,15 @@
 
 [![](https://raw.githubusercontent.com/3F/Conari/master/Conari/Resources/Conari_v1.png)](https://github.com/3F/Conari)
 
-Conari engine represents powerful platform for work with unmanaged memory, pe-modules, and their data: Libraries, Executable Modules, other native (C/C++, ...) and raw binary data.
+🧬 Conari engine represents powerful platform for work with unmanaged memory, pe-modules, related PInvoke features, and more for: Libraries, Executable Modules, enjoying of the unmanaged native C/C++ in .NET world, and other raw binary data. Even accessing to complex types like structures without their declaration at all.
 
-Lightweight and flexible binding, even accessing to complex types like structures without their declaration at all. Also contains wrappers for types like unmanaged structures, unmanaged strings, and much more.
-
-[![Build status](https://ci.appveyor.com/api/projects/status/xbb5imyn9lr8dxbb/branch/master?svg=true)](https://ci.appveyor.com/project/3Fs/conari-wkygr/branch/master)
+[![Build status](https://ci.appveyor.com/api/projects/status/qc1d3ofsso8fd67t/branch/master?svg=true)](https://ci.appveyor.com/project/3Fs/conari/branch/master)
 [![release-src](https://img.shields.io/github/release/3F/Conari.svg)](https://github.com/3F/Conari/releases/latest)
 [![License](https://img.shields.io/badge/License-MIT-74A5C2.svg)](https://github.com/3F/Conari/blob/master/LICENSE)
 [![NuGet package](https://img.shields.io/nuget/v/Conari.svg)](https://www.nuget.org/packages/Conari/) 
-[![Tests](https://img.shields.io/appveyor/tests/3Fs/conari-wkygr/master.svg)](https://ci.appveyor.com/project/3Fs/conari-wkygr/build/tests)
+[![Tests](https://img.shields.io/appveyor/tests/3Fs/conari/master.svg)](https://ci.appveyor.com/project/3Fs/conari/build/tests)
 
-[![Build history](https://buildstats.info/appveyor/chart/3Fs/conari-wkygr?buildCount=10&includeBuildsFromPullRequest=true&showStats=true)](https://ci.appveyor.com/project/3Fs/conari-wkygr/history)
+[![Build history](https://buildstats.info/appveyor/chart/3Fs/conari?buildCount=10&includeBuildsFromPullRequest=true&showStats=true)](https://ci.appveyor.com/project/3Fs/conari/history)
 
 > 1:[ ***[Quick start](https://github.com/3F/Conari/wiki/Quick-start)*** ] 2:[ [Basic examples for C++ and C#](https://www.youtube.com/watch?v=9Hyg3_WE9Ks) ] 3:[ [Complex types and Strings](https://www.youtube.com/watch?v=QXMj9-8XJnY) ]
 > -> { **[Wiki](https://github.com/3F/Conari/wiki)** }
@@ -21,12 +19,64 @@ Lightweight and flexible binding, even accessing to complex types like structure
 [![](https://raw.githubusercontent.com/3F/Conari/master/Conari/Resources/screencast_Complex_types.jpg)](https://www.youtube.com/watch?v=QXMj9-8XJnY)
 
 
-## License
+## Why Conari ?
+
+It was designed to be loyal to your needs on the fly.
+
+🔍 Easy to start:
+
+```csharp
+using(var l = new ConariL("...")) {
+    // ...
+}
+```
+
+🚀 Awesome speed:
+
+test of regXwild's algorithms [[340x10000 Unicode](https://github.com/3F/regXwild/blob/d9e4cd18e6f3fbc29b271b1feb4d8c659aa14bd7/Readme.md#speed-comparison)]   | +icase [x32]| +icase [x64]         | `
+----------------------------------------------|--------------|-----------------|---
+**native C++** final `EXT` algorithm          | **~50ms**    | **~26ms**       | `<<`
+regexp-c++11(regex_search)                    | ~59309ms     | ~53334ms        |
+regexp-c++11(regex_match with endings .*)     | ~59503ms     | ~53817ms        |
+.NET Regex engine [Compiled]                  | ~38310ms     | ~37242ms        |
+.NET Regex engine                             | ~31565ms     | ~30975ms        |
+regXwild via **Conari** v1.3 (Lambda) - `EXT` | **~54ms**    | **~35ms**       | `<<`
+regXwild via **Conari** v1.3 (DLR) - `EXT`    | ~214ms       | ~226ms          |
+
+🔨 Its amazing DLR features:
+
+```csharp
+using(dynamic l = new ConariX("..."))
+{
+    // just everything is yours ~
+    l.curl_easy_setopt(curl, 10002, "http://example.com");
+}
+```
+
+🔧 Raw accessibility to any binary data in unmanaged memory:
+
+```csharp
+ptr.Native().align<int>(2, "x", "y")
+            .t<IntPtr>("data")
+            .Raw;
+```
+
+🔖 Modern **.NET Core**
+
+Conari is ready for .NET Core starting from 1.4.
+
+But we have even more, again. Conari also provides [support for .NET Standard **2.0**](https://github.com/3F/Conari/issues/13) layer which does not cover unmanaged EmitCalli due to missed implementation for System.Private.CoreLib.
+
+🍰 Open and Free:
+
+Conari is available for everyone from 2016 🎉 Open Source project; MIT License, Yes! Enjoy!
+
+## 🗸 License
 
 The [MIT License (MIT)](https://github.com/3F/Conari/blob/master/LICENSE)
 
 ```
-Copyright (c) 2013-2019  Denis Kuzmin < entry.reg@gmail.com > GitHub/3F
+Copyright (c) 2016-2019  Denis Kuzmin < entry.reg@gmail.com > GitHub/3F
 ```
 
 [ [ ☕ Donate ](https://3F.github.com/Donation/) ]
@@ -35,17 +85,7 @@ Conari contributors: https://github.com/3F/Conari/graphs/contributors
 
 We're waiting for your awesome contributions!
 
-
-## Why Conari ?
-
-
-**Easy to start:**
-
-```csharp
-using(var l = new ConariL("...")) {
-    // ...
-}
-```
+## Take a look closer
 
 **Dynamic features** (**DLR**, *fully automatic way*) when using of *unmanaged* code:
 
@@ -235,4 +275,4 @@ have fun!
 * NuGet: [![NuGet package](https://img.shields.io/nuget/v/Conari.svg)](https://www.nuget.org/packages/Conari/)
 * [GetNuTool](https://github.com/3F/GetNuTool): `msbuild gnt.core /p:ngpackages="Conari"` or **[gnt](https://3f.github.io/GetNuTool/releases/latest/gnt/)** /p:ngpackages="Conari"
 * [GitHub Releases](https://github.com/3F/Conari/releases) [ [latest](https://github.com/3F/Conari/releases/latest) ]
-* CI builds: [`CI /artifacts`](https://ci.appveyor.com/project/3Fs/conari/history) ( [old CI](https://ci.appveyor.com/project/3Fs/conari/history) ) or find `🎲 CI build` on [GitHub Releases](https://github.com/3F/Conari/releases) page.
+* CI builds: [`CI /artifacts`](https://ci.appveyor.com/project/3Fs/conari/history) or find `🎲 CI build` on [GitHub Releases](https://github.com/3F/Conari/releases) page.
