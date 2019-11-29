@@ -56,6 +56,24 @@
                     .Raw;
         ```
 
+        🏄 Most powerful PInvoke and even most convenient use of WinAPI. Our recipe is simple: *Just use it!*
+
+        ```
+        dynamic user32 = new User32();
+
+            user32.ShowWindow(0x000A0A28, 3);
+            user32.MessageBoxA(0, "Conari in action", "Hello!", 0);
+        ```
+
+        ```
+        dynamic kernel32 = new Kernel32();
+
+            kernel32.GetModuleHandleA&lt;IntPtr&gt;("libcurl-x64");
+            kernel32.GetModuleHandleW&lt;IntPtr&gt;((WCharPtr)ustr);
+        ```
+
+        **Important note:** Conari does not provide anything from above. It will just generate and adapt everything at runtime. Specially for you!
+
         🔖 Modern **.NET Core**
 
         Conari is ready for .NET Core starting from 1.4.

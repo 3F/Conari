@@ -4,13 +4,13 @@
 
 🧬 Conari engine represents powerful platform for work with unmanaged memory, pe-modules, related PInvoke features, and more for: Libraries, Executable Modules, enjoying of the unmanaged native C/C++ in .NET world, and other raw binary data. Even accessing to complex types like structures without their declaration at all.
 
-[![Build status](https://ci.appveyor.com/api/projects/status/qc1d3ofsso8fd67t/branch/master?svg=true)](https://ci.appveyor.com/project/3Fs/conari/branch/master)
+[![Build status](https://ci.appveyor.com/api/projects/status/xbb5imyn9lr8dxbb/branch/master?svg=true)](https://ci.appveyor.com/project/3Fs/conari-wkygr/branch/master)
 [![release-src](https://img.shields.io/github/release/3F/Conari.svg)](https://github.com/3F/Conari/releases/latest)
 [![License](https://img.shields.io/badge/License-MIT-74A5C2.svg)](https://github.com/3F/Conari/blob/master/LICENSE)
 [![NuGet package](https://img.shields.io/nuget/v/Conari.svg)](https://www.nuget.org/packages/Conari/) 
-[![Tests](https://img.shields.io/appveyor/tests/3Fs/conari/master.svg)](https://ci.appveyor.com/project/3Fs/conari/build/tests)
+[![Tests](https://img.shields.io/appveyor/tests/3Fs/conari-wkygr/master.svg)](https://ci.appveyor.com/project/3Fs/conari-wkygr/build/tests)
 
-[![Build history](https://buildstats.info/appveyor/chart/3Fs/conari?buildCount=10&includeBuildsFromPullRequest=true&showStats=true)](https://ci.appveyor.com/project/3Fs/conari/history)
+[![Build history](https://buildstats.info/appveyor/chart/3Fs/conari-wkygr?buildCount=15&includeBuildsFromPullRequest=true&showStats=true)](https://ci.appveyor.com/project/3Fs/conari-wkygr/history)
 
 > 1:[ ***[Quick start](https://github.com/3F/Conari/wiki/Quick-start)*** ] 2:[ [Basic examples for C++ and C#](https://www.youtube.com/watch?v=9Hyg3_WE9Ks) ] 3:[ [Complex types and Strings](https://www.youtube.com/watch?v=QXMj9-8XJnY) ]
 > -> { **[Wiki](https://github.com/3F/Conari/wiki)** }
@@ -60,6 +60,24 @@ ptr.Native().align<int>(2, "x", "y")
             .t<IntPtr>("data")
             .Raw;
 ```
+
+🏄 Most powerful PInvoke and even most convenient use of WinAPI. Our recipe is simple: *Just use it!*
+
+```csharp
+dynamic user32 = new User32();
+
+    user32.ShowWindow(0x000A0A28, 3);
+    user32.MessageBoxA(0, "Conari in action", "Hello!", 0);
+```
+
+```csharp
+dynamic kernel32 = new Kernel32();
+
+    kernel32.GetModuleHandleA<IntPtr>("libcurl-x64");
+    kernel32.GetModuleHandleW<IntPtr>((WCharPtr)ustr);
+```
+
+**Important note:** Conari does not provide anything from above. It will just generate and adapt everything at runtime. Specially for you!
 
 🔖 Modern **.NET Core**
 
@@ -275,4 +293,4 @@ have fun!
 * NuGet: [![NuGet package](https://img.shields.io/nuget/v/Conari.svg)](https://www.nuget.org/packages/Conari/)
 * [GetNuTool](https://github.com/3F/GetNuTool): `msbuild gnt.core /p:ngpackages="Conari"` or **[gnt](https://3f.github.io/GetNuTool/releases/latest/gnt/)** /p:ngpackages="Conari"
 * [GitHub Releases](https://github.com/3F/Conari/releases) [ [latest](https://github.com/3F/Conari/releases/latest) ]
-* CI builds: [`CI /artifacts`](https://ci.appveyor.com/project/3Fs/conari/history) or find `🎲 CI build` on [GitHub Releases](https://github.com/3F/Conari/releases) page.
+* CI builds: [`CI /artifacts`](https://ci.appveyor.com/project/3Fs/conari-wkygr/history) ( [old CI](https://ci.appveyor.com/project/3Fs/conari/history) ) or find `🎲 CI build` on [GitHub Releases](https://github.com/3F/Conari/releases) page.
