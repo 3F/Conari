@@ -28,9 +28,9 @@ namespace net.r_eg.Conari.Core
     public interface IConfig
     {
         /// <summary>
-        /// The library.
+        /// Module (.dll, .exe, or address).
         /// </summary>
-        string LibName { get; set; }
+        string Module { get; set; }
 
         /// <summary>
         /// To use `commit` methods for end calling.
@@ -38,7 +38,7 @@ namespace net.r_eg.Conari.Core
         bool TransactionStrategy { get; set; }
 
         /// <summary>
-        /// To load library only when it required.
+        /// To load library only when required.
         /// </summary>
         bool LazyLoading { get; set; }
 
@@ -48,8 +48,21 @@ namespace net.r_eg.Conari.Core
         bool CacheDLR { get; set; }
 
         /// <summary>
-        /// Auto name-decoration to find entry points of exported functions.
+        /// Auto name-decoration to find entry points of exported proc.
         /// </summary>
         bool Mangling { get; set; }
+
+        /// <summary>
+        /// https://github.com/3F/Conari/issues/15
+        /// Windows will prevent new loading and return the same handle as for the first loaded module due to used reference count for each trying to load the same module (dll or exe).
+        /// Actual new loading and its new handle is possible when reference count is less than 1.
+        /// 
+        /// Through Conari this means each decrementing when disposing is processed on implemented such as ConariL object.
+        /// That is, each new instance will increase total reference count by +1 and each disposing will decrease it by -1.
+        /// But it can produce the problem not only in multithreading but even between third processes.
+        /// 
+        /// This option will isolate module for a real new loading even if it was already loaded somewhere else.
+        /// </summary>
+        bool IsolateLoadingOfModule { get; set; }
     }
 }

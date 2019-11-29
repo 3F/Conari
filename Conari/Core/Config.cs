@@ -30,9 +30,9 @@ namespace net.r_eg.Conari.Core
     public struct Config: IConfig
     {
         /// <summary>
-        /// The library.
+        /// Module (.dll, .exe, or address).
         /// </summary>
-        public string LibName
+        public string Module
         {
             get;
             set;
@@ -49,7 +49,7 @@ namespace net.r_eg.Conari.Core
         }
 
         /// <summary>
-        /// To load library only when it required.
+        /// To load library only when required.
         /// </summary>
         public bool LazyLoading
         {
@@ -67,7 +67,7 @@ namespace net.r_eg.Conari.Core
         }
 
         /// <summary>
-        /// Auto name-decoration to find entry points of exported functions.
+        /// Auto name-decoration to find entry points of exported proc.
         /// </summary>
         public bool Mangling
         {
@@ -75,23 +75,40 @@ namespace net.r_eg.Conari.Core
             set;
         }
 
-        public static explicit operator String(Config cfg)
+        /// <summary>
+        /// https://github.com/3F/Conari/issues/15
+        /// Windows will prevent new loading and return the same handle as for the first loaded module due to used reference count for each trying to load the same module (dll or exe).
+        /// Actual new loading and its new handle is possible when reference count is less than 1.
+        /// 
+        /// Through Conari this means each decrementing when disposing is processed on implemented such as ConariL object.
+        /// That is, each new instance will increase total reference count by +1 and each disposing will decrease it by -1.
+        /// But it can produce the problem not only in multithreading but even between third processes.
+        /// 
+        /// This option will isolate module for a real new loading even if it was already loaded somewhere else.
+        /// </summary>
+        public bool IsolateLoadingOfModule
         {
-            return cfg.LibName;
+            get;
+            set;
         }
 
-        public static explicit operator Config(String lib)
-        {
-            return new Config(lib);
-        }
+        [Obsolete("Use {Module} property instead.")]
+        public string LibName => Module;
 
-        /// <param name="lib">The library.</param>
-        public Config(string lib)
+        public static explicit operator string(Config cfg) => cfg.Module;
+
+        public static explicit operator Config(string lib) => new Config(lib);
+
+        /// <param name="module">Module (.dll, .exe, or address).</param>
+        /// <param name="isolate">Initialize property {IsolateLoadingOfModule}.</param>
+        public Config(string module, bool isolate = false)
             : this()
         {
-            LibName     = lib;
+            Module      = module;
             CacheDLR    = true;
             Mangling    = true;
+
+            IsolateLoadingOfModule = isolate;
         }
     }
 }

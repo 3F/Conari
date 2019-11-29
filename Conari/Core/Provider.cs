@@ -336,7 +336,7 @@ namespace net.r_eg.Conari.Core
             throw new NotImplementedException("Not yet implemented. Please use it from unmanaged code.");
         }
 
-        public Provider()
+        protected Provider()
         {
             aliasDict = new AliasDict(this);
         }
@@ -346,11 +346,12 @@ namespace net.r_eg.Conari.Core
         protected IntPtr getProcAddress(LpProcName lpProcName)
         {
             if(!Library.IsActive && !load()) {
-                throw new LoaderException($"The handle of library is zero. Last loaded library: '{Library.LibName}'");
+                throw new LoaderException($"The handle of library is zero. Last loaded library: '{Library.module}'");
             }
 
-            return getProcAddress(
-                Library.Handle,
+            return getProcAddress
+            (
+                Library.handle,
                 tryAlias(lpProcName), 
                 Mangling
             );

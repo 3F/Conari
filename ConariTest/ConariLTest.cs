@@ -14,7 +14,7 @@ namespace ConariTest
         [Fact]
         public void loadTest1()
         {
-            Assert.Throws<ArgumentException>(() =>
+            Assert.Throws<ArgumentNullException>(() =>
                 new ConariL((string)null)
             );
 
@@ -32,7 +32,7 @@ namespace ConariTest
         {
             new ConariL(new Config("") { LazyLoading = true }).Dispose();
 
-            Assert.Throws<ArgumentException>(() =>
+            Assert.Throws<ArgumentNullException>(() =>
                 new ConariL("")
             );
         }

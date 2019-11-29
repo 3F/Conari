@@ -23,50 +23,27 @@
  * THE SOFTWARE.
 */
 
-using System;
-using net.r_eg.Conari.Types;
-
-namespace net.r_eg.Conari.Core
+namespace net.r_eg.Conari.Types
 {
-    public struct Link
+    /// <summary>
+    /// Reference type wrapper for use inside value type data.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    internal sealed class WRef<T> 
     {
-        /// <summary>
-        /// Used module (.dll, .exe, or address)
-        /// </summary>
-        public string module;
+        public T value;
 
-        /// <summary>
-        /// Points to actual isolated module if true.
-        /// </summary>
-        public bool isolated;
-
-        /// <summary>
-        /// A handle of loaded module.
-        /// </summary>
-        internal IntPtr handle;
-
-        /// <summary>
-        /// An resolved file status of the used module.
-        /// </summary>
-        internal readonly WRef<bool> resolved;
-
-        public bool IsActive => handle != IntPtr.Zero;
-
-        [Obsolete("Use {module} field instead.")]
-        public string LibName => module;
-
-        public Link(IntPtr handle, string module, bool isolated = false)
-            : this()
+        public static implicit operator T(WRef<T> obj)
         {
-            this.handle     = handle;
-            this.module     = module;
-            this.isolated   = isolated;
-
-            resolved = new WRef<bool>(false);
+            return (obj == default) ? default : obj.value;
         }
 
-        public Link(string module)
-            : this(IntPtr.Zero, module)
+        public WRef(T value)
+        {
+            this.value = value;
+        }
+
+        public WRef()
         {
 
         }

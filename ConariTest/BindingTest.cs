@@ -13,43 +13,45 @@ namespace ConariTest
     {
         private const string UNLIB_DLL = @"..\UnLib.dll";
 
+        private readonly IConfig gCfgUnlib = new Config(UNLIB_DLL, true);
+
         [Fact]
         public void basicTest1()
         {
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(UNLIB_DLL, true))
             {
                 Assert.Equal(true, l.DLR.get_True<bool>());
                 Assert.True(l.bind<Func<bool>>("get_True")());
                 Assert.Equal(true, l.bind(Dynamic.GetMethodInfo(typeof(bool)), "get_True")
                                                     .dynamic
-                                                    .Invoke(null, new object[0]));
+                                                    .Invoke(null, Array.Empty<object>()));
             }
         }
 
         [Fact]
         public void basicTest2()
         {
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 Assert.Equal(7, l.DLR.get_Seven<ushort>());
                 Assert.Equal(7, l.bind<Func<ushort>>("get_Seven")());
                 Assert.Equal((ushort)7, l.bind(Dynamic.GetMethodInfo(typeof(ushort)), "get_Seven")
                                                          .dynamic
-                                                         .Invoke(null, new object[0]));
+                                                         .Invoke(null, Array.Empty<object>()));
             }
         }
 
         [Fact]
         public void basicTest3()
         {
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 string exp = "Hello World !";
                 Assert.Equal(exp, l.DLR.get_HelloWorld<CharPtr>());
                 Assert.Equal(exp, l.bind<Func<CharPtr>>("get_HelloWorld")());
 
                 var dyn = l.bind(Dynamic.GetMethodInfo(typeof(CharPtr)), "get_HelloWorld");
-                Assert.Equal(exp, (CharPtr)dyn.dynamic.Invoke(null, new object[0]));
+                Assert.Equal(exp, (CharPtr)dyn.dynamic.Invoke(null, Array.Empty<object>()));
             }
         }
 
@@ -58,7 +60,7 @@ namespace ConariTest
         {
             Assert.Throws<WinFuncFailException>(() =>
             {
-                using(var l = new ConariL(UNLIB_DLL))
+                using(var l = new ConariL(gCfgUnlib))
                 {
                     l.Mangling = false;
                     l.DLR.not_real_func_name<bool>();
@@ -71,7 +73,7 @@ namespace ConariTest
         {
             Assert.Throws<WinFuncFailException>(() =>
             {
-                using(var l = new ConariL(UNLIB_DLL))
+                using(var l = new ConariL(gCfgUnlib))
                 {
                     l.Mangling = false;
                     l.bind<Func<bool>>("not_real_func_name")();
@@ -84,12 +86,12 @@ namespace ConariTest
         {
             Assert.Throws<WinFuncFailException>(() =>
             {
-                using(var l = new ConariL(UNLIB_DLL))
+                using(var l = new ConariL(gCfgUnlib))
                 {
                     l.Mangling = false;
                     l.bind(Dynamic.GetMethodInfo(typeof(bool)), "not_real_func_name")
                         .dynamic
-                        .Invoke(null, new object[0]);
+                        .Invoke(null, Array.Empty<object>());
                 }
             });
         }
@@ -97,7 +99,7 @@ namespace ConariTest
         [Fact]
         public void basicTest7()
         {
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 Assert.Equal((UserSpecUintType)7, l.DLR.get_Seven<UserSpecUintType>());
                 Assert.Equal((UserSpecUintType)7, l.bind<Func<UserSpecUintType>>("get_Seven")());
@@ -105,7 +107,7 @@ namespace ConariTest
                 Assert.Equal((UserSpecUintType)7, 
                                 l.bind(Dynamic.GetMethodInfo(typeof(UserSpecUintType)), "get_Seven")
                                                 .dynamic
-                                                .Invoke(null, new object[0]));
+                                                .Invoke(null, Array.Empty<object>()));
             }
         }
 
@@ -114,7 +116,7 @@ namespace ConariTest
         {
             Assert.Throws<EntryPointNotFoundException>(() =>
             {
-                using(var l = new ConariL(UNLIB_DLL))
+                using(var l = new ConariL(gCfgUnlib))
                 {
                     l.Mangling = true;
                     l.DLR.not_real_func_name<bool>();
@@ -127,7 +129,7 @@ namespace ConariTest
         {
             Assert.Throws<EntryPointNotFoundException>(() =>
             {
-                using(var l = new ConariL(UNLIB_DLL))
+                using(var l = new ConariL(gCfgUnlib))
                 {
                     l.Mangling = true;
                     l.bind<Func<bool>>("not_real_func_name")();
@@ -140,12 +142,12 @@ namespace ConariTest
         {
             Assert.Throws<EntryPointNotFoundException>(() =>
             {
-                using(var l = new ConariL(UNLIB_DLL))
+                using(var l = new ConariL(gCfgUnlib))
                 {
                     l.Mangling = true;
                     l.bind(Dynamic.GetMethodInfo(typeof(bool)), "not_real_func_name")
                         .dynamic
-                        .Invoke(null, new object[0]);
+                        .Invoke(null, Array.Empty<object>());
                 }
             });
         }
@@ -153,20 +155,20 @@ namespace ConariTest
         [Fact]
         public void basicTest11()
         {
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 Assert.Equal(false, l.DLR.get_False<bool>());
                 Assert.False(l.bind<Func<bool>>("get_False")());
                 Assert.Equal(false, l.bind(Dynamic.GetMethodInfo(typeof(bool)), "get_False")
                                                     .dynamic
-                                                    .Invoke(null, new object[0]));
+                                                    .Invoke(null, Array.Empty<object>()));
             }
         }
 
         [Fact]
         public void basicTest12()
         {
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 Assert.Equal(7, l.bindFunc<int>("get_VarSeven", typeof(int))());
                 Assert.Null(l.bind("set_VarSeven", typeof(void), typeof(int))(5));
@@ -179,7 +181,7 @@ namespace ConariTest
         [Fact]
         public void basicTest13()
         {
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 Assert.Equal(7, l.bind<Func<int>>("get_VarSeven")());
 
@@ -194,7 +196,7 @@ namespace ConariTest
         [Fact]
         public void basicTest14()
         {
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 Assert.Equal(7, l.DLR.get_VarSeven<int>());
                 Assert.Equal(null, l.DLR.set_VarSeven(5));
@@ -207,7 +209,7 @@ namespace ConariTest
         [Fact]
         public void basicTest15()
         {
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 Assert.Equal(7, l.bind(Dynamic.GetMethodInfo(typeof(int)), "get_VarSeven")
                                         .dynamic
@@ -219,7 +221,7 @@ namespace ConariTest
 
                 Assert.Equal(5, l.bind(Dynamic.GetMethodInfo(typeof(int)), "get_VarSeven")
                                         .dynamic
-                                        .Invoke(null, new object[0]));
+                                        .Invoke(null, Array.Empty<object>()));
 
                 Assert.Null(l.bind(Dynamic.GetMethodInfo(null), "reset_VarSeven")
                                         .dynamic
@@ -234,7 +236,7 @@ namespace ConariTest
         [Fact]
         public void cacheTest1()
         {
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 Assert.Equal(7, l.DLR.get_VarSeven<int>());
                 Assert.Equal(null, l.DLR.set_VarSeven(1235));
@@ -247,7 +249,7 @@ namespace ConariTest
         [Fact]
         public void cacheTest2()
         {
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 Assert.Equal(7, l.bindFunc<int>("get_VarSeven", typeof(int))());
                 Assert.Null(l.bind("set_VarSeven", typeof(void), typeof(int))(1024));
@@ -260,7 +262,7 @@ namespace ConariTest
         [Fact]
         public void cacheTest3()
         {
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 Assert.Equal(7, l.bindFunc<Func<int>>("get_VarSeven")());
 
@@ -285,7 +287,7 @@ namespace ConariTest
                 see `T getDelegate<T>(IntPtr ptr, CallingConvention conv) where T : class`
             */
 
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 Assert.Equal(7, l.DLR.get_Seven<ushort>());
                 Assert.Equal(7, l.bind<Func<ushort>>("get_Seven")());
@@ -294,7 +296,7 @@ namespace ConariTest
                 Assert.Equal(7, l.bind<Func<ushort>>("get_Seven")());
             }
 
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 Assert.Equal(7, l.bind<Func<ushort>>("get_Seven")());
                 Assert.Equal(7, l.DLR.get_Seven<ushort>());
@@ -307,7 +309,7 @@ namespace ConariTest
         [Fact]
         public void namingTest1()
         {
-            using(var l = new ConariL(UNLIB_DLL, "apiprefix_"))
+            using(var l = new ConariL(UNLIB_DLL, true, "apiprefix_"))
             {
                 Assert.Equal(4, l.DLR.GetMagicNum<int>());
 
@@ -327,12 +329,12 @@ namespace ConariTest
             // bool net::r_eg::Conari::UnLib::API::getD_True(void)
             // ?getD_True@API@UnLib@Conari@r_eg@net@@YA_NXZ
 
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 Assert.True(l.bind<Func<bool>>("?getD_True@API@UnLib@Conari@r_eg@net@@YA_NXZ")());
                 Assert.Equal(true, l.bind(Dynamic.GetMethodInfo(typeof(bool)), "?getD_True@API@UnLib@Conari@r_eg@net@@YA_NXZ")
                                                     .dynamic
-                                                    .Invoke(null, new object[0]));
+                                                    .Invoke(null, Array.Empty<object>()));
             }
         }
 
@@ -341,12 +343,12 @@ namespace ConariTest
         {
             // unsigned short net::r_eg::Conari::UnLib::API::getD_Seven(void)
             // ?getD_Seven@API@UnLib@Conari@r_eg@net@@YAGXZ
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 Assert.Equal(7, l.bind<Func<ushort>>("?getD_Seven@API@UnLib@Conari@r_eg@net@@YAGXZ")());
                 Assert.Equal((ushort)7, l.bind(Dynamic.GetMethodInfo(typeof(ushort)), "?getD_Seven@API@UnLib@Conari@r_eg@net@@YAGXZ")
                                                          .dynamic
-                                                         .Invoke(null, new object[0]));
+                                                         .Invoke(null, Array.Empty<object>()));
             }
         }
 
@@ -356,7 +358,7 @@ namespace ConariTest
             // char const * net::r_eg::Conari::UnLib::API::getD_HelloWorld(void)
             // x86: ?getD_HelloWorld@API@UnLib@Conari@r_eg@net@@YAPBDXZ
             // x64: ?getD_HelloWorld@API@UnLib@Conari@r_eg@net@@YAPEBDXZ
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 string xfun;
                 if(IntPtr.Size == sizeof(Int64)) {
@@ -370,7 +372,7 @@ namespace ConariTest
                 Assert.Equal(exp, l.bind<Func<CharPtr>>(xfun)());
 
                 var dyn = l.bind(Dynamic.GetMethodInfo(typeof(CharPtr)), xfun);
-                Assert.Equal(exp, (CharPtr)dyn.dynamic.Invoke(null, new object[0]));
+                Assert.Equal(exp, (CharPtr)dyn.dynamic.Invoke(null, Array.Empty<object>()));
             }
         }
 
@@ -380,7 +382,7 @@ namespace ConariTest
         [Fact]
         public void manglingTest4()
         {
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 l.Mangling = true;
 
@@ -388,7 +390,7 @@ namespace ConariTest
                 Assert.Equal(7, l.bind<Func<ushort>>("get_SevenStdCall")());
                 Assert.Equal((ushort)7, l.bind(Dynamic.GetMethodInfo(typeof(ushort)), "get_SevenStdCall")
                                                          .dynamic
-                                                         .Invoke(null, new object[0]));
+                                                         .Invoke(null, Array.Empty<object>()));
             }
         }
 
@@ -398,7 +400,7 @@ namespace ConariTest
         [Fact]
         public void manglingTest5()
         {
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 l.Mangling = true;
 
@@ -406,7 +408,7 @@ namespace ConariTest
                 Assert.Equal(7, l.bind<Func<ushort>>("get_SevenFastCall")());
                 Assert.Equal((ushort)7, l.bind(Dynamic.GetMethodInfo(typeof(ushort)), "get_SevenFastCall")
                                                          .dynamic
-                                                         .Invoke(null, new object[0]));
+                                                         .Invoke(null, Array.Empty<object>()));
             }
         }
 
@@ -416,7 +418,7 @@ namespace ConariTest
         [Fact]
         public void manglingTest6()
         {
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 l.Mangling = true;
 
@@ -424,7 +426,7 @@ namespace ConariTest
                 Assert.Equal(7, l.bind<Func<ushort>>("get_SevenVectorCall")());
                 Assert.Equal((ushort)7, l.bind(Dynamic.GetMethodInfo(typeof(ushort)), "get_SevenVectorCall")
                                                          .dynamic
-                                                         .Invoke(null, new object[0]));
+                                                         .Invoke(null, Array.Empty<object>()));
             }
         }
 
@@ -436,7 +438,7 @@ namespace ConariTest
         [Fact]
         public void manglingTest7()
         {
-            using var l = new ConariL(UNLIB_DLL)
+            using var l = new ConariL(gCfgUnlib)
             {
                 Mangling = false
             };
@@ -461,7 +463,7 @@ namespace ConariTest
         [Fact]
         public void manglingTest8()
         {
-            using var l = new ConariL(UNLIB_DLL)
+            using var l = new ConariL(gCfgUnlib)
             {
                 Mangling = false
             };
@@ -488,7 +490,7 @@ namespace ConariTest
         [Fact]
         public void manglingTest9()
         {
-            using var l = new ConariL(UNLIB_DLL)
+            using var l = new ConariL(gCfgUnlib)
             {
                 Mangling = false
             };
@@ -498,13 +500,13 @@ namespace ConariTest
 
             if(IntPtr.Size == sizeof(Int64))
             {
-                Assert.Equal((ushort)7, xfun.Invoke(null, new object[0]));
+                Assert.Equal((ushort)7, xfun.Invoke(null, Array.Empty<object>()));
                 return;
             }
 
             Assert.Throws<WinFuncFailException>(() =>
             {
-                xfun.Invoke(null, new object[0]);
+                xfun.Invoke(null, Array.Empty<object>());
             });
         }
 
@@ -514,7 +516,7 @@ namespace ConariTest
         [Fact]
         public void echoTest1()
         {
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 string exp = "my string-123 !";
 
@@ -537,7 +539,7 @@ namespace ConariTest
         [Fact]
         public void echoTest2()
         {
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 string exp = "my string-123 !";
 
@@ -560,7 +562,7 @@ namespace ConariTest
         [Fact]
         public void echoTest3()
         {
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 string exp = "my string-123 !";
 
@@ -583,7 +585,7 @@ namespace ConariTest
         [Fact]
         public void echoTest4()
         {
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 string exp = "my string-123 !";
 
@@ -606,7 +608,7 @@ namespace ConariTest
         [Fact]
         public void echoTest5()
         {
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 string exp = "my string-123 !";
 
@@ -629,7 +631,7 @@ namespace ConariTest
         [Fact]
         public void echoTest6()
         {
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 Assert.Equal(false, l.DLR.get_BoolVal<bool>(false));
                 Assert.False(l.bind<Func<bool, bool>>("get_BoolVal")(false));
@@ -651,7 +653,7 @@ namespace ConariTest
         [Fact]
         public void echoTest7()
         {
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 Assert.Equal(0, l.DLR.get_IntVal<int>(0));
                 Assert.Equal(-456, l.bind<Func<int, int>>("get_IntVal")(-456));
@@ -664,13 +666,13 @@ namespace ConariTest
         [Fact]
         public void complexTest1()
         {
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 IntPtr ptr1 = l.DLR.get_TSpec<IntPtr>();
                 IntPtr ptr2 = l.bind<Func<IntPtr>>("get_TSpec")();
 
                 var dyn     = l.bind(Dynamic.GetMethodInfo(typeof(IntPtr)), "get_TSpec");
-                IntPtr ptr3 = (IntPtr)dyn.dynamic.Invoke(null, new object[0]);
+                IntPtr ptr3 = (IntPtr)dyn.dynamic.Invoke(null, Array.Empty<object>());
 
                 Assert.NotEqual(IntPtr.Zero, ptr1);
                 Assert.True(ptr1 == ptr2 && ptr2 == ptr3);
@@ -738,7 +740,7 @@ namespace ConariTest
         [Fact]
         public void complexTest2()
         {
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 IntPtr ptr = l.DLR.get_TSpecB_A_ptr<IntPtr>();
                 Assert.NotEqual(IntPtr.Zero, ptr);
@@ -824,7 +826,7 @@ namespace ConariTest
         [Fact]
         public void stringTest1()
         {
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 string exp = "mystring-123 !";
 
@@ -849,7 +851,7 @@ namespace ConariTest
         [Fact]
         public void stringTest2()
         {
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 string exp = "mystring-123 !";
 
@@ -874,7 +876,7 @@ namespace ConariTest
         [Fact]
         public void stringTest3()
         {
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 string exp = "mystring-123 !";
 
@@ -899,7 +901,7 @@ namespace ConariTest
         [Fact]
         public void stringTest4()
         {
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 string exp = "mystring-123 !";
 
@@ -921,7 +923,7 @@ namespace ConariTest
         [Fact]
         public void chkTypeTVerTest1()
         {
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 TVer v = new TVer(7, 0, 256);
 
@@ -933,7 +935,7 @@ namespace ConariTest
         [Fact]
         public void chkTypeRefTVerTest1()
         {
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 TVer v = new TVer(5, 0, 1024);
 

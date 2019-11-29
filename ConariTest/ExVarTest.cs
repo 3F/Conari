@@ -1,5 +1,6 @@
 ﻿using System;
 using net.r_eg.Conari;
+using net.r_eg.Conari.Core;
 using net.r_eg.Conari.Native;
 using net.r_eg.Conari.Types;
 using Xunit;
@@ -10,10 +11,12 @@ namespace ConariTest
     {
         private const string UNLIB_DLL = @"..\UnLib.dll";
 
+        private readonly IConfig gCfgUnlib = new Config(UNLIB_DLL, true);
+
         [Fact]
         public void exvarTest1()
         {
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 UInt32 expected = 0x00001CE8;
 
@@ -35,7 +38,7 @@ namespace ConariTest
         [Fact]
         public void exvarTest2()
         {
-            using(var l = new ConariL(UNLIB_DLL, "apiprefix_"))
+            using(var l = new ConariL(UNLIB_DLL, true, "apiprefix_"))
             {
                 bool expected = false;
                 
@@ -54,7 +57,7 @@ namespace ConariTest
         [Fact]
         public void exvarTest3()
         {
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 string expected = "Hello World!";
 

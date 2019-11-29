@@ -24,26 +24,24 @@
 */
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using net.r_eg.Conari.Core;
 using net.r_eg.Conari.Log;
 
 namespace net.r_eg.Conari
 {
-    public class ConariL: Provider, IConari, ILoader, IProvider, IBinder, IDisposable
+    /// <summary>
+    /// Conari for work with unmanaged memory, pe-modules, and raw binary data: 
+    /// https://github.com/3F/Conari
+    /// </summary>
+    public class ConariL: Provider, IConari, ILoader, IProvider, IBinder/*, IDisposable*/
     {
         protected IConfig config;
 
         /// <summary>
         /// Access to available configuration data of dynamic DLR.
         /// </summary>
-        public IProviderDLR ConfigDLR
-        {
-            get {
-                return (IProviderDLR)DLR;
-            }
-        }
+        public IProviderDLR ConfigDLR => (IProviderDLR)DLR;
 
         /// <summary>
         /// Provides dynamic features like adding 
@@ -58,12 +56,10 @@ namespace net.r_eg.Conari
         /// <summary>
         /// Access to logger and its events.
         /// </summary>
-        public ISender Log
-        {
-            get {
-                return LSender._;
-            }
-        }
+        public ISender Log => LSender._;
+
+        //TODO: integration with IConfig
+        private protected override bool ModuleIsolation { get; set; }
 
         /// <summary>
         /// DLR Features with `__cdecl` calling convention.
@@ -100,7 +96,8 @@ namespace net.r_eg.Conari
         /// </summary>
         public dynamic __fastcall
         {
-            get {
+            get 
+            {
                 if(_dlrFast == null) {
                     _dlrFast = newDLR(CallingConvention.FastCall);
                 }
@@ -121,7 +118,7 @@ namespace net.r_eg.Conari
         }
 
         /// <summary>
-        /// The Conari with specific calling convention.
+        /// Initialize Conari with specific calling convention.
         /// </summary>
         /// <param name="cfg">The Conari configuration.</param>
         /// <param name="conv">How should call methods.</param>
@@ -136,7 +133,7 @@ namespace net.r_eg.Conari
         }
 
         /// <summary>
-        /// The Conari with Cdecl - When the stack is cleaned up by the caller, it can do vararg functions.
+        /// Initialize Conari with Cdecl - When the stack is cleaned up by the caller, it can do vararg functions.
         /// </summary>
         /// <param name="cfg">The Conari configuration.</param>
         /// <param name="prefix">Optional prefix to use via `bind&lt;&gt;`</param>
@@ -145,9 +142,9 @@ namespace net.r_eg.Conari
         {
 
         }
-        
+
         /// <summary>
-        /// The Conari with specific calling convention.
+        /// Initialize Conari with specific calling convention.
         /// </summary>
         /// <param name="lib">The library.</param>
         /// <param name="conv">How should call methods.</param>
@@ -159,7 +156,7 @@ namespace net.r_eg.Conari
         }
 
         /// <summary>
-        /// The Conari with the calling convention by default.
+        /// Initialize Conari with the calling convention by default.
         /// </summary>
         /// <param name="lib">The library.</param>
         /// <param name="prefix">Optional prefix to use via `bind&lt;&gt;`</param>
@@ -169,16 +166,30 @@ namespace net.r_eg.Conari
 
         }
 
+        /// <summary>
+        /// Initialize Conari with the calling convention by default.
+        /// </summary>
+        /// <param name="lib">The library.</param>
+        /// <param name="isolate">To isolate module for a real new loading when true. Details in {IConfig.IsolateLoadingOfModule}.</param>
+        /// <param name="prefix">Optional prefix to use via `bind&lt;&gt;`</param>
+        public ConariL(string lib, bool isolate, string prefix = null)
+            : this(new Config(lib, isolate), prefix)
+        {
+
+        }
+
         protected void init(IConfig cfg)
         {
-            config      = cfg ?? throw new ArgumentNullException("Configuration cannot be null.");
+            config      = cfg ?? throw new ArgumentNullException(nameof(cfg));
             Mangling    = cfg.Mangling;
 
+            ModuleIsolation = cfg.IsolateLoadingOfModule;
+
             if(cfg.LazyLoading) {
-                Library = new Link(cfg.LibName);
+                Library = new Link(cfg.Module);
             }
             else {
-                load(cfg.LibName);
+                load(cfg.Module);
             }
 
             DLR = newDLR(Convention);
@@ -196,15 +207,5 @@ namespace net.r_eg.Conari
             DLR = newDLR(e.Data);
             LSender.Send(sender, $"DLR has been updated with new CallingConvention: {e.Data}", Message.Level.Info);
         }
-
-        #region IDisposable
-
-        // CA1063
-        protected override void Dispose(bool disposing)
-        {
-            base.Dispose(disposing);
-        }
-
-        #endregion
     }
 }

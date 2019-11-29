@@ -25,6 +25,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace net.r_eg.Conari.WinAPI
 {
@@ -86,5 +87,41 @@ namespace net.r_eg.Conari.WinAPI
         [DllImport("kernel32", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool FreeLibrary(IntPtr hModule);
+
+        /// <summary>
+        /// Retrieves a module handle for the specified module. The module must have been loaded by the calling process.
+        /// https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-getmodulehandlea
+        /// </summary>
+        /// <param name="lpModuleName">The name of the loaded module (either a .dll or .exe file). </param>
+        /// <returns>A handle to the specified module if success. Or NULL when fails. Use GetLastError.</returns>
+        [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern IntPtr GetModuleHandle([MarshalAs(UnmanagedType.LPWStr)] string lpModuleName);
+
+        /// <summary>
+        /// Retrieves the fully qualified path for the file that contains the specified module. 
+        /// The module must have been loaded by the current process.
+        /// https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-getmodulefilenamea
+        /// </summary>
+        /// <param name="hModule">
+        /// A handle to the loaded module whose path is being requested. 
+        /// If this parameter is NULL, GetModuleFileName retrieves the path of the executable file of the current process.
+        /// </param>
+        /// <param name="lpFilename">A pointer to a buffer that receives the fully qualified path of the module.</param>
+        /// <param name="nSize">The size of the lpFilename buffer.</param>
+        /// <returns>
+        /// If the function succeeds, the return value is the length of the string that is copied to the buffer, 
+        /// in characters, not including the terminating null character.
+        /// 
+        /// If the buffer is too small to hold the module name, the string is truncated to nSize characters 
+        /// including the terminating null character, the function returns nSize, 
+        /// and the function sets the last error to ERROR_INSUFFICIENT_BUFFER.
+        /// 
+        /// If the function fails, the return value is 0 (zero). Use GetLastError.
+        /// 
+        /// Windows XP: If the buffer is too small to hold the module name, the function returns nSize. 
+        ///             The last error code remains ERROR_SUCCESS. Same for 0-buffer.
+        /// </returns>
+        [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern uint GetModuleFileName(IntPtr hModule, [Out]StringBuilder lpFilename, uint nSize);
     }
 }

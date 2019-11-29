@@ -11,13 +11,15 @@ namespace ConariTest
     {
         private const string UNLIB_DLL = @"..\UnLib.dll";
 
+        private readonly IConfig gCfgUnlib = new Config(UNLIB_DLL, true);
+
         [Fact]
         public void aliasTest1()
         {
             // bool net::r_eg::Conari::UnLib::API::getD_True(void)
             // ?getD_True@API@UnLib@Conari@r_eg@net@@YA_NXZ
 
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(UNLIB_DLL, true))
             {
                 l.Aliases["getD_True"] = new ProcAlias("?getD_True@API@UnLib@Conari@r_eg@net@@YA_NXZ");
 
@@ -25,7 +27,7 @@ namespace ConariTest
                 Assert.True(l.bind<Func<bool>>("getD_True")());
                 Assert.Equal(true, l.bind(Dynamic.GetMethodInfo(typeof(bool)), "getD_True")
                                         .dynamic
-                                        .Invoke(null, new object[0]));
+                                        .Invoke(null, Array.Empty<object>()));
             }
         }
 
@@ -35,7 +37,7 @@ namespace ConariTest
             // unsigned short net::r_eg::Conari::UnLib::API::getD_Seven(void)
             // ?getD_Seven@API@UnLib@Conari@r_eg@net@@YAGXZ
 
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 l.Aliases["getD_Seven"] = new ProcAlias("?getD_Seven@API@UnLib@Conari@r_eg@net@@YAGXZ");
 
@@ -43,7 +45,7 @@ namespace ConariTest
                 Assert.Equal(7, l.bind<Func<ushort>>("getD_Seven")());
                 Assert.Equal((ushort)7, l.bind(Dynamic.GetMethodInfo(typeof(ushort)), "getD_Seven")
                                                 .dynamic
-                                                .Invoke(null, new object[0]));
+                                                .Invoke(null, Array.Empty<object>()));
             }
         }
 
@@ -53,7 +55,7 @@ namespace ConariTest
             // char const * net::r_eg::Conari::UnLib::API::getD_HelloWorld(void)
             // x86: ?getD_HelloWorld@API@UnLib@Conari@r_eg@net@@YAPBDXZ
             // x64: ?getD_HelloWorld@API@UnLib@Conari@r_eg@net@@YAPEBDXZ
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 string xfun;
                 if(IntPtr.Size == sizeof(Int64)) {
@@ -70,14 +72,14 @@ namespace ConariTest
                 Assert.Equal(exp, l.bind<Func<CharPtr>>("getD_HelloWorld")());
 
                 var dyn = l.bind(Dynamic.GetMethodInfo(typeof(CharPtr)), "getD_HelloWorld");
-                Assert.Equal(exp, (CharPtr)dyn.dynamic.Invoke(null, new object[0]));
+                Assert.Equal(exp, (CharPtr)dyn.dynamic.Invoke(null, Array.Empty<object>()));
             }
         }
 
         [Fact]
         public void aliasTest4()
         {
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 UInt32 expected = 0x00001CE8;
 
@@ -100,7 +102,7 @@ namespace ConariTest
         [Fact]
         public void aliasPrefixTest1()
         {
-            using(var l = new ConariL(UNLIB_DLL, "apiprefix_"))
+            using(var l = new ConariL(UNLIB_DLL, true, "apiprefix_"))
             {
                 bool expected = false;
 
@@ -118,7 +120,7 @@ namespace ConariTest
         [Fact]
         public void aliasPrefixTest2()
         {
-            using(var l = new ConariL(UNLIB_DLL, "apiprefix_"))
+            using(var l = new ConariL(UNLIB_DLL, true, "apiprefix_"))
             {
                 bool expected = false;
 
@@ -137,7 +139,7 @@ namespace ConariTest
         [Fact]
         public void aliasPrefixTest3()
         {
-            using(var l = new ConariL(UNLIB_DLL, "apiprefix_"))
+            using(var l = new ConariL(UNLIB_DLL, true, "apiprefix_"))
             {
                 bool expected = false;
 
@@ -154,7 +156,7 @@ namespace ConariTest
         [Fact]
         public void aliasPrefixTest4()
         {
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 l.Prefix = "apiprefix_";
 
@@ -183,7 +185,7 @@ namespace ConariTest
         [Fact]
         public void aliasPrefixTest5()
         {
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 var pa = new ProcAlias("apiprefix_GFlag", new AliasCfg() { NoPrefixR = true });
                 l.Aliases["one"] = l.Aliases["two"] = pa;
@@ -201,7 +203,7 @@ namespace ConariTest
         [Fact]
         public void aliasPrefixTest6()
         {
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 l.Aliases["GMN1"] = new ProcAlias(
                     "GetMagicNum", 
@@ -226,7 +228,7 @@ namespace ConariTest
         [Fact]
         public void multiAliasTest1()
         {
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 l.Aliases["getD_True"]  = "?getD_True@API@UnLib@Conari@r_eg@net@@YA_NXZ";
                 l.Aliases["getFlag"]    = l.Aliases["getD_True"];
@@ -236,14 +238,14 @@ namespace ConariTest
                 Assert.True(l.bind<Func<bool>>("getFlag")());
                 Assert.Equal(true, l.bind(Dynamic.GetMethodInfo(typeof(bool)), "getFlag")
                                         .dynamic
-                                        .Invoke(null, new object[0]));
+                                        .Invoke(null, Array.Empty<object>()));
             }
         }
 
         [Fact]
         public void multiAliasTest2()
         {
-            using(var l = new ConariL(UNLIB_DLL))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 l.Aliases["d"]  = "?getD_True@API@UnLib@Conari@r_eg@net@@YA_NXZ";
                 l.Aliases["a"] = l.Aliases["b"] = l.Aliases["c"] = l.Aliases["d"];
