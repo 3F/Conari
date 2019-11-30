@@ -35,7 +35,7 @@ using(var l = new ConariL("...")) {
 
 test of regXwild's algorithms [[340x10000 Unicode](https://github.com/3F/regXwild/blob/d9e4cd18e6f3fbc29b271b1feb4d8c659aa14bd7/Readme.md#speed-comparison)]   | +icase [x32]| +icase [x64]         | `
 ----------------------------------------------|--------------|-----------------|---
-**native C++** final `EXT` algorithm          | **~50ms**    | **~26ms**       | `<<`
+regXwild **native C++** `EXT` algorithm       | **~50ms**    | **~26ms**       | `<<`
 regexp-c++11(regex_search)                    | ~59309ms     | ~53334ms        |
 regexp-c++11(regex_match with endings .*)     | ~59503ms     | ~53817ms        |
 .NET Regex engine [Compiled]                  | ~38310ms     | ~37242ms        |

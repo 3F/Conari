@@ -1,7 +1,73 @@
+Conari  https://github.com/3F/Conari
 - - - -
-Conari  :: https://github.com/3F/Conari
-_ _ _ _
 
+[1.4] 2019.11.30
+
+    * NEW: Starting support of the .NET Core. PR #12
+           Full support: netcoreapp2.1 and netstandard2.1 (SDK 3).
+    
+    * NEW: Hack of the unmanaged EmitCalli to support .NET Standard 2.0. Issue #13.
+    
+    * NEW: NativeData and BReader now supports CharPtr, WCharPtr, BSTR types.
+    
+    * NEW: Implemented isolation for PE Modules. Issue #15.
+           Manage it through `IConfig.IsolateLoadingOfModule`.
+           
+           Optionaly it will isolate module for a real new loading even if it was already loaded somewhere else. Full details in https://github.com/3F/Conari/issues/15
+           
+    * NEW: Added `ConariX` as an compatible DLR version of ConariL implementation:
+            ```
+            using(dynamic l = new ConariX("..."))
+            {
+                // just everything is yours ~
+                l.curl_easy_setopt(curl, 10002, "http://example.com");
+            }
+            ```
+            
+    * NEW: Implemented kernel32 WinApi via new ConariX:
+            ```
+            dynamic kernel32 = new Kernel32();
+
+                kernel32.GetModuleHandleA<IntPtr>("libcurl-x64");
+                kernel32.GetModuleHandleW<IntPtr>((WCharPtr)ustr);
+            ```
+            
+    * NEW: Implemented user32 WinApi via new ConariX:
+            ```
+            dynamic user32 = new User32();
+
+                user32.ShowWindow(0x000A0A28, 3);
+                user32.MessageBoxA(0, "Conari in action", "Hello!", 0);
+            ```
+            
+    * NEW: Added netfx based target platforms: net472.
+    
+    * NEW: Added initialization of UnmanagedString from IntPtr.
+    
+    * FIXED: Fixed bug with typeof(void) for return type when DLR.
+    
+    * FIXED: Fixed bug with x64 for CharPtr, WCharPtr, BSTR types.
+    
+    * CHANGED: Performance: Internal ModuleBuilder now is unified for all our new generated dynamic types.
+    
+    * CHANGED: Added hMSBuild 2.2 + GetNuTool 1.7 in nupkg packages for related build processes:
+           
+           https://www.nuget.org/packages/Conari/
+           * tools\gnt.bat - https://github.com/3F/GetNuTool
+           * tools\hMSBuild.bat - https://github.com/3F/hMSBuild
+           
+    * NOTE: Official Releases:
+    
+            * NuGet: https://www.nuget.org/packages/Conari/
+            * GitHub: https://github.com/3F/Conari/releases/latest
+            
+    * NOTE: Please note again, .NET Standard 2.0 support is possible only because of our hack!
+            
+            While other netcoreapp2.1 + netstandard2.1 target platforms will not contain this modifications at all. Means most known behaviour.
+    
+            Do not hesitate to contact: https://github.com/3F/Conari/issues
+           
+        
 [v1.3]
 
     NEW: Improved speed >80% (DLR) & >90% (Lambda) - Issue #10
