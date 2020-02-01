@@ -3,8 +3,8 @@
 set cim=packages\vsSolutionBuildEvent\cim.cmd -vsw-priority Microsoft.NetCore.Component.SDK
 set _gnt=tools/gnt
 
-set reltype=%1
-if "%reltype%"=="" (
+set reltype=%~1
+if not defined reltype (
     set reltype=Release
 )
 
