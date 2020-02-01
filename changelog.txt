@@ -1,5 +1,6 @@
-Conari  https://github.com/3F/Conari
-- - - -
+- - - - - - - - - - - - - - - - - - -
+Conari - https://github.com/3F/Conari
+- - - - - - - - - - - - - - - - - - -
 
 [1.4] 2019.11.30
 
@@ -63,7 +64,7 @@ Conari  https://github.com/3F/Conari
             
     * NOTE: Please note again, .NET Standard 2.0 support is possible only because of our hack!
             
-            While other netcoreapp2.1 + netstandard2.1 target platforms will not contain this modifications at all. Means most known behaviour.
+            While other netcoreapp2.1 + netstandard2.1 target platforms will not contain this modifications at all. Means most known behavior.
     
             Do not hesitate to contact: https://github.com/3F/Conari/issues
            

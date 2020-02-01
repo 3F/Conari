@@ -1,6 +1,6 @@
 # ./Conari_v1*
 
-* Author: entry.reg@gmail.com :: github.com/3F
+* Author: github.com/3F  < x-3F@outlook.com >
 * License: Under the Conari project - github.com/3F/Conari
 ---
   In order to avoid misunderstanding, I also note that my idea for spirals was inspired by this (:

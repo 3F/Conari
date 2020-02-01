@@ -33,6 +33,8 @@ using(var l = new ConariL("...")) {
 
 🚀 Awesome speed:
 
+Optional caching of 0x29 opcodes (Calli) and more.
+
 test of regXwild's algorithms [[340x10000 Unicode](https://github.com/3F/regXwild/blob/d9e4cd18e6f3fbc29b271b1feb4d8c659aa14bd7/Readme.md#speed-comparison)]   | +icase [x32]| +icase [x64]         | `
 ----------------------------------------------|--------------|-----------------|---
 regXwild **native C++** `EXT` algorithm       | **~50ms**    | **~26ms**       | `<<`
@@ -94,7 +96,7 @@ Conari is available for everyone from 2016 🎉 Open Source project; MIT License
 The [MIT License (MIT)](https://github.com/3F/Conari/blob/master/LICENSE)
 
 ```
-Copyright (c) 2016-2019  Denis Kuzmin < entry.reg@gmail.com > GitHub/3F
+Copyright (c) 2016-2020  Denis Kuzmin < x-3F@outlook.com > GitHub/3F
 ```
 
 [ [ ☕ Donate ](https://3F.github.com/Donation/) ]
