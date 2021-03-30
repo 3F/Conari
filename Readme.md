@@ -96,10 +96,10 @@ Conari is available for everyone from 2016 🎉 Open Source project; MIT License
 The [MIT License (MIT)](https://github.com/3F/Conari/blob/master/LICENSE)
 
 ```
-Copyright (c) 2016-2020  Denis Kuzmin < x-3F@outlook.com > GitHub/3F
+Copyright (c) 2016-2021  Denis Kuzmin <x-3F@outlook.com> github/3F
 ```
 
-[ [ ☕ Donate ](https://3F.github.com/Donation/) ]
+[ [ ☕ Donate ](https://3F.github.io/Donation/) ]
 
 Conari contributors: https://github.com/3F/Conari/graphs/contributors
 

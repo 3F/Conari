@@ -13,7 +13,7 @@
     <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>Conari</PackageId>
-    <Copyright>Copyright (c) 2016-2020  Denis Kuzmin &lt; x-3F@outlook.com &gt; GitHub/3F</Copyright>
+    <Copyright>Copyright (c) 2016-2021  Denis Kuzmin &lt;x-3F@outlook.com&gt; github/3F</Copyright>
     <Title>[ Conari ] platform for unmanaged memory, pe-modules, PInvoke and more</Title>
     <PackageIcon>Conari_v1.png</PackageIcon>
     <IconUrl>https://raw.githubusercontent.com/3F/Conari/master/Conari/Resources/Conari_v1.png</IconUrl>

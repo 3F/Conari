@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.0</TargetFrameworks>
     <OutputType>Exe</OutputType>
-    <Copyright>Copyright (c) 2016-2020  Denis Kuzmin &lt; x-3F@outlook.com &gt; GitHub/3F</Copyright>
+    <Copyright>Copyright (c) 2016-2021  Denis Kuzmin &lt;x-3F@outlook.com&gt; github/3F</Copyright>
     <RootNamespace>net.r_eg.GenDelegates</RootNamespace>
     <AssemblyName>GenDelegates</AssemblyName>
     <NoWarn>1701;1702;CS1591;IDE1006</NoWarn>

@@ -1,8 +1,8 @@
 ﻿/*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016-2020  Denis Kuzmin < x-3F@outlook.com > GitHub/3F
- * Copyright (c) Conari contributors: https://github.com/3F/Conari/graphs/contributors
+ * Copyright (c) 2016-2021  Denis Kuzmin <x-3F@outlook.com> github/3F
+ * Copyright (c) Conari contributors https://github.com/3F/Conari/graphs/contributors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
