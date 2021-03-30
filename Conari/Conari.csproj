@@ -1,4 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\common.props" />
 
   <PropertyGroup>
     <Version>1.4.0</Version>
@@ -10,7 +11,7 @@
     <RootNamespace>net.r_eg.Conari</RootNamespace>
     <AssemblyName>Conari</AssemblyName>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\com.github.3F.snk</AssemblyOriginatorKeyFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>Conari</PackageId>
     <Copyright>Copyright (c) 2016-2021  Denis Kuzmin &lt;x-3F@outlook.com&gt; github/3F</Copyright>
@@ -18,9 +19,9 @@
     <PackageIcon>Conari_v1.png</PackageIcon>
     <IconUrl>https://raw.githubusercontent.com/3F/Conari/master/Conari/Resources/Conari_v1.png</IconUrl>
     <Description>
-        🧬 Conari engine represents powerful platform for work with unmanaged memory, pe-modules, related PInvoke features,
-        and more for: Libraries, Executable Modules, enjoying of the unmanaged native C/C++ in .NET world, and other raw binary data.
-        Even accessing to complex types like structures without their declaration at all.
+        🧬 An unmanaged memory, modules, and raw data in one touch.
+
+        Conari engine represents most flexible platform for working with unmanaged memory, modules, related P/Invoke features, and more around libraries, executable modules, runtime dynamic use of the unmanaged native C/C++ in .NET world and other raw data just in a few easy steps without configuring something, and... Even accessing to complex types like structures without their declaration at all.
 
         ## Why Conari ?
 
@@ -133,14 +134,17 @@
     <DefineConstants Condition=" '$(TargetFramework)' == 'netstandard2.0' ">$(DefineConstants);NETSTD20</DefineConstants>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <NoDefaultExcludes>true</NoDefaultExcludes> <!-- NU5119: ..\.version -->
+  </PropertyGroup>
+
   <ItemGroup>
     <None Include="..\LICENSE" Pack="true" PackagePath="" />
     <None Include="..\Readme.md" Pack="true" PackagePath="" />
-    <None Include="..\3rd-party.txt" Pack="true" PackagePath="" />
+    <None Include="..\3rd-party-notices.txt" Pack="true" PackagePath="" />
     <None Include="..\changelog.txt" Pack="true" PackagePath="" />
     <None Include="..\.version" Pack="true" PackagePath="" />
-    <!-- NuGet bug when naming with 'build' keyword: https://github.com/NuGet/Home/issues/8810 -->
-    <None Include="obj\release-info.txt" Condition="Exists('obj\release-info.txt')" Pack="true" PackagePath="" />
+    <None Include="..\$(RootObjDir)\build-info.txt" Condition="Exists('..\$(RootObjDir)\build-info.txt')" Pack="true" PackagePath="" />
     <None Include="Resources/Conari_v1.png" Pack="true" PackagePath="" />
   </ItemGroup>
 
@@ -154,9 +158,9 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(IsNetCoreFamilyTarget)' == 'true'">
-    <PackageReference Include="Microsoft.CSharp" Version="4.6.0" />
-    <PackageReference Include="System.Reflection.Emit" Version="4.6.0" />
-    <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.6.0" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
+    <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.7.0" />
   </ItemGroup>
 
 </Project>

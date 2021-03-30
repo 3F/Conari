@@ -9,13 +9,13 @@ using Xunit;
 
 namespace ConariTest
 {
+    using static _svc.TestHelper;
+
     /// <summary>
     /// ConariX related tests
     /// </summary>
     public class XBindingTest
     {
-        private const string UNLIB_DLL = @"..\UnLib.dll";
-
         private readonly IConfig gCfgUnlib = new Config(UNLIB_DLL, true);
 
         [Fact]

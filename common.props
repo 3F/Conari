@@ -1,0 +1,16 @@
+﻿<Project>
+
+  <PropertyGroup>
+    <RootOutDir>bin\prj\</RootOutDir>
+    <RootObjDir>bin\obj\</RootObjDir>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <OutPrjDir>$(RootOutDir)$(MSBuildProjectName)\$(Configuration)\$(TargetFramework)\</OutPrjDir>
+    <IntermediateOutputPath>..\$(RootObjDir)$(MSBuildProjectName)\$(Configuration)\</IntermediateOutputPath>
+
+    <OutputPath>..\$(OutPrjDir)\</OutputPath>
+    <OutDir>$([MSBuild]::Escape($([System.IO.Path]::GetFullPath(`$([System.IO.Path]::Combine(`$(SolutionDir)`, `$(OutPrjDir)`))`))))</OutDir>
+  </PropertyGroup>
+
+</Project>

@@ -31,10 +31,10 @@ using net.r_eg.Conari.Log;
 namespace net.r_eg.Conari
 {
     /// <summary>
-    /// Conari for work with unmanaged memory, pe-modules, and raw binary data: 
+    /// Conari engine. An unmanaged memory, modules, and raw data in one touch.
     /// https://github.com/3F/Conari
     /// </summary>
-    public class ConariL: Provider, IConari, ILoader, IProvider, IBinder/*, IDisposable*/
+    public class ConariL: Provider, IConari, ILoader, IProvider, IBinder, IDisposable
     {
         protected IConfig config;
 

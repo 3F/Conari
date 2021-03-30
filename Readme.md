@@ -2,7 +2,9 @@
 
 [![](https://raw.githubusercontent.com/3F/Conari/master/Conari/Resources/Conari_v1.png)](https://github.com/3F/Conari)
 
-🧬 Conari engine represents powerful platform for work with unmanaged memory, pe-modules, related PInvoke features, and more for: Libraries, Executable Modules, enjoying of the unmanaged native C/C++ in .NET world, and other raw binary data. Even accessing to complex types like structures without their declaration at all.
+🧬 An unmanaged memory, modules, and raw data in one touch.
+
+Conari engine represents most flexible platform for working with unmanaged memory, modules, related P/Invoke features, and more around libraries, executable modules, runtime dynamic use of the unmanaged native C/C++ in .NET world and other raw data just in a few easy steps without configuring something, and... Even accessing to complex types like structures without their declaration at all.
 
 [![Build status](https://ci.appveyor.com/api/projects/status/xbb5imyn9lr8dxbb/branch/master?svg=true)](https://ci.appveyor.com/project/3Fs/conari-wkygr/branch/master)
 [![release-src](https://img.shields.io/github/release/3F/Conari.svg)](https://github.com/3F/Conari/releases/latest)
@@ -35,7 +37,7 @@ using(var l = new ConariL("...")) {
 
 Optional caching of 0x29 opcodes (Calli) and more.
 
-test of regXwild's algorithms [[340x10000 Unicode](https://github.com/3F/regXwild/blob/d9e4cd18e6f3fbc29b271b1feb4d8c659aa14bd7/Readme.md#speed-comparison)]   | +icase [x32]| +icase [x64]         | `
+test of regXwild's algorithms [[340x10000 Unicode](https://github.com/3F/regXwild#speed)]   | +icase [x32]| +icase [x64]         | `
 ----------------------------------------------|--------------|-----------------|---
 regXwild **native C++** `EXT` algorithm       | **~50ms**    | **~26ms**       | `<<`
 regexp-c++11(regex_search)                    | ~59309ms     | ~53334ms        |
@@ -271,20 +273,24 @@ and more !
 * *[List of real usage via Conari engine](https://github.com/3F/Conari/wiki/Projects)*
 
 #### Sample for DLR
-How about to use [regXwild](https://github.com/3F/regXwild) (Fast and powerful wildcards on native unmanaged C++) in your C# code ? It's easy:
+How about [regXwild](https://github.com/3F/regXwild) (⏱ Superfast ^Advanced wildcards++? on native unmanaged C++) in your C# code?
 
 ```csharp
-using(var l = new ConariL("regXwild.dll")) {
-...
-    if(l.DLR.searchEssC<bool>((WCharPtr)data, (WCharPtr)filter, false)) {
-        // ...
-    }
+using dynamic l = new ConariX("regXwild.dll");
+if(l.match<bool>(input, "'+.#?'")) {
+    // ... '1.4', '1.04', ...
 }
 ```
-yes, you don't need to do anything else! Conari will prepare all required operations and binding with native method instead of you:
+Yes, you don't need to do anything else! Conari will prepare everything for binding with the following native method instead of you:
 
 ```cpp
-REGXWILD_API bool searchEssC(const TCHAR* data, const TCHAR* filter, bool ignoreCase);
+REGXWILD_API_L bool match
+(
+    const rxwtypes::TCHAR* input,
+    const rxwtypes::TCHAR* pattern,
+    rxwtypes::flagcfg_t options = 0,
+    EssRxW::MatchResult* result = nullptr
+);
 ```
 
 have fun!

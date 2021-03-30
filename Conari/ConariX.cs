@@ -37,7 +37,7 @@ using net.r_eg.Conari.Types.Methods;
 namespace net.r_eg.Conari
 {
     /// <summary>
-    /// Conari [DLR version] for work with unmanaged memory, pe-modules, and raw binary data: 
+    /// Conari engine [DLR version]. An unmanaged memory, modules, and raw data in one touch.
     /// https://github.com/3F/Conari
     /// </summary>
     public class ConariX: DynamicObject, IConari, ILoader, IProvider, IBinder, IDisposable

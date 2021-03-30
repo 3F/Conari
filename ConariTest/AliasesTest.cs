@@ -7,10 +7,10 @@ using Xunit;
 
 namespace ConariTest
 {
+    using static _svc.TestHelper;
+
     public class AliasesTest
     {
-        private const string UNLIB_DLL = @"..\UnLib.dll";
-
         private readonly IConfig gCfgUnlib = new Config(UNLIB_DLL, true);
 
         [Fact]

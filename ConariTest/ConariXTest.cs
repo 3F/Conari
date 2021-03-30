@@ -7,10 +7,10 @@ using Xunit;
 
 namespace ConariTest
 {
+    using static _svc.TestHelper;
+
     public class ConariXTest
     {
-        private const string STUB_LIB_NAME = "__ThisIsNotRealUserLib";
-
         [Fact]
         public void loadTest1()
         {

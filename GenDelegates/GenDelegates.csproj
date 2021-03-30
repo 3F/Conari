@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\common.props" />
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.0</TargetFrameworks>
+    <TargetFrameworks>net5</TargetFrameworks>
     <OutputType>Exe</OutputType>
     <Copyright>Copyright (c) 2016-2021  Denis Kuzmin &lt;x-3F@outlook.com&gt; github/3F</Copyright>
     <RootNamespace>net.r_eg.GenDelegates</RootNamespace>
