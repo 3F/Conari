@@ -23,6 +23,8 @@
  * THE SOFTWARE.
 */
 
+using System.Threading;
+
 namespace net.r_eg.Conari.Core
 {
     public interface IConfig
@@ -64,5 +66,27 @@ namespace net.r_eg.Conari.Core
         /// This option will isolate module for a real new loading even if it was already loaded somewhere else.
         /// </summary>
         bool IsolateLoadingOfModule { get; set; }
+
+        /// <summary>
+        /// For not null value overrides the logic for how the module will be isolated according <see cref="IsolateLoadingOfModule"/> option.
+        /// </summary>
+        IModuleIsolationRecipe ModuleIsolationRecipe { get; set; }
+
+        /// <summary>
+        /// Cancel processing in loader if module can't be isolated.
+        /// </summary>
+        bool CancelIfCantIsolate { get; set; }
+
+        /// <summary>
+        /// Signals to cancel active operations as soon as possible.
+        /// </summary>
+        CancellationTokenSource Cts { get; set; }
+
+        /// <summary>
+        /// Limit in milliseconds for how long to wait signals when synchronization of threads (processes) in <see cref="Loader"/>.
+        /// Use <see cref="Timeout.Infinite"/> (-1) to wait indefinitely.
+        /// Use null for default value (<see cref="LLConfig.SIG_LIM"/>).
+        /// </summary>
+        int? LoaderSyncLimit { get; set; }
     }
 }

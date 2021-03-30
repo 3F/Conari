@@ -239,24 +239,23 @@ namespace net.r_eg.Conari
 
         #endregion
 
-        #region IDisposable Support
+        #region IDisposable
 
-        private bool disposedValue = false;
+        private bool disposed;
 
         protected virtual void Dispose(bool _)
         {
-            if(!disposedValue) {
-                disposedValue = true;
-            }
-
-            if(__l_impl != null) {
-                __l_impl.Dispose();
+            if(!disposed)
+            {
+                __l_impl?.Dispose();
+                disposed = true;
             }
         }
 
         public void Dispose()
         {
             Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         #endregion

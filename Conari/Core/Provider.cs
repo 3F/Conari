@@ -346,8 +346,10 @@ namespace net.r_eg.Conari.Core
         /// <returns>The address of the exported function.</returns>
         protected IntPtr getProcAddress(LpProcName lpProcName)
         {
-            if(!Library.IsActive && !load()) {
-                throw new LoaderException($"The handle of library is zero. Last loaded library: '{Library.module}'");
+            if(!Library.IsActive && !load())
+            {
+                if(Library.cancelled) throw new LoadCancelledException(Library.module);
+                throw new LoaderException($"Module `{Library}` is not loaded or corrupted.");
             }
 
             return getProcAddress

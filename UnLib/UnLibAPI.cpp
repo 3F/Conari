@@ -170,7 +170,7 @@ namespace NS_UNLIB_API_
 
         g_sharedTSpec = s; //+1
 
-        return s.get();
+        return g_sharedTSpec.get();
     }
 
     TSpecB* g_TSpecB;

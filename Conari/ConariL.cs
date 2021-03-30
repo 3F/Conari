@@ -58,8 +58,7 @@ namespace net.r_eg.Conari
         /// </summary>
         public ISender Log => LSender._;
 
-        //TODO: integration with IConfig
-        private protected override bool ModuleIsolation { get; set; }
+        private protected override LLConfig LLCfg { get; set; }
 
         /// <summary>
         /// DLR Features with `__cdecl` calling convention.
@@ -182,8 +181,7 @@ namespace net.r_eg.Conari
         {
             config      = cfg ?? throw new ArgumentNullException(nameof(cfg));
             Mangling    = cfg.Mangling;
-
-            ModuleIsolation = cfg.IsolateLoadingOfModule;
+            LLCfg       = new(cfg);
 
             if(cfg.LazyLoading) {
                 Library = new Link(cfg.Module);

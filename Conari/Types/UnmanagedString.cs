@@ -181,46 +181,42 @@ namespace net.r_eg.Conari.Types
             }
         }
 
-        private void free()
+        private void free(bool managed)
         {
-            if(Owner) {
+            if(!managed && Owner) {
                 free(Pointer, Type);
             }
 
-            // but we still can try to get data from this offset :)
-            Pointer = IntPtr.Zero;
-            Data = null;
+            if(managed)
+            {
+                // since we still can try to get data from this offset
+                Pointer = IntPtr.Zero;
+                Data = null;
+            }
         }
 
         #region IDisposable
 
-        // To detect redundant calls
-        private bool disposed = false;
-
-        // Do not change this code. Put cleanup code in Dispose(bool disposing)
-        public void Dispose()
-        {
-            Dispose(true);
-
-            // To suppress only if the finalizer is overridden ! ~UnmanagedString()
-            GC.SuppressFinalize(this);
-        }
+        private bool disposed;
 
         private void Dispose(bool disposing)
         {
-            if(disposed) {
-                return;
+            if(!disposed)
+            {
+                free(managed: false);
+                if(disposing) free(managed: true);
+
+                disposed = true;
             }
-            disposed = true;
-
-            free();
         }
 
-        // Do not change this code. Put cleanup code in Dispose(bool disposing)
-        ~UnmanagedString()
+        public void Dispose()
         {
-            Dispose(false);
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
+
+        ~UnmanagedString() => Dispose(false);
 
         #endregion
     }

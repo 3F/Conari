@@ -23,61 +23,24 @@
  * THE SOFTWARE.
 */
 
-using System;
-using net.r_eg.Conari.Types;
-
 namespace net.r_eg.Conari.Core
 {
-    public struct Link
+    public interface IModuleIsolationRecipe
     {
         /// <summary>
-        /// Used module (.dll, .exe, or address)
+        /// Isolate module and its depedencies before loading. 
+        /// See also <see cref="IConfig.IsolateLoadingOfModule"/> and <see cref="IConfig.ModuleIsolationRecipe"/> related options.
         /// </summary>
-        public string module;
+        /// <param name="l">Accessing module information.</param>
+        /// <param name="module">Final module for loading.</param>
+        /// <returns>Success of implemented isolation. It will use the original module if false; And will require <see cref="discard"/> processing if true.</returns>
+        bool isolate(Link l, out string module);
 
         /// <summary>
-        /// Points to actual isolated module if true.
+        /// Discards isolation if it was applied before.
         /// </summary>
-        public bool isolated;
-
-        /// <summary>
-        /// Cancelled or timeout when loading.
-        /// </summary>
-        public bool cancelled;
-
-        /// <summary>
-        /// A handle of loaded module.
-        /// </summary>
-        internal IntPtr handle;
-
-        /// <summary>
-        /// An resolved file status of the used module.
-        /// </summary>
-        internal readonly WRef<bool> resolved;
-
-        public bool IsActive => handle != IntPtr.Zero;
-
-        [Obsolete("Use {module} field instead.")]
-        public string LibName => module;
-
-        public static explicit operator IntPtr(Link v) => v.handle;
-
-        public override string ToString() => module;
-
-        public Link(IntPtr handle, string module, bool isolated = false)
-            : this()
-        {
-            this.handle     = handle;
-            this.module     = module;
-            this.isolated   = isolated;
-
-            resolved = new WRef<bool>(false);
-        }
-
-        public Link(string module)
-            : this(IntPtr.Zero, module)
-        {
-
-        }
+        /// <param name="l">Accessing module information.</param>
+        /// <returns>Success (reserved)</returns>
+        bool discard(Link l);
     }
 }

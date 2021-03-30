@@ -107,23 +107,21 @@ namespace net.r_eg.Conari.PE
 
         #region IDisposable
 
-        // To detect redundant calls
-        private bool disposed = false;
+        private bool disposed;
 
-        // To correctly implement the disposable pattern.
+        private void Dispose(bool _)
+        {
+            if(!disposed)
+            {
+                free();
+                disposed = true;
+            }
+        }
+
         public void Dispose()
         {
             Dispose(true);
-        }
-
-        private void Dispose(bool disposing)
-        {
-            if(disposed) {
-                return;
-            }
-            disposed = true;
-
-            free();
+            GC.SuppressFinalize(this);
         }
 
         #endregion

@@ -24,6 +24,7 @@
 */
 
 using System;
+using System.Threading;
 
 namespace net.r_eg.Conari.Core
 {
@@ -86,11 +87,15 @@ namespace net.r_eg.Conari.Core
         /// 
         /// This option will isolate module for a real new loading even if it was already loaded somewhere else.
         /// </summary>
-        public bool IsolateLoadingOfModule
-        {
-            get;
-            set;
-        }
+        public bool IsolateLoadingOfModule { get; set; }
+
+        public IModuleIsolationRecipe ModuleIsolationRecipe { get; set; }
+
+        public bool CancelIfCantIsolate { get; set; }
+
+        public CancellationTokenSource Cts { get; set; }
+
+        public int? LoaderSyncLimit { get; set; }
 
         [Obsolete("Use {Module} property instead.")]
         public string LibName => Module;

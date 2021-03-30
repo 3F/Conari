@@ -326,24 +326,21 @@ namespace net.r_eg.Conari.PE.Hole
 
         #region IDisposable
 
-        // To detect redundant calls
-        private bool disposed = false;
+        private bool disposed;
 
-        // To correctly implement the disposable pattern.
+        protected virtual void Dispose(bool _)
+        {
+            if(!disposed)
+            {
+                reader.Dispose();
+                disposed = true;
+            }
+        }
+
         public void Dispose()
         {
             Dispose(true);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if(disposed) {
-                return;
-            }
-            disposed = true;
-
-            //...
-            reader.Dispose();
+            GC.SuppressFinalize(this);
         }
 
         #endregion

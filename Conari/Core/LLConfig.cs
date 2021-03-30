@@ -24,58 +24,41 @@
 */
 
 using System;
-using net.r_eg.Conari.Types;
+using System.Threading;
 
 namespace net.r_eg.Conari.Core
 {
-    public struct Link
+    internal sealed class LLConfig
     {
-        /// <summary>
-        /// Used module (.dll, .exe, or address)
-        /// </summary>
-        public string module;
+        private const int SIG_LIM = 80_000; //ms
 
-        /// <summary>
-        /// Points to actual isolated module if true.
-        /// </summary>
-        public bool isolated;
+        /// <inheritdoc cref="IConfig.IsolateLoadingOfModule"/>
+        public bool tryIsolateModule;
 
-        /// <summary>
-        /// Cancelled or timeout when loading.
-        /// </summary>
-        public bool cancelled;
+        /// <inheritdoc cref="IConfig.ModuleIsolationRecipe"/>
+        public IModuleIsolationRecipe moduleIsolationRecipe;
 
-        /// <summary>
-        /// A handle of loaded module.
-        /// </summary>
-        internal IntPtr handle;
+        /// <inheritdoc cref="IConfig.CancelIfCantIsolate"/>
+        public bool cancelIfCantIsolate;
 
-        /// <summary>
-        /// An resolved file status of the used module.
-        /// </summary>
-        internal readonly WRef<bool> resolved;
+        /// <inheritdoc cref="IConfig.Cts"/>
+        public CancellationTokenSource cts;
 
-        public bool IsActive => handle != IntPtr.Zero;
+        /// <inheritdoc cref="IConfig.LoaderSyncLimit"/>
+        public int loaderSyncLimit;
 
-        [Obsolete("Use {module} field instead.")]
-        public string LibName => module;
-
-        public static explicit operator IntPtr(Link v) => v.handle;
-
-        public override string ToString() => module;
-
-        public Link(IntPtr handle, string module, bool isolated = false)
-            : this()
+        internal LLConfig(IConfig cfg)
         {
-            this.handle     = handle;
-            this.module     = module;
-            this.isolated   = isolated;
+            if(cfg == null) throw new ArgumentNullException(nameof(cfg));
 
-            resolved = new WRef<bool>(false);
+            tryIsolateModule        = cfg.IsolateLoadingOfModule;
+            moduleIsolationRecipe   = cfg.ModuleIsolationRecipe;
+            cancelIfCantIsolate     = cfg.CancelIfCantIsolate;
+            cts                     = cfg.Cts;
+            loaderSyncLimit         = cfg.LoaderSyncLimit ?? SIG_LIM;
         }
 
-        public Link(string module)
-            : this(IntPtr.Zero, module)
+        internal LLConfig()
         {
 
         }

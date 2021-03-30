@@ -24,13 +24,15 @@
 */
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using net.r_eg.Conari.Exceptions;
+using net.r_eg.Conari.Extension;
 using net.r_eg.Conari.Log;
 using net.r_eg.Conari.PE;
+using net.r_eg.Conari.Resources;
 using net.r_eg.Conari.WinAPI;
 
 namespace net.r_eg.Conari.Core
@@ -38,9 +40,8 @@ namespace net.r_eg.Conari.Core
     public abstract class Loader: ILoader, IDisposable
     {
         private const string CLLI = "CLLI-ED221AE3-F097-4AA7-AAFB-84260FEB3D2A";
-        private const int SIG_LIM = 8000; //ms
 
-        private readonly EventWaitHandle ewhSignal = new EventWaitHandle(true, EventResetMode.AutoReset, CLLI);
+        private readonly EventWaitHandle ewhSignal = new(true, EventResetMode.AutoReset, CLLI);
 
         /// <summary>
         /// Before unloading a library.
@@ -57,26 +58,17 @@ namespace net.r_eg.Conari.Core
         /// </summary>
         public event EventHandler<DataArgs<Link>> AfterLoad = delegate(object sender, DataArgs<Link> e) { };
 
-        //TODO: integration with IConfig
-        private protected abstract bool ModuleIsolation { get; set; }
+        private protected abstract LLConfig LLCfg { get; set; }
 
         /// <summary>
         /// Active library.
         /// </summary>
-        public Link Library
-        {
-            get;
-            protected set;
-        }
+        public Link Library { get; protected set; }
 
         /// <summary>
         /// PE32/PE32+ features.
         /// </summary>
-        public IPE PE
-        {
-            get;
-            protected set;
-        }
+        public IPE PE { get; protected set; }
 
         /// <summary>
         /// Loads library into the address space.
@@ -90,14 +82,19 @@ namespace net.r_eg.Conari.Core
             }
 
             if(Library.IsActive) {
-                throw new LoaderException($"Module '{Library.module}' should be unloaded before new loading '{lib}'.");
+                throw new LoaderException($"Module '{Library}' should be unloaded before new loading '{lib}'.");
             }
 
             Library = loadLibrary(lib);
+            if(Library.cancelled)
+            {
+                LSender.Send(this, $"The load of the `{Library}` was cancelled.", Message.Level.Debug);
+                return false;
+            }
 
             if(Library.handle == IntPtr.Zero) {
                 // TODO: clarify specific error
-                throw new LoadLibException($"Failed loading '{Library.module}'. Possible incorrect architecture or missing file or its dependencies. https://github.com/3F/Conari/issues/4", true);
+                throw new LoadLibException($"Failed loading '{Library}'. Possible incorrect architecture or missing file or its dependencies. https://github.com/3F/Conari/issues/4", true);
             }
 
             PE = new PEFile(Library.module);
@@ -106,47 +103,66 @@ namespace net.r_eg.Conari.Core
             return true;
         }
 
-        protected bool load()
-        {
-            return load(Library.module);
-        }
+        protected bool load() => load(Library.module);
 
         protected Link loadLibrary(string lib)
         {
-            var l = new Link(lib);
-
-            if(ModuleIsolation)
+            Link l = new(lib);
+            try
             {
-                ewhSignal.WaitOne(SIG_LIM);
+                WaitHandle[] handles = (LLCfg.cts == null) ? new[] { ewhSignal } 
+                                                           : new[] { ewhSignal, LLCfg.cts.Token.WaitHandle };
 
-                try
+                if(WaitHandle.WaitAny(handles, LLCfg.loaderSyncLimit) != 0)
+                {
+                    if(!LLCfg.cts.IsCancellationRequested)
+                    {
+                        LSender.Send(this, Msg.SyncLimit_0.Format($"{LLCfg.loaderSyncLimit}"), Message.Level.Warn);
+                    }
+
+                    l.cancelled = true;
+                    return l;
+                }
+
+                if(LLCfg.tryIsolateModule)
                 {
                     // GetModuleHandle must be used carefully when a multithreading.
                     // There is no guarantee that the module handle remains valid for the time when it will be used.
                     // That's why we still use loadLibrary for actual module use.
                     l.handle = NativeMethods.GetModuleHandle(lib);
 
-                    if(l.handle != IntPtr.Zero && tryIsolateModule(l, out string isolated))
+                    if(l.handle != IntPtr.Zero)
                     {
-                        lib = isolated;
-                        l.isolated = true;
+                        if(tryIsolateModule(l, out string isolated))
+                        {
+                            lib         = isolated;
+                            l.isolated  = true;
+                            l.handle    = IntPtr.Zero;
+                        }
+                        else if(LLCfg.cancelIfCantIsolate)
+                        {
+                            l.cancelled = true;
+                            l.handle    = IntPtr.Zero;
+                            return l;
+                        }
                     }
                 }
-                finally
+
+                l.handle = loadLibraryEx(lib);
+                l.module = lib;
+
+                // resolves full name of loaded module for the case when no file extension
+                if(!l.resolved && !Path.HasExtension(l.module) && GetModuleFileName(l, out string module))
                 {
-                    ewhSignal.Set();
+                    l.module = module;
                 }
+                return l;
             }
-
-            l.handle = loadLibraryEx(lib);
-            l.module = lib;
-
-            // resolves full name of loaded module for the case when no file extension
-            if(!l.resolved && !Path.HasExtension(l.module) && GetModuleFileName(l, out string module))
+            finally
             {
-                l.module = module;
+                if(!l.cancelled || (l.handle == IntPtr.Zero && LLCfg.cancelIfCantIsolate))
+                    ewhSignal.Set();
             }
-            return l;
         }
 
         protected virtual IntPtr loadLibraryEx(string lib)
@@ -156,13 +172,15 @@ namespace net.r_eg.Conari.Core
             return NativeMethods.LoadLibraryEx(lib, IntPtr.Zero, LoadLibraryFlags.LOAD_WITH_ALTERED_SEARCH_PATH);
         }
 
-        [SuppressMessage("Design", "CA1031:Do not catch general exception types", 
-            Justification = "We can only try with loadLibrary, that's why we'll just return false for any problems. Additional option to rethrow exception is possible in future but not for today's implementation."
-        )]
-        protected virtual bool tryIsolateModule(Link l, out string module)
+        protected bool tryIsolateModule(Link l, out string module)
         {
             try
             {
+                if(LLCfg.moduleIsolationRecipe != null)
+                {
+                    return LLCfg.moduleIsolationRecipe.isolate(l, out module);
+                }
+
                 if(!l.resolved && !Path.HasExtension(l.module) && GetModuleFileName(l, out string fname)) {
                     module = fname;
                 }
@@ -181,31 +199,48 @@ namespace net.r_eg.Conari.Core
             }
             catch(Exception ex)
             {
-                //TODO: option to throw exception
-                LSender.Send(this, $"Something went wrong when trying to isolate `{l.module}`: {ex.Message}", Message.Level.Debug);
-                
                 module = null;
+                LSender.Send
+                (
+                    this, 
+                    $"`{l.module}` cannot be isolated (user's recipe `{LLCfg.moduleIsolationRecipe?.GetType().FullName}`): {ex.Message}",
+                    Message.Level.Debug
+                );
                 return false;
             }
         }
 
-        protected virtual void discardIsolation(Link l)
+        protected bool tryDiscardIsolation(Link l)
         {
-            try 
+            try
             {
-                var dir = Path.GetDirectoryName(l.module);
-
-                if(dir.IndexOf(CLLI) != -1) // just to be sure
+                if(LLCfg.moduleIsolationRecipe != null)
                 {
-                    File.Delete(l.module);
-                    Directory.Delete(dir, false);
+                    return LLCfg.moduleIsolationRecipe.discard(l);
                 }
 
+                string dir = Path.GetDirectoryName(l.module);
+
+                if(dir.IndexOf(CLLI, StringComparison.OrdinalIgnoreCase) == -1)
+                {
+                    throw new DirectoryNotFoundException($"`{dir}` is not part of `{CLLI}`");
+                }
+
+                File.Delete(l.module);
+                Directory.Delete(dir, false);
+
                 LSender.Send(this, $"Discarded isolation: {l.module}", Message.Level.Trace);
+                return true;
             }
-            catch(IOException ex) {
-                // we're working with temp files, so just inform about something:
-                LSender.Send(this, $"Isolation cannot be discarded for `{l.module}`: {ex.Message}", Message.Level.Debug);
+            catch(Exception ex)
+            {
+                LSender.Send
+                (
+                    this,
+                    $"Isolation cannot be discarded for `{l.module}` (user's recipe `{LLCfg.moduleIsolationRecipe?.GetType().FullName}`): {ex.Message}",
+                    Message.Level.Debug
+                );
+                return false;
             }
         }
 
@@ -227,61 +262,84 @@ namespace net.r_eg.Conari.Core
             return false;
         }
 
-        protected bool free()
+        private bool free(bool disposing)
         {
-            ewhSignal.Dispose();
-
-            if(!Library.IsActive) 
+            if(!Library.IsActive || Library.cancelled) 
             {
-                LSender.Send(this, $"Dispose Library: it's not activated.", Message.Level.Trace);
+                LSender.Send(this, $"Ignored disposing. `{Library}` is not activated or has been cancelled.", Message.Level.Trace);
                 return true;
             }
 
-            BeforeUnload(this, new DataArgs<Link>(Library));
+            if(!ewhSignal.WaitOne(LLCfg.loaderSyncLimit))
+            {
+                LSender.Send(this, Msg.SyncLimit_0.Format($"{LLCfg.loaderSyncLimit}"), Message.Level.Warn);
+            }
 
+            if(disposing) BeforeUnload(this, new DataArgs<Link>(Library));
+
+            bool ret = false;
             try 
             {
-                return NativeMethods.FreeLibrary(Library.handle);
+                ret = NativeMethods.FreeLibrary(Library.handle);
+                return ret;
             }
             finally
             {
+                ewhSignal.Set();
+
+                if(disposing)
                 AfterUnload
                 (
                     this, 
-                    new DataArgs<Link>(
-                        new Link(Library.module)
+                    new
+                    (
+                        ret ? new Link(Library.module) : Library
                     )
                 );
 
-                if(PE != null) {
-                    LSender.Send(this, $"Dispose PE: file ({PE.FileName})", Message.Level.Debug);
+                if(disposing && PE != null)
+                {
+                    LSender.Send(this, $"Dispose PE file `{PE.FileName}`", Message.Level.Trace);
                     ((IDisposable)PE).Dispose();
                 }
 
-                if(Library.isolated) {
-                    discardIsolation(Library);
+                if(Library.isolated)
+                {
+                    tryDiscardIsolation(Library);
                 }
+
+                if(disposing) ewhSignal.Dispose();
             }
         }
 
         #region IDisposable
 
-        private bool disposed = false;
+        private bool disposed;
 
         protected virtual void Dispose(bool disposing)
         {
-            if(disposed) {
-                return;
+            if(!disposed)
+            {
+                if(!free(disposing))
+                {
+                    LSender.Send
+                    (
+                        this,
+                        $"`{Library}` ({Library.handle}) cannot be disposed due to {Marshal.GetLastWin32Error()}",
+                        Message.Level.Warn
+                    );
+                }
+                disposed = true;
             }
-            disposed = true;
-
-            free();
         }
 
         public void Dispose()
         {
             Dispose(true);
+            GC.SuppressFinalize(this);
         }
+
+        ~Loader() => Dispose(false);
 
         #endregion
     }
