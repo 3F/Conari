@@ -61,6 +61,11 @@
         "$type": "net.r_eg.vsSBE.Events.ModeScript, vsSolutionBuildEvent",
         "Type": "Script",
         "Command__": [
+          "#[( !(#[IO exists.file(\"UnmanagedEmitCalli/UnmanagedEmitCalli.sln\")]) )",
+          "{",
+          "    #[File call(\"git\", \"submodule update --init UnmanagedEmitCalli\", 1000)]",
+          "}]",
+          "",
           "#[\" Packages \"]",
           "",
           "#[( !(#[IO exists.file(\"packages/__checked\")]) )",

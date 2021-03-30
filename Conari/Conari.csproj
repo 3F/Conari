@@ -131,7 +131,7 @@
 
   <PropertyGroup Condition="'$(IsNetCoreFamilyTarget)' == 'true'">
     <DefineConstants>$(DefineConstants);NETCORE</DefineConstants>
-    <DefineConstants Condition=" '$(TargetFramework)' == 'netstandard2.0' ">$(DefineConstants);NETSTD20</DefineConstants>
+    <DefineConstants Condition=" '$(TargetFramework)' == 'netstandard2.0' ">$(DefineConstants);NETSTD20;NETSTD</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -161,6 +161,11 @@
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
     <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="$(PathToUnmanagedEmitCalli)*.cs" Link="UnmanagedEmitCalli\%(Filename)%(Extension)" />
+    <Compile Remove="$(PathToUnmanagedEmitCalli)InternalsVisibleTo.cs" />
   </ItemGroup>
 
 </Project>

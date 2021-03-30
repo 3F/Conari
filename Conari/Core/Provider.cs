@@ -36,6 +36,7 @@ using net.r_eg.Conari.Native;
 using net.r_eg.Conari.Types;
 using net.r_eg.Conari.Types.Methods;
 using net.r_eg.Conari.WinAPI;
+using net.r_eg.DotNet.System.Reflection.Emit;
 
 #if NETSTD20
 using net.r_eg.Conari.Extension;
@@ -510,29 +511,7 @@ namespace net.r_eg.Conari.Core
             // https://github.com/3F/Conari/issues/6
             Type tret = fixTypes(convRetType(mi.ReturnType));
 
-            // NOTE: (System.Private.CoreLib.dll) An unmanaged EmitCalli is avaialble only with netcoreapp2.1+: https://github.com/dotnet/corefx/issues/9800
-            // System.Reflection.Emit.ILGeneration is just metadata while mscorlib/src/System/Reflection/Emit/DynamicILGenerator implements this since https://github.com/dotnet/coreclr/pull/16546
-
-#if NETSTD20
-
-            // This call is at our own risk ! ie. minimal netstandard2.0 have no complete support when unmanaged type.
-            // Below, it is hack only for netstandard2.0 based on my analysis: https://github.com/3F/Conari/issues/13 
-            // But note again: actual instructions in implemented method (System.Private.CoreLib.dll) are not the same to unmanaged EmitCalli (mscorlib or netcoreapp2.1+).
-
-            il.EmitCalli(OpCodes.Calli, CallingConventions.Standard, tret, mParams, null);
-
-            if(il.TryGetFieldValue(out object m_scope, "m_scope", true))
-            {
-                if(m_scope.TryGetFieldValue(out object m_tokens, "m_tokens", true))
-                {
-                    var tksig = (List<object>)m_tokens;
-                    ((byte[])tksig[tksig.Count - 1])[0] = CallingConventionConverter.GetMdSigCallingConventionAsByte(conv);
-                }
-            }
-
-#else
-            il.EmitCalli(OpCodes.Calli, conv, tret, mParams);
-#endif
+            il.EmitCalliStd(conv, tret, mParams);
 
             il.Emit(OpCodes.Ret);
 

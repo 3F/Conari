@@ -1,0 +1,3 @@
+[submodule "UnmanagedEmitCalli"]
+	path = UnmanagedEmitCalli
+	url = https://github.com/3F/UnmanagedEmitCalli.git

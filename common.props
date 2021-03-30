@@ -3,6 +3,8 @@
   <PropertyGroup>
     <RootOutDir>bin\prj\</RootOutDir>
     <RootObjDir>bin\obj\</RootObjDir>
+
+    <PathToUnmanagedEmitCalli>..\UnmanagedEmitCalli\src\</PathToUnmanagedEmitCalli>
   </PropertyGroup>
 
   <PropertyGroup>
