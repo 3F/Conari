@@ -346,6 +346,8 @@ namespace net.r_eg.Conari.Core
         /// <returns>The address of the exported function.</returns>
         protected IntPtr getProcAddress(LpProcName lpProcName)
         {
+            if(Disposed) throw new CommonException($"{GetType()} was disposed.");
+
             if(!Library.IsActive && !load())
             {
                 if(Library.cancelled) throw new LoadCancelledException(Library.module);

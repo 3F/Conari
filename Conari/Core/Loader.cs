@@ -70,6 +70,8 @@ namespace net.r_eg.Conari.Core
         /// </summary>
         public IPE PE { get; protected set; }
 
+        internal bool Disposed => disposed;
+
         /// <summary>
         /// Loads library into the address space.
         /// </summary>
