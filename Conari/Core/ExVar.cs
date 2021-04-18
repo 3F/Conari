@@ -29,6 +29,7 @@ using System.Dynamic;
 using System.Linq;
 using net.r_eg.Conari.Extension;
 using net.r_eg.Conari.Native;
+using net.r_eg.Conari.Resources;
 
 namespace net.r_eg.Conari.Core
 {
@@ -154,7 +155,7 @@ namespace net.r_eg.Conari.Core
         /// <returns></returns>
         public override bool TrySetMember(SetMemberBinder binder, object value)
         {
-            throw new NotImplementedException("Not yet implemented.");
+            throw new NotImplementedException(Msg.NotYetImpl);
         }
 
         /// <summary>

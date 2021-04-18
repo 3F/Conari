@@ -23,27 +23,45 @@
  * THE SOFTWARE.
 */
 
-namespace net.r_eg.Conari.PE.WinNT
+using System;
+using net.r_eg.Conari.Native.Core;
+using net.r_eg.Conari.PE.Hole;
+using net.r_eg.Conari.PE.WinNT;
+
+namespace net.r_eg.Conari.PE
 {
-    using DWORD = System.UInt32;
-    using WORD  = System.UInt16;
+    using static Static.Members;
 
     /// <summary>
-    /// Export Format
-    /// /winnt.h
+    /// PE32/PE32+ <see cref="Memory"/> implementation.
     /// </summary>
-    public struct IMAGE_EXPORT_DIRECTORY
+    public sealed class PEMem: PEAbstract, IPE
     {
-        public DWORD Characteristics;
-        public DWORD TimeDateStamp;
-        public WORD MajorVersion;
-        public WORD MinorVersion;
-        public DWORD Name;
-        public DWORD Base;
-        public DWORD NumberOfFunctions;
-        public DWORD NumberOfNames;
-        public DWORD AddressOfFunctions;     // RVA from base of image
-        public DWORD AddressOfNames;         // RVA from base of image
-        public DWORD AddressOfNameOrdinals;  // RVA from base of image
+        /// <summary>
+        /// Current image.
+        /// </summary>
+        public static Magic CurrentImage { get; }
+            = Is64bit ? Magic.PE64 : Magic.PE32;
+
+        /// <summary>
+        /// Full path to current image.
+        /// </summary>
+        public static string CurrentImageName { get
+        {
+            try
+            {
+                return AppDomain.CurrentDomain.FriendlyName;
+            }
+            catch(AppDomainUnloadedException ex)
+            {
+                return ex.Source;
+            }
+        }}
+
+        public PEMem(IntPtr addr)
+            : base(new QPe(new Memory(addr)))
+        {
+
+        }
     }
 }

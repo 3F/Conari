@@ -47,6 +47,9 @@ namespace net.r_eg.Conari.Core
         /// <inheritdoc cref="IConfig.LoaderSyncLimit"/>
         public int loaderSyncLimit;
 
+        /// <inheritdoc cref="IConfig.PeImplementation"/>
+        public PeImplType peImplementation;
+
         internal LLConfig(IConfig cfg)
         {
             if(cfg == null) throw new ArgumentNullException(nameof(cfg));
@@ -56,6 +59,7 @@ namespace net.r_eg.Conari.Core
             cancelIfCantIsolate     = cfg.CancelIfCantIsolate;
             cts                     = cfg.Cts;
             loaderSyncLimit         = cfg.LoaderSyncLimit ?? SIG_LIM;
+            peImplementation        = cfg.PeImplementation;
         }
 
         internal LLConfig()

@@ -15,4 +15,9 @@
     <OutDir>$([MSBuild]::Escape($([System.IO.Path]::GetFullPath(`$([System.IO.Path]::Combine(`$(SolutionDir)`, `$(OutPrjDir)`))`))))</OutDir>
   </PropertyGroup>
 
+  <!-- Additional compilation features -->
+  <PropertyGroup>
+
+  </PropertyGroup>
+
 </Project>

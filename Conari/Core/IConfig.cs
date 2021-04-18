@@ -88,5 +88,10 @@ namespace net.r_eg.Conari.Core
         /// Use null for default value (<see cref="LLConfig.SIG_LIM"/>).
         /// </summary>
         int? LoaderSyncLimit { get; set; }
+
+        /// <summary>
+        /// Use specific implementation around PE processing. Affects loader, mangling, and other related core features.
+        /// </summary>
+        PeImplType PeImplementation { get; set; }
     }
 }

@@ -23,27 +23,20 @@
  * THE SOFTWARE.
 */
 
-namespace net.r_eg.Conari.PE.WinNT
+namespace net.r_eg.Conari.Core
 {
-    using DWORD = System.UInt32;
-    using WORD  = System.UInt16;
-
-    /// <summary>
-    /// Export Format
-    /// /winnt.h
-    /// </summary>
-    public struct IMAGE_EXPORT_DIRECTORY
+    public enum PeImplType
     {
-        public DWORD Characteristics;
-        public DWORD TimeDateStamp;
-        public WORD MajorVersion;
-        public WORD MinorVersion;
-        public DWORD Name;
-        public DWORD Base;
-        public DWORD NumberOfFunctions;
-        public DWORD NumberOfNames;
-        public DWORD AddressOfFunctions;     // RVA from base of image
-        public DWORD AddressOfNames;         // RVA from base of image
-        public DWORD AddressOfNameOrdinals;  // RVA from base of image
+        Default,
+
+        /// <summary>
+        /// Use <see cref="Native.Core.Memory"/> implementation.
+        /// </summary>
+        Memory,
+
+        /// <summary>
+        /// Use <see cref="Native.Core.NativeStream"/> implementation.
+        /// </summary>
+        NativeStream
     }
 }

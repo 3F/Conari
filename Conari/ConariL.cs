@@ -27,6 +27,7 @@ using System;
 using System.Runtime.InteropServices;
 using net.r_eg.Conari.Core;
 using net.r_eg.Conari.Log;
+using net.r_eg.Conari.Resources;
 
 namespace net.r_eg.Conari
 {
@@ -112,7 +113,7 @@ namespace net.r_eg.Conari
         public dynamic __vectorcall
         {
             get {
-                throw new NotSupportedException("Not yet implemented.");
+                throw new NotSupportedException(Msg.NotYetImpl);
             }
         }
 

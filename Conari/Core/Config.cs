@@ -97,6 +97,8 @@ namespace net.r_eg.Conari.Core
 
         public int? LoaderSyncLimit { get; set; }
 
+        public PeImplType PeImplementation { get; set; }
+
         [Obsolete("Use {Module} property instead.")]
         public string LibName => Module;
 

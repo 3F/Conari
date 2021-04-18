@@ -51,7 +51,7 @@ namespace net.r_eg.Conari.Exceptions
                 sb.Append($"cannot ");
             }
 
-            sb.Append($"handle > 2-GB addresses): `{pe.CurrentImageName}`({pe.Current}) cannot process `{pe.FileName}`({pe.Magic}). ");
+            sb.Append($"handle > 2-GB addresses): `{PEMem.CurrentImageName}`({PEMem.CurrentImage}) cannot process `{pe.FileName}`({pe.Magic}). ");
 
             sb.Append($"Possible solution https://github.com/3F/Conari/issues/4");
             return sb.ToString();

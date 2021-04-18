@@ -23,27 +23,25 @@
  * THE SOFTWARE.
 */
 
-namespace net.r_eg.Conari.PE.WinNT
-{
-    using DWORD = System.UInt32;
-    using WORD  = System.UInt16;
+using net.r_eg.Conari.Types;
 
-    /// <summary>
-    /// Export Format
-    /// /winnt.h
-    /// </summary>
-    public struct IMAGE_EXPORT_DIRECTORY
+namespace net.r_eg.Conari.PE
+{
+    public sealed class AddrTables
     {
-        public DWORD Characteristics;
-        public DWORD TimeDateStamp;
-        public WORD MajorVersion;
-        public WORD MinorVersion;
-        public DWORD Name;
-        public DWORD Base;
-        public DWORD NumberOfFunctions;
-        public DWORD NumberOfNames;
-        public DWORD AddressOfFunctions;     // RVA from base of image
-        public DWORD AddressOfNames;         // RVA from base of image
-        public DWORD AddressOfNameOrdinals;  // RVA from base of image
+        public VPtr IMAGE_DOS_HEADER { get; internal set; }
+
+        public VPtr IMAGE_NT_HEADERS { get; internal set; }
+
+        public VPtr IMAGE_FILE_HEADER { get; internal set; }
+
+        public VPtr IMAGE_OPTIONAL_HEADER { get; internal set; }
+
+        public VPtr IMAGE_EXPORT_DIRECTORY { get; internal set; }
+
+        internal AddrTables(VPtr mz)
+        {
+            IMAGE_DOS_HEADER = mz;
+        }
     }
 }

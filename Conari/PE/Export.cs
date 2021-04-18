@@ -30,8 +30,8 @@ using net.r_eg.Conari.PE.Hole;
 
 namespace net.r_eg.Conari.PE
 {
-    using DWORD = System.UInt32;
-    using WORD = System.UInt16;
+    using DWORD = UInt32;
+    using WORD  = UInt16;
 
     public sealed class Export
     {
@@ -59,13 +59,13 @@ namespace net.r_eg.Conari.PE
             return IntPtr.Add(loaded, Convert.ToInt32(getAddressOf(name)));
         }
 
-        internal Export(ExportDirectory exdir)
+        internal Export(QPe qpe)
         {
-            if(exdir == null) throw new ArgumentNullException(nameof(exdir));
+            if(qpe == null) throw new ArgumentNullException(nameof(qpe));
 
-            names       = exdir.Names.ToArray();
-            ordinals    = exdir.Ordinals.ToArray();
-            addresses   = exdir.AddressesOfProc.ToArray();
+            names       = qpe.Names.ToArray();
+            ordinals    = qpe.Ordinals.ToArray();
+            addresses   = qpe.AddressesOfProc.ToArray();
         }
     }
 }

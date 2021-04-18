@@ -23,27 +23,44 @@
  * THE SOFTWARE.
 */
 
-namespace net.r_eg.Conari.PE.WinNT
-{
-    using DWORD = System.UInt32;
-    using WORD  = System.UInt16;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using net.r_eg.Conari.PE.Hole;
+using net.r_eg.Conari.PE.WinNT;
 
-    /// <summary>
-    /// Export Format
-    /// /winnt.h
-    /// </summary>
-    public struct IMAGE_EXPORT_DIRECTORY
+namespace net.r_eg.Conari.PE
+{
+    public abstract class PEAbstract: IPE
     {
-        public DWORD Characteristics;
-        public DWORD TimeDateStamp;
-        public WORD MajorVersion;
-        public WORD MinorVersion;
-        public DWORD Name;
-        public DWORD Base;
-        public DWORD NumberOfFunctions;
-        public DWORD NumberOfNames;
-        public DWORD AddressOfFunctions;     // RVA from base of image
-        public DWORD AddressOfNames;         // RVA from base of image
-        public DWORD AddressOfNameOrdinals;  // RVA from base of image
+        internal readonly QPe qpe;
+        private readonly Lazy<Export> export;
+
+        public Characteristics Characteristics => qpe.Characteristics;
+
+        public Magic Magic => qpe.Magic;
+
+        public MachineTypes Machine => qpe.Machine;
+
+        public AddrTables Addresses => qpe.Addresses;
+
+        public IMAGE_SECTION_HEADER[] Sections => qpe.Sections;
+
+        public IMAGE_EXPORT_DIRECTORY DExport => qpe.Export;
+
+        public IEnumerable<string> ExportedProcNames => qpe.Names;
+
+        public Export Export => export.Value;
+
+        [Obsolete("Use " + nameof(ExportedProcNames))]
+        public string[] ExportedProcNamesArray => ExportedProcNames.ToArray();
+
+        public string FileName { get; protected set; }
+
+        internal PEAbstract(QPe qpe)
+        {
+            this.qpe    = qpe ?? throw new ArgumentNullException(nameof(qpe));
+            export      = new Lazy<Export>(() => new(qpe));
+        }
     }
 }

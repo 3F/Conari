@@ -24,105 +24,33 @@
 */
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.IO;
+using net.r_eg.Conari.Native.Core;
 using net.r_eg.Conari.PE.Hole;
-using net.r_eg.Conari.PE.WinNT;
 
 namespace net.r_eg.Conari.PE
 {
-    using static Static.Members;
-
-    public sealed class PEFile: IPE, IDisposable
+    /// <summary>
+    /// PE32/PE32+ <see cref="NativeStream"/> implementation.
+    /// </summary>
+    public sealed class PEFile: PEAbstract, IPE, IDisposable
     {
-        private readonly ExportDirectory exdir;
-        private readonly Lazy<Export> _export;
-
-        /// <summary>
-        /// Attributes of the image.
-        /// </summary>
-        public Characteristics Characteristics => exdir.Characteristics;
-
-        /// <summary>
-        /// Magic word from optional header.
-        /// </summary>
-        public Magic Magic => exdir.Magic;
-
-        /// <summary>
-        /// Target architecture of the image.
-        /// </summary>
-        public MachineTypes Machine => exdir.Machine;
-
-        /// <summary>
-        /// Get available sections.
-        /// https://msdn.microsoft.com/en-us/library/windows/desktop/ms680341.aspx
-        /// /winnt.h
-        /// </summary>
-        public IMAGE_SECTION_HEADER[] Sections => exdir.Sections;
-
-        /// <summary>
-        /// Get IMAGE_EXPORT_DIRECTORY record.
-        /// WinNT IMAGE_OPTIONAL_HEADER - IMAGE_DATA_DIRECTORY[IMAGE_DIRECTORY_ENTRY_EXPORT]
-        /// </summary>
-        public IMAGE_EXPORT_DIRECTORY DExport => exdir.Export;
-
-        /// <summary>
-        /// Receives full names of all available exported functions or variables from ExportDirectory 
-        /// (WinNT OPTIONAL_HEADER).
-        /// </summary>
-        public IEnumerable<string> ExportedProcNames => exdir.Names;
-
-        /// <summary>
-        /// Export Address Table + Export Name Table + Export Ordinal Table.
-        /// </summary>
-        public Export Export => _export.Value;
-
-        /// <summary>
-        /// Full names of all available exported functions or variables from ExportDirectory 
-        /// (WinNT OPTIONAL_HEADER).
-        /// </summary>
-        [Obsolete("Use " + nameof(ExportedProcNames))]
-        public string[] ExportedProcNamesArray => ExportedProcNames.ToArray();
-
-        /// <summary>
-        /// Active pe-file.
-        /// </summary>
-        public string FileName { get; private set; }
-
-        /// <summary>
-        /// Current image.
-        /// </summary>
-        public Magic Current { get; } 
-            = Is64bit ? Magic.PE64 : Magic.PE32;
-
-        /// <summary>
-        /// Full path to current image.
-        /// </summary>
-        public string CurrentImageName { get; private set; }
-
         public PEFile(string file)
+            :base(new QPe
+            (
+                new NativeStream
+                (
+                    new FileStream
+                    (
+                        !string.IsNullOrWhiteSpace(file) ? file : throw new ArgumentNullException(nameof(file)), 
+                        FileMode.Open,
+                        FileAccess.Read,
+                        FileShare.Read
+                    )
+                )
+            ))
         {
-            if(string.IsNullOrWhiteSpace(file)) throw new ArgumentNullException(nameof(file));
-
-            exdir       = new ExportDirectory(file);
-            FileName    = file;
-
-            _export = new Lazy<Export>(() => new(exdir));
-
-            try
-            {
-                CurrentImageName = AppDomain.CurrentDomain.FriendlyName;
-            }
-            catch(AppDomainUnloadedException ex)
-            {
-                CurrentImageName = ex.Source;
-            }
-        }
-
-        private void free()
-        {
-            exdir.Dispose();
-            FileName = null;
+            FileName = file;
         }
 
         #region IDisposable
@@ -133,7 +61,9 @@ namespace net.r_eg.Conari.PE
         {
             if(!disposed)
             {
-                free();
+                ((NativeStream)qpe.Reader).Dispose();
+                FileName = null;
+
                 disposed = true;
             }
         }

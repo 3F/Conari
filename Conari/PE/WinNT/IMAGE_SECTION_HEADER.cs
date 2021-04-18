@@ -36,7 +36,6 @@ namespace net.r_eg.Conari.PE.WinNT
     public struct IMAGE_SECTION_HEADER
     {
         public const int IMAGE_SIZEOF_SHORT_NAME = 8;
-        public const int IMAGE_SIZEOF_SECTION_HEADER = 40;
 
         /// <summary>
         /// An 8-byte, null-padded UTF-8 string. 

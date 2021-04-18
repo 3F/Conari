@@ -32,7 +32,6 @@ using net.r_eg.Conari.Exceptions;
 using net.r_eg.Conari.Extension;
 using net.r_eg.Conari.Log;
 using net.r_eg.Conari.PE;
-using net.r_eg.Conari.PE.WinNT;
 using net.r_eg.Conari.Resources;
 using net.r_eg.Conari.Types;
 using net.r_eg.Conari.WinAPI;
@@ -86,9 +85,7 @@ namespace net.r_eg.Conari.Core
         /// <returns></returns>
         protected bool load(string lib)
         {
-            if(string.IsNullOrWhiteSpace(lib)) {
-                throw new ArgumentNullException(nameof(lib));
-            }
+            if(string.IsNullOrWhiteSpace(lib)) throw new ArgumentNullException(nameof(lib));
 
             if(Library.IsActive) {
                 throw new LoaderException($"Module '{Library}' should be unloaded before new loading '{lib}'.");
@@ -101,13 +98,17 @@ namespace net.r_eg.Conari.Core
                 return false;
             }
 
-            PE = new PEFile(Library.module);
-
             if(Library.handle == IntPtr.Zero)
             {
-                if(PE.Magic != PE.Current) throw new ArchitectureMismatchException(PE);
+                if(File.Exists(Library.module)) //TODO: it can also be in PATH, system32, ... +optional extension
+                {
+                    using var _pe = new PEFile(Library.module);
+                    if(_pe.Magic != PEMem.CurrentImage) throw new ArchitectureMismatchException(_pe);
+                }
                 throw new LoadLibException($"Failed loading '{Library}'. Possible incorrect architecture or missing file or its dependencies. https://github.com/3F/Conari/issues/4", true);
             }
+            
+            PE = getPeInstance(LLCfg.peImplementation, Library);
 
             AfterLoad(this, new DataArgs<Link>(Library));
             return true;
@@ -254,6 +255,17 @@ namespace net.r_eg.Conari.Core
             }
         }
 
+        protected IPE getPeInstance(PeImplType type, Link l)
+        {
+            switch(type)
+            {
+                case PeImplType.Default: // 1.5+ Memory
+                case PeImplType.Memory: return new PEMem(l.handle);
+                case PeImplType.NativeStream: return new PEFile(l.module);
+            }
+            throw new NotImplementedException();
+        }
+
         private protected static bool GetModuleFileName(Link l, out string fname, int buffer = 1024)
             => l.resolved.value = GetModuleFileName(l.handle, out fname, buffer);
 
@@ -307,10 +319,10 @@ namespace net.r_eg.Conari.Core
                     )
                 );
 
-                if(disposing && PE != null)
+                if(disposing && PE != null && PE is IDisposable pestream)
                 {
                     LSender.Send(this, $"Dispose PE file `{PE.FileName}`", Message.Level.Trace);
-                    ((IDisposable)PE).Dispose();
+                    pestream.Dispose();
                 }
 
                 if(Library.isolated)

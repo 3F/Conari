@@ -33,6 +33,7 @@ using net.r_eg.Conari.Aliases;
 using net.r_eg.Conari.Exceptions;
 using net.r_eg.Conari.Log;
 using net.r_eg.Conari.Native;
+using net.r_eg.Conari.Resources;
 using net.r_eg.Conari.Types;
 using net.r_eg.Conari.Types.Methods;
 using net.r_eg.Conari.WinAPI;
@@ -318,7 +319,7 @@ namespace net.r_eg.Conari.Core
         /// <param name="ptr">The address of the memory to be freed.</param>
         public void free(IntPtr ptr)
         {
-            throw new NotImplementedException("Not yet implemented. Please use it from unmanaged code.");
+            throw new NotImplementedException(Msg.NotYetImpl);
         }
 
         protected Provider()

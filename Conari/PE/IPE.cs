@@ -47,6 +47,11 @@ namespace net.r_eg.Conari.PE
         MachineTypes Machine { get; }
 
         /// <summary>
+        /// Known addresses of the tables.
+        /// </summary>
+        AddrTables Addresses { get; }
+
+        /// <summary>
         /// Get available sections.
         /// https://msdn.microsoft.com/en-us/library/windows/desktop/ms680341.aspx
         /// /winnt.h
@@ -81,15 +86,5 @@ namespace net.r_eg.Conari.PE
         /// Active pe-file.
         /// </summary>
         string FileName { get; }
-
-        /// <summary>
-        /// Current image.
-        /// </summary>
-        Magic Current { get; }
-
-        /// <summary>
-        /// Full path to current image.
-        /// </summary>
-        string CurrentImageName { get; }
     }
 }
