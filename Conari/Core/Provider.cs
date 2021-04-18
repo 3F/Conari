@@ -368,7 +368,7 @@ namespace net.r_eg.Conari.Core
 
             LSender.Send(this, $"{msgerr} Trying to decorate with C rules.", Message.Level.Warn);
 
-            var func = CMangling.Decorate(lpProcName, ((ILoader)this).PE.ExportedProcNames.ToArray());
+            var func = CMangling.Decorate(lpProcName, ((ILoader)this).PE.Export.Names.ToArray());
             if(func == null) {
                 throw new EntryPointNotFoundException(
                     $"{msgerr} The `Mangling.C` does not help. Check a correct name manually. Related issue: https://github.com/3F/Conari/issues/3"

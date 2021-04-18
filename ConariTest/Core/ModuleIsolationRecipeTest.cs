@@ -76,14 +76,12 @@ namespace ConariTest.Core
 
         private class _Recipe1: IModuleIsolationRecipe
         {
-            public const string CLLI = "CLLI-TEST-2301F37A-5F7D-45B7-9AED-ABC3988D953F";
-
             public string DstDir { get; private set; }
             public string Destination { get; private set; }
 
             public bool isolate(Link l, out string module)
             {
-                DstDir = Path.Combine(Path.GetTempPath(), CLLI, Guid.NewGuid().ToString());
+                DstDir = Path.Combine(TempDstPath, Guid.NewGuid().ToString());
                 Directory.CreateDirectory(DstDir);
 
                 Destination = Path.Combine(DstDir, Path.GetFileName(l.module));
@@ -97,7 +95,7 @@ namespace ConariTest.Core
             {
                 var dir = Path.GetDirectoryName(l.module);
 
-                if(dir.IndexOf(CLLI) != -1)
+                if(dir.IndexOf(CLLI_TEST) != -1)
                 {
                     File.Delete(l.module);
                     Directory.Delete(dir, false);

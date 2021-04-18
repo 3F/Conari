@@ -24,34 +24,37 @@
 */
 
 using System;
-using System.Runtime.InteropServices;
+using System.Text;
+using net.r_eg.Conari.PE;
+using net.r_eg.Conari.PE.WinNT;
 
 namespace net.r_eg.Conari.Exceptions
 {
     [Serializable]
-    public class WinFuncFailException: CommonException
+    public class ArchitectureMismatchException: LoadLibException
     {
-        public WinFuncFailException(string message, bool getError)
-            : base(getError ? detail(message) : message)
+        public ArchitectureMismatchException(IPE pe, bool getError = true)
+            : base(format(pe), getError)
         {
 
         }
 
-        public WinFuncFailException(string message)
-            : this(message, false)
+        private static string format(IPE pe)
         {
+            StringBuilder sb = new();
+            sb.Append($"Target architecture of the image is {pe.Machine} (");
 
-        }
+            if(pe.Characteristics.HasFlag(Characteristics.IMAGE_FILE_LARGE_ADDRESS_AWARE)) {
+                sb.Append($"can ");
+            }
+            else {
+                sb.Append($"cannot ");
+            }
 
-        public WinFuncFailException()
-            : this(String.Empty, true)
-        {
+            sb.Append($"handle > 2-GB addresses): `{pe.CurrentImageName}`({pe.Current}) cannot process `{pe.FileName}`({pe.Magic}). ");
 
-        }
-
-        protected static string detail(string message)
-        {
-            return $"{message} [Error: {Marshal.GetLastWin32Error()}]";
+            sb.Append($"Possible solution https://github.com/3F/Conari/issues/4");
+            return sb.ToString();
         }
     }
 }

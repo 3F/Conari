@@ -26,7 +26,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using net.r_eg.Conari.Exceptions;
 using net.r_eg.Conari.Log;
 using net.r_eg.Conari.Native;
@@ -35,103 +34,104 @@ using net.r_eg.Conari.PE.WinNT;
 
 namespace net.r_eg.Conari.PE.Hole
 {
-    using BYTE  = System.Byte;
-    using DWORD = System.UInt32;
-    using LONG  = System.Int32;
-    using WORD  = System.UInt16;
+    using BYTE  = Byte;
+    using DWORD = UInt32;
+    using LONG  = Int32;
+    using WORD  = UInt16;
 
     /// <summary>
-    /// PE32/PE32+ files. Works with records from ExportDirectory: 
-    /// WinNT IMAGE_OPTIONAL_HEADER - IMAGE_DATA_DIRECTORY[IMAGE_DIRECTORY_ENTRY_EXPORT]
+    /// PE32/PE32+ implementation.
     /// </summary>
     internal class ExportDirectory: IDisposable
     {
-        protected BinaryReader reader;
-        protected TExInfo exInfo;
+        protected readonly BinaryReader reader;
 
-        protected struct TExInfo
+        /// <summary>
+        /// Attributes of the image.
+        /// </summary>
+        public Characteristics Characteristics { get; protected set; }
+
+        /// <summary>
+        /// Magic word from optional header.
+        /// </summary>
+        public Magic Magic { get; protected set; }
+
+        /// <summary>
+        /// Target architecture of the image.
+        /// </summary>
+        public MachineTypes Machine { get; protected set; }
+
+        /// <summary>
+        /// VirtualAddress of DataDirectory[ENTRY_EXPORT]
+        /// </summary>
+        public DWORD VAExportDir { get; protected set; }
+
+        /// <summary>
+        /// The Size of DataDirectory[ENTRY_EXPORT]
+        /// </summary>
+        public DWORD SizeExportDir { get; protected set; }
+
+        public WORD NumberOfSections { get; protected set; }
+
+        public IMAGE_SECTION_HEADER[] Sections { get; protected set; }
+
+        public IMAGE_EXPORT_DIRECTORY Export { get; protected set; }
+
+        public IEnumerable<string> Names { get
         {
-            // VirtualAddress of DataDirectory[ENTRY_EXPORT]
-            public DWORD VirtualAddress;
-
-            // The Size of DataDirectory[ENTRY_EXPORT]
-            public DWORD Size;
-
-            // The number of sections
-            public WORD NumberOfSections;
-        }
-
-        public IMAGE_SECTION_HEADER[] Sections
-        {
-            get;
-            protected set;
-        }
-
-        public IMAGE_EXPORT_DIRECTORY DExport
-        {
-            get;
-            protected set;
-        }
-
-        public IEnumerable<string> Names
-        {
-            get
+            if(Export.NumberOfNames < 1 || Export.AddressOfNames < 1)
             {
-                if(DExport.NumberOfNames < 1 || DExport.AddressOfNames < 1) {
-                    LSender.Send(
-                        this, 
-                        "The export functions was not found. The NumberOfNames or AddressOfNames < 1", 
-                        Message.Level.Info
-                    );
-                    yield break;
-                }
-
-                var stream = reader.BaseStream;
-
-                DWORD offset = rva2Offset(DExport.AddressOfNames);
-                stream.Seek(offset, SeekOrigin.Begin);
-
-                // addresses of function names
-
-                DWORD[] names = new DWORD[DExport.NumberOfNames];
-                for(DWORD i = 0; i < DExport.NumberOfNames; ++i) {
-                    names[i] = rva2Offset(reader.ReadUInt32());
-                }
-
-                // null-terminated names
-
-                foreach(DWORD addr in names)
-                {
-                    stream.Seek(addr, SeekOrigin.Begin);
-
-                    char c;
-                    string str = "";
-                    while((c = reader.ReadChar()) != '\0') {
-                        str += c;
-                    }
-
-                    yield return str;
-                }
+                LSender.Send
+                (
+                    this, 
+                    "The export functions was not found. The NumberOfNames or AddressOfNames < 1", 
+                    Message.Level.Info
+                );
+                yield break;
             }
-        }
 
-        public static string[] GetNames(string pefile)
+            seek(Export.AddressOfNames);
+
+            // addresses of function names
+
+            DWORD[] names = new DWORD[Export.NumberOfNames];
+            for(DWORD i = 0; i < Export.NumberOfNames; ++i) {
+                names[i] = rva2Offset(reader.ReadUInt32());
+            }
+
+            // null-terminated names
+
+            foreach(DWORD addr in names)
+            {
+                reader.BaseStream.Seek(addr, SeekOrigin.Begin);
+
+                char c;
+                string str = string.Empty;
+                while((c = reader.ReadChar()) != '\0') {
+                    str += c;
+                }
+
+                yield return str;
+            }
+        }}
+
+        internal IEnumerable<DWORD> AddressesOfProc { get
         {
-            using(var ef = new ExportDirectory(pefile)) {
-                return ef.Names.ToArray();
-            }
-        }
+            seek(Export.AddressOfFunctions);
 
-        public static string[] TryGetNames(string pefile)
+            for(DWORD i = 0; i < Export.NumberOfFunctions; ++i) {
+                yield return reader.ReadUInt32();
+            }
+        }}
+
+        internal IEnumerable<WORD> Ordinals { get
         {
-            try {
-                return GetNames(pefile);
+            seek(Export.AddressOfNameOrdinals);
+
+            for(DWORD i = 0; i < Export.NumberOfNames; ++i) {
+                yield return reader.ReadUInt16();
             }
-            catch(Exception ex) {
-                LSender.Send<ExportDirectory>(new Message($"GetNames('{pefile}') threw an exception.", ex));
-                return null;
-            }
-        }
+        }}
 
         public ExportDirectory(string pefile)
         {
@@ -139,19 +139,10 @@ namespace net.r_eg.Conari.PE.Hole
                 new FileStream(pefile, FileMode.Open, FileAccess.Read, FileShare.Read)
             );
 
-            init();
-        }
+            initialize(lfanew());
 
-        protected void init()
-        {
-            exInfo = addrOfExport(lfanew());
-
-            if(exInfo.VirtualAddress < 1 || exInfo.Size < 1) {
-                return;
-            }
-
-            Sections = getSectionHeaders(exInfo.NumberOfSections);
-            DExport  = getExports(exInfo.VirtualAddress);
+            Sections    = getSectionHeaders(NumberOfSections);
+            Export      = getExports(VAExportDir);
         }
 
         protected LONG lfanew()
@@ -172,7 +163,7 @@ namespace net.r_eg.Conari.PE.Hole
             throw new PECorruptDataException();
         }
 
-        protected TExInfo addrOfExport(LONG e_lfanew)
+        protected void initialize(LONG e_lfanew)
         {
             var stream = reader.BaseStream;
 
@@ -184,7 +175,6 @@ namespace net.r_eg.Conari.PE.Hole
             char[] sig = new char[4];
             reader.Read(sig, 0, sig.Length); // A 4-byte signature identifying the file as a PE image
 
-            // The bytes are "PE\0\0"
             if(sig[0] != 'P' || sig[1] != 'E' || sig[2] != '\0' || sig[3] != '\0') {
                 throw new PECorruptDataException();
             }
@@ -192,26 +182,29 @@ namespace net.r_eg.Conari.PE.Hole
             /* IMAGE_FILE_HEADER */
             // https://msdn.microsoft.com/en-us/library/windows/desktop/ms680313.aspx
 
-            byte[] IMAGE_FILE_HEADER = new byte[20];
+            const short _OFS_IOH = 2; //TODO: WORD for Magic from IMAGE_OPTIONAL_HEADER
+            byte[] IMAGE_FILE_HEADER = new byte[/*WORD×4 + DWORD×3 =*/20 + _OFS_IOH];
             reader.Read(IMAGE_FILE_HEADER, 0, IMAGE_FILE_HEADER.Length);
 
-            dynamic ifh = NativeData
-                            ._(IMAGE_FILE_HEADER)
-                            .t<WORD, WORD>(null, "NumberOfSections")
+            dynamic ifh = IMAGE_FILE_HEADER
+                            .Native()
+                            .t<WORD, WORD>("Machine", "NumberOfSections")
                             .align<DWORD>(3)
-                            .t<WORD, WORD>("SizeOfOptionalHeader")
+                            .t<WORD>("SizeOfOptionalHeader")
+                            .t<WORD>("Characteristics")
+                            .t<WORD>("Magic") //NOTE: actually this is part of IMAGE_OPTIONAL_HEADER offset 0 (0x108)
                             .Raw.Type;
 
             /* IMAGE_OPTIONAL_HEADER */
             // https://msdn.microsoft.com/en-us/library/windows/desktop/ms680339.aspx
 
-            // move to NumberOfRvaAndSizes
+            // move to NumberOfRvaAndSizes (Optional Header)
 
             if(ifh.SizeOfOptionalHeader == 0xE0) { // IMAGE_OPTIONAL_HEADER32
-                stream.Seek(0x5C, SeekOrigin.Current);
+                stream.Seek(0x5C - _OFS_IOH, SeekOrigin.Current);
             }
             else if(ifh.SizeOfOptionalHeader == 0xF0) { // IMAGE_OPTIONAL_HEADER64
-                stream.Seek(0x6C, SeekOrigin.Current);
+                stream.Seek(0x6C - _OFS_IOH, SeekOrigin.Current);
             }
             else {
                 // also known 0 for object files
@@ -235,8 +228,8 @@ namespace net.r_eg.Conari.PE.Hole
             byte[] DIRECTORY_EXPORT = new byte[8];
             reader.Read(DIRECTORY_EXPORT, 0, DIRECTORY_EXPORT.Length);
 
-            dynamic idd = NativeData
-                            ._(DIRECTORY_EXPORT)
+            dynamic idd = DIRECTORY_EXPORT
+                            .Native()
                             .t<DWORD>("VirtualAddress")
                             .t<DWORD>("Size")
                             .Raw.Type;
@@ -244,11 +237,14 @@ namespace net.r_eg.Conari.PE.Hole
             // to the end of directories
             stream.Seek(8 * (NumberOfRvaAndSizes - 1), SeekOrigin.Current);
 
-            return new TExInfo() {
-                VirtualAddress = idd.VirtualAddress,
-                Size = idd.Size,
-                NumberOfSections = ifh.NumberOfSections,
-            };
+            {
+                VAExportDir         = idd.VirtualAddress;
+                SizeExportDir       = idd.Size;
+                NumberOfSections    = ifh.NumberOfSections;
+                Characteristics     = (Characteristics)ifh.Characteristics;
+                Machine             = (MachineTypes)ifh.Machine;
+                Magic               = (Magic)ifh.Magic;
+            }
         }
 
         protected IMAGE_SECTION_HEADER[] getSectionHeaders(int count)
@@ -285,6 +281,7 @@ namespace net.r_eg.Conari.PE.Hole
 
         protected IMAGE_EXPORT_DIRECTORY getExports(DWORD virtualAddress)
         {
+            if(virtualAddress < 1) return new IMAGE_EXPORT_DIRECTORY();
             var stream = reader.BaseStream;
 
             DWORD offset = rva2Offset(virtualAddress);
@@ -322,6 +319,12 @@ namespace net.r_eg.Conari.PE.Hole
             }
 
             throw new ArgumentOutOfRangeException($"Incorrect RVA: {rva}");
+        }
+
+        private void seek(DWORD rva)
+        {
+            DWORD offset = rva2Offset(rva);
+            reader.BaseStream.Seek(offset, SeekOrigin.Begin);
         }
 
         #region IDisposable

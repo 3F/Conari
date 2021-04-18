@@ -24,34 +24,48 @@
 */
 
 using System;
-using System.Runtime.InteropServices;
+using System.Collections.Generic;
+using System.Linq;
+using net.r_eg.Conari.PE.Hole;
 
-namespace net.r_eg.Conari.Exceptions
+namespace net.r_eg.Conari.PE
 {
-    [Serializable]
-    public class WinFuncFailException: CommonException
+    using DWORD = System.UInt32;
+    using WORD = System.UInt16;
+
+    public sealed class Export
     {
-        public WinFuncFailException(string message, bool getError)
-            : base(getError ? detail(message) : message)
-        {
+        private readonly DWORD[] addresses;
+        private readonly string[] names;
+        private readonly WORD[] ordinals;
 
+        public IEnumerable<DWORD> Addresses => addresses;
+
+        public IEnumerable<string> Names => names;
+
+        public IEnumerable<WORD> NameOrdinals => ordinals;
+
+        public DWORD getAddressOf(string name)
+        {
+            for(DWORD i = 0; i < names.Length; ++i)
+            {
+                if(name == names[i]) return addresses[ordinals[i]];
+            }
+            return 0;
         }
 
-        public WinFuncFailException(string message)
-            : this(message, false)
+        public IntPtr getAddressOf(string name, IntPtr loaded)
         {
-
+            return IntPtr.Add(loaded, Convert.ToInt32(getAddressOf(name)));
         }
 
-        public WinFuncFailException()
-            : this(String.Empty, true)
+        internal Export(ExportDirectory exdir)
         {
+            if(exdir == null) throw new ArgumentNullException(nameof(exdir));
 
-        }
-
-        protected static string detail(string message)
-        {
-            return $"{message} [Error: {Marshal.GetLastWin32Error()}]";
+            names       = exdir.Names.ToArray();
+            ordinals    = exdir.Ordinals.ToArray();
+            addresses   = exdir.AddressesOfProc.ToArray();
         }
     }
 }

@@ -23,6 +23,7 @@
  * THE SOFTWARE.
 */
 
+using System;
 using System.Collections.Generic;
 using net.r_eg.Conari.PE.WinNT;
 
@@ -30,6 +31,21 @@ namespace net.r_eg.Conari.PE
 {
     public interface IPE
     {
+        /// <summary>
+        /// Attributes of the image.
+        /// </summary>
+        Characteristics Characteristics { get; }
+
+        /// <summary>
+        /// Magic word from optional header.
+        /// </summary>
+        Magic Magic { get; }
+
+        /// <summary>
+        /// Target architecture of the image.
+        /// </summary>
+        MachineTypes Machine { get; }
+
         /// <summary>
         /// Get available sections.
         /// https://msdn.microsoft.com/en-us/library/windows/desktop/ms680341.aspx
@@ -50,14 +66,30 @@ namespace net.r_eg.Conari.PE
         IEnumerable<string> ExportedProcNames { get; }
 
         /// <summary>
+        /// Export Address Table + Export Name Table + Export Ordinal Table.
+        /// </summary>
+        Export Export { get; }
+
+        /// <summary>
         /// Full names of all available exported functions or variables from ExportDirectory 
         /// (WinNT OPTIONAL_HEADER).
         /// </summary>
+        [Obsolete("Use " + nameof(ExportedProcNames))]
         string[] ExportedProcNamesArray { get; }
 
         /// <summary>
         /// Active pe-file.
         /// </summary>
         string FileName { get; }
+
+        /// <summary>
+        /// Current image.
+        /// </summary>
+        Magic Current { get; }
+
+        /// <summary>
+        /// Full path to current image.
+        /// </summary>
+        string CurrentImageName { get; }
     }
 }

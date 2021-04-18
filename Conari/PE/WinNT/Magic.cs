@@ -23,35 +23,29 @@
  * THE SOFTWARE.
 */
 
-using System;
-using System.Runtime.InteropServices;
-
-namespace net.r_eg.Conari.Exceptions
+namespace net.r_eg.Conari.PE.WinNT
 {
-    [Serializable]
-    public class WinFuncFailException: CommonException
+    using WORD = System.UInt16;
+
+    /// <summary>
+    /// IMAGE_OPTIONAL_HEADER 
+    ///     WORD Magic; 0x108
+    /// </summary>
+    public enum Magic: WORD
     {
-        public WinFuncFailException(string message, bool getError)
-            : base(getError ? detail(message) : message)
-        {
+        /// <summary>
+        /// PE32 image.
+        /// </summary>
+        PE32 = 0x10B,
 
-        }
+        /// <summary>
+        /// PE32+ image.
+        /// </summary>
+        PE64 = 0x20B,
 
-        public WinFuncFailException(string message)
-            : this(message, false)
-        {
-
-        }
-
-        public WinFuncFailException()
-            : this(String.Empty, true)
-        {
-
-        }
-
-        protected static string detail(string message)
-        {
-            return $"{message} [Error: {Marshal.GetLastWin32Error()}]";
-        }
+        /// <summary>
+        /// The file is a ROM image.
+        /// </summary>
+        ROM = 0x107,
     }
 }

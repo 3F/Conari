@@ -163,8 +163,8 @@ using(var l = new ConariL(
 ```csharp
 
 // IMAGE_FILE_HEADER: https://msdn.microsoft.com/en-us/library/windows/desktop/ms680313.aspx
-dynamic ifh = NativeData
-                ._(data)
+dynamic ifh = binaryData
+                .Native()
                 .t<WORD, WORD>(null, "NumberOfSections")
                 .align<DWORD>(3)
                 .t<WORD, WORD>("SizeOfOptionalHeader")
@@ -175,10 +175,12 @@ if(ifh.SizeOfOptionalHeader == 0xE0) { // IMAGE_OPTIONAL_HEADER32
 }
 
 // IMAGE_DATA_DIRECTORY: https://msdn.microsoft.com/en-us/library/windows/desktop/ms680305.aspx
-dynamic idd = (new NativeData(data))
+dynamic idd = binaryData.Native()
                     .t<DWORD>("VirtualAddress") // idd.VirtualAddress
                     .t<DWORD>("Size")           // idd.Size
                     .Raw.Type;
+
+DWORD offset = rva2Offset(idd.VirtualAddress);
 ```
 
 ```csharp

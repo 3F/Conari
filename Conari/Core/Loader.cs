@@ -32,6 +32,7 @@ using net.r_eg.Conari.Exceptions;
 using net.r_eg.Conari.Extension;
 using net.r_eg.Conari.Log;
 using net.r_eg.Conari.PE;
+using net.r_eg.Conari.PE.WinNT;
 using net.r_eg.Conari.Resources;
 using net.r_eg.Conari.WinAPI;
 
@@ -70,6 +71,8 @@ namespace net.r_eg.Conari.Core
         /// </summary>
         public IPE PE { get; protected set; }
 
+        internal static string TempDstPath => Path.Combine(Path.GetTempPath(), CLLI);
+
         internal bool Disposed => disposed;
 
         public static explicit operator IntPtr(Loader l) => l.Library.handle;
@@ -96,12 +99,13 @@ namespace net.r_eg.Conari.Core
                 return false;
             }
 
-            if(Library.handle == IntPtr.Zero) {
-                // TODO: clarify specific error
+            PE = new PEFile(Library.module);
+
+            if(Library.handle == IntPtr.Zero)
+            {
+                if(PE.Magic != PE.Current) throw new ArchitectureMismatchException(PE);
                 throw new LoadLibException($"Failed loading '{Library}'. Possible incorrect architecture or missing file or its dependencies. https://github.com/3F/Conari/issues/4", true);
             }
-
-            PE = new PEFile(Library.module);
 
             AfterLoad(this, new DataArgs<Link>(Library));
             return true;
@@ -192,7 +196,7 @@ namespace net.r_eg.Conari.Core
                     module = l.module;
                 }
 
-                var dstDir = Path.Combine(Path.GetTempPath(), CLLI, Guid.NewGuid().ToString());
+                var dstDir = Path.Combine(TempDstPath, Guid.NewGuid().ToString());
                 Directory.CreateDirectory(dstDir);
 
                 var dst = Path.Combine(dstDir, Path.GetFileName(module));
