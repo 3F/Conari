@@ -23,27 +23,35 @@
  * THE SOFTWARE.
 */
 
-using System.Diagnostics;
+using System;
+using net.r_eg.Conari.Native;
 
-namespace net.r_eg.Conari.Core
+namespace net.r_eg.Conari.Static
 {
-    [DebuggerDisplay("{(string)this}")]
-    public struct LpProcName
+    public static class Members
     {
-        public string origin;
-        public string prefixed;
+        /// <summary>
+        /// 32-bit or 64-bit addressing in the current process?
+        /// </summary>
+        public static bool Is64bit => IntPtr.Size == sizeof(Int64);
 
-        public static explicit operator string(LpProcName proc)
+        /// <inheritdoc cref="NativeData.SizeOf(Type)"/>
+        public static int SizeOf<T>() => NativeData.SizeOf(typeof(T));
+
+#if NET40
+
+        public static T[] EmptyArray<T>() => _EmptyArray<T>.value;
+
+        private static class _EmptyArray<T>
         {
-            return proc.prefixed ?? proc.origin;
+            public static readonly T[] value = new T[0];
         }
 
-        public static implicit operator LpProcName(string proc) => new(proc);
+#else
 
-        public LpProcName(string origin, string prefixed = null)
-        {
-            this.origin     = origin;
-            this.prefixed   = prefixed;
-        }
+        public static T[] EmptyArray<T>() => Array.Empty<T>();
+
+#endif
+
     }
 }

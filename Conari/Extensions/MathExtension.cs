@@ -23,27 +23,31 @@
  * THE SOFTWARE.
 */
 
-using System.Diagnostics;
-
-namespace net.r_eg.Conari.Core
+namespace net.r_eg.Conari.Extension
 {
-    [DebuggerDisplay("{(string)this}")]
-    public struct LpProcName
+    public static class MathExtension
     {
-        public string origin;
-        public string prefixed;
+        /// <summary>
+        /// Our optimal polynom for hash functions.
+        /// </summary>
+        /// <param name="r">initial vector</param>
+        /// <param name="x">new value</param>
+        /// <returns></returns>
+        public static int HashPolynom(this int r, int x) => unchecked((r << 5) + r ^ x);
 
-        public static explicit operator string(LpProcName proc)
+        /// <summary>
+        /// Calculate final Hash Code from specified vector and pushed values.
+        /// </summary>
+        /// <param name="r">initial vector</param>
+        /// <param name="values">List of individual Hash Code values.</param>
+        /// <returns></returns>
+        public static int CalculateHashCode(this int r, params object[] values)
         {
-            return proc.prefixed ?? proc.origin;
-        }
-
-        public static implicit operator LpProcName(string proc) => new(proc);
-
-        public LpProcName(string origin, string prefixed = null)
-        {
-            this.origin     = origin;
-            this.prefixed   = prefixed;
+            int h = r;
+            foreach(var v in values) {
+                h.HashPolynom(v?.GetHashCode() ?? 0);
+            }
+            return h;
         }
     }
 }

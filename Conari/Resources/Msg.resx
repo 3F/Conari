@@ -117,7 +117,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ArgPointerZero" xml:space="preserve">
+    <value>Pointer must be a non-zero</value>
+  </data>
+  <data name="field_0_defined_mode_1" xml:space="preserve">
+    <value>Field `{0}` is already defined in the chain. Reset/renew/or use other mode instead of `{1}`.</value>
+  </data>
+  <data name="NotYetImpl" xml:space="preserve">
+    <value>Not yet implemented. https://github.com/3F/Conari</value>
+  </data>
   <data name="SyncLimit_0" xml:space="preserve">
     <value>Sync wait limit reached: {0}</value>
+  </data>
+  <data name="UrlSrc" xml:space="preserve">
+    <value>https://github.com/3F/Conari</value>
   </data>
 </root>

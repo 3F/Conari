@@ -102,7 +102,7 @@ namespace net.r_eg.Conari.Core
 
         public static explicit operator string(Config cfg) => cfg.Module;
 
-        public static explicit operator Config(string lib) => new Config(lib);
+        public static explicit operator Config(string lib) => new(lib);
 
         /// <param name="module">Module (.dll, .exe, or address).</param>
         /// <param name="isolate">Initialize property {IsolateLoadingOfModule}.</param>

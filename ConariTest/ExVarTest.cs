@@ -7,6 +7,7 @@ using Xunit;
 
 namespace ConariTest
 {
+    using static net.r_eg.Conari.Static.Members;
     using static _svc.TestHelper;
 
     public class ExVarTest
@@ -62,14 +63,14 @@ namespace ConariTest
                 string expected = "Hello World!";
 
                 string fld;
-                if(IntPtr.Size == sizeof(Int64)) {
+                if(Is64bit) {
                     fld = "?eVariableTest@API@UnLib@Conari@r_eg@net@@3PEBDEB";
                 }
                 else {
                     fld = "?eVariableTest@API@UnLib@Conari@r_eg@net@@3PBDB";
                 }
 
-                if(IntPtr.Size == sizeof(Int32))
+                if(!Is64bit)
                 {
                     Assert.Equal(expected, (CharPtr)l.ExVar.get(fld));
                     Assert.Equal(expected, (CharPtr)l.ExVar.getVar(fld));
@@ -82,7 +83,7 @@ namespace ConariTest
                 Assert.Equal(expected, (CharPtr)l.ExVar.getField(typeof(IntPtr), fld).value);
 
                 byte[] raw  = l.ExVar.getField(typeof(IntPtr).NativeSize(), fld).value;
-                var rawptr  = (IntPtr.Size == sizeof(Int64)) ? BitConverter.ToInt64(raw, 0) : BitConverter.ToInt32(raw, 0);
+                var rawptr  = Is64bit ? BitConverter.ToInt64(raw, 0) : BitConverter.ToInt32(raw, 0);
 
                 Assert.Equal(expected, (CharPtr)rawptr);
             }

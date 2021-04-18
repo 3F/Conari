@@ -2,7 +2,7 @@
 
 [![](https://raw.githubusercontent.com/3F/Conari/master/Conari/Resources/Conari_v1.png)](https://github.com/3F/Conari)
 
-🧬 An unmanaged memory, modules, and raw data in one touch.
+🧬 An unmanaged memory, modules, and raw data in *one-touch*.
 
 Conari engine represents most flexible platform for working with unmanaged memory, modules, related P/Invoke features, and more around libraries, executable modules, runtime dynamic use of the unmanaged native C/C++ in .NET world and other raw data just in a few easy steps without configuring something, and... Even accessing to complex types like structures without their declaration at all.
 
@@ -25,15 +25,13 @@ Conari engine represents most flexible platform for working with unmanaged memor
 
 It was designed to be loyal to your needs on the fly.
 
-🔍 Easy to start:
+🔍 Easy to start
 
 ```csharp
-using(var l = new ConariL("...")) {
-    // ...
-}
+using var l = new ConariL("...");
 ```
 
-🚀 Awesome speed:
+🚀 Awesome speed
 
 Optional caching of 0x29 opcodes (Calli) and more.
 
@@ -47,25 +45,50 @@ regexp-c++11(regex_match with endings .*)     | ~59503ms     | ~53817ms        |
 regXwild via **Conari** v1.3 (Lambda) - `EXT` | **~54ms**    | **~35ms**       | `<<`
 regXwild via **Conari** v1.3 (DLR) - `EXT`    | ~214ms       | ~226ms          |
 
-🔨 Its amazing DLR features:
+🔨 Its amazing DLR features
 
 ```csharp
 using(dynamic l = new ConariX("..."))
 {
     // just everything is yours ~
-    l.curl_easy_setopt(curl, 10002, "http://example.com");
+    l.curl_easy_setopt(curl, 10002, "https://example.com");
 }
 ```
 
-🔧 Raw accessibility to any binary data in unmanaged memory:
+🔧 The easiest (most ever) access to any data in unmanaged memory
 
 ```csharp
-ptr.Native().align<int>(2, "x", "y")
-            .t<IntPtr>("data")
-            .Raw;
+// Everything will be generated at runtime
+memory.Native()
+    .f<WORD>("Machine", "NumberOfSections") // IMAGE_FILE_HEADER (0xF4)
+    .align<DWORD>(3)
+    .t<WORD>("SizeOfOptionalHeader")
+    .t<WORD>("Characteristics")
+    .region()
+    .t<WORD>("Magic") // IMAGE_OPTIONAL_HEADER (0x108)
+    .build(out dynamic ifh);
+
+if(ifh.SizeOfOptionalHeader == 0xF0) { // IMAGE_OPTIONAL_HEADER64
+    memory.move(0x6C);
+}
+
+// Use it !
+
+ifh.NumberOfSections    // 6
+ifh.Characteristics     // IMAGE_FILE_EXECUTABLE_IMAGE | IMAGE_FILE_LARGE_ADDRESS_AWARE | IMAGE_FILE_DLL
+ifh.Machine             // IMAGE_FILE_MACHINE_AMD64
+ifh.Magic               // PE64
 ```
 
-🏄 Most powerful PInvoke and even most convenient use of WinAPI. Our recipe is simple: *Just use it!*
+```csharp
+dynamic l = ptr.Native().f<int>("x", "y").build();
+l.x // 17
+l.y // -23
+```
+
+🏄 Most powerful PInvoke and even most convenient use of WinAPI without preparing something
+
+Conari will generate and adapt everything at runtime! Specially for you! For example, below we don't provide neither *user32.ShowWindow()* nor *user32.MessageBoxA(),* even no *kernel32.GetModuleHandleA/W()*
 
 ```csharp
 dynamic user32 = new User32();
@@ -81,15 +104,13 @@ dynamic kernel32 = new Kernel32();
     kernel32.GetModuleHandleW<IntPtr>((WCharPtr)ustr);
 ```
 
-**Important note:** Conari does not provide anything from above. It will just generate and adapt everything at runtime. Specially for you!
+Because our recipe is simple, *Just use it!* and have fun.
 
 🔖 Modern **.NET Core**
 
-Conari is ready for .NET Core starting from 1.4.
+Conari is ready for .NET Core starting from 1.4. Even for [.NET Standard **2.0**](https://github.com/3F/Conari/issues/13) which does not cover unmanaged *EmitCalli* due to missing implementation for *System.Private.CoreLib.* Now this is another one of independent solution for everyone as https://github.com/3F/UnmanagedEmitCalli
 
-But we have even more, again. Conari also provides [support for .NET Standard **2.0**](https://github.com/3F/Conari/issues/13) layer which does not cover unmanaged EmitCalli due to missed implementation for System.Private.CoreLib.
-
-🍰 Open and Free:
+🍰 Open and Free
 
 Conari is available for everyone from 2016 🎉 Open Source project; MIT License, Yes! Enjoy!
 
@@ -103,7 +124,7 @@ Copyright (c) 2016-2021  Denis Kuzmin <x-3F@outlook.com> github/3F
 
 [ [ ☕ Donate ](https://3F.github.io/Donation/) ]
 
-Conari contributors: https://github.com/3F/Conari/graphs/contributors
+Conari contributors https://github.com/3F/Conari/graphs/contributors
 
 We're waiting for your awesome contributions!
 
@@ -163,22 +184,21 @@ using(var l = new ConariL(
 ```csharp
 
 // IMAGE_FILE_HEADER: https://msdn.microsoft.com/en-us/library/windows/desktop/ms680313.aspx
-dynamic ifh = binaryData
-                .Native()
-                .t<WORD, WORD>(null, "NumberOfSections")
-                .align<DWORD>(3)
-                .t<WORD, WORD>("SizeOfOptionalHeader")
-                .Raw.Type;
+dynamic ifh = binaryData.Native()
+            .t<WORD, WORD>(null, "NumberOfSections")
+            .align<DWORD>(3)
+            .t<WORD, WORD>("SizeOfOptionalHeader")
+            .build();
                 
-if(ifh.SizeOfOptionalHeader == 0xE0) { // IMAGE_OPTIONAL_HEADER32
+if(ifh.SizeOfOptionalHeader == 0xF0) { // IMAGE_OPTIONAL_HEADER64
     ... 
 }
 
 // IMAGE_DATA_DIRECTORY: https://msdn.microsoft.com/en-us/library/windows/desktop/ms680305.aspx
-dynamic idd = binaryData.Native()
-                    .t<DWORD>("VirtualAddress") // idd.VirtualAddress
-                    .t<DWORD>("Size")           // idd.Size
-                    .Raw.Type;
+binaryData.Native()
+    .t<DWORD>("VirtualAddress")
+    .t<DWORD>("Size")
+    .build(out dynamic idd);
 
 DWORD offset = rva2Offset(idd.VirtualAddress);
 ```
@@ -266,15 +286,11 @@ l.BeforeUnload += (object sender, DataArgs<Link> e) =>
 ...
 ```
 
-
-and more !
+and more ...
 
 
 ### [Examples](https://github.com/3F/Conari/wiki/Examples)
 
-* *[List of real usage via Conari engine](https://github.com/3F/Conari/wiki/Projects)*
-
-#### Sample for DLR
 How about [regXwild](https://github.com/3F/regXwild) (⏱ Superfast ^Advanced wildcards++? on native unmanaged C++) in your C# code?
 
 ```csharp
@@ -295,12 +311,11 @@ REGXWILD_API_L bool match
 );
 ```
 
-have fun!
-
-
 ## How to get Conari
 
 * NuGet: [![NuGet package](https://img.shields.io/nuget/v/Conari.svg)](https://www.nuget.org/packages/Conari/)
 * [GetNuTool](https://github.com/3F/GetNuTool): `msbuild gnt.core /p:ngpackages="Conari"` or **[gnt](https://3f.github.io/GetNuTool/releases/latest/gnt/)** /p:ngpackages="Conari"
 * [GitHub Releases](https://github.com/3F/Conari/releases) [ [latest](https://github.com/3F/Conari/releases/latest) ]
 * CI builds: [`CI /artifacts`](https://ci.appveyor.com/project/3Fs/conari-wkygr/history) ( [old CI](https://ci.appveyor.com/project/3Fs/conari/history) ) or find `🎲 CI build` on [GitHub Releases](https://github.com/3F/Conari/releases) page.
+
+*Enjoy!*

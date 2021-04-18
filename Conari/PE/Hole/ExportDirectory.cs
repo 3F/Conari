@@ -38,6 +38,7 @@ namespace net.r_eg.Conari.PE.Hole
     using DWORD = UInt32;
     using LONG  = Int32;
     using WORD  = UInt16;
+    using static Static.Members;
 
     /// <summary>
     /// PE32/PE32+ implementation.
@@ -253,7 +254,7 @@ namespace net.r_eg.Conari.PE.Hole
             // https://msdn.microsoft.com/en-us/library/windows/desktop/ms680341.aspx
 
             if(count < 1) {
-                return new IMAGE_SECTION_HEADER[0];
+                return EmptyArray<IMAGE_SECTION_HEADER>();
             }
 
             byte[] data = new byte[count * IMAGE_SECTION_HEADER.IMAGE_SIZEOF_SECTION_HEADER];

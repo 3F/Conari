@@ -23,27 +23,19 @@
  * THE SOFTWARE.
 */
 
-using System.Diagnostics;
-
-namespace net.r_eg.Conari.Core
+namespace net.r_eg.Conari.Native.Core
 {
-    [DebuggerDisplay("{(string)this}")]
-    public struct LpProcName
+    public interface ILocalReader: INativeReader
     {
-        public string origin;
-        public string prefixed;
+        /// <summary>
+        /// The length of the readable data.
+        /// </summary>
+        int Length { get; }
 
-        public static explicit operator string(LpProcName proc)
-        {
-            return proc.prefixed ?? proc.origin;
-        }
-
-        public static implicit operator LpProcName(string proc) => new(proc);
-
-        public LpProcName(string origin, string prefixed = null)
-        {
-            this.origin     = origin;
-            this.prefixed   = prefixed;
-        }
+        /// <summary>
+        /// Extends local data using additional bytes.
+        /// </summary>
+        /// <param name="bytes"></param>
+        void extend(byte[] bytes);
     }
 }

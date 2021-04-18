@@ -28,6 +28,8 @@ using System.Runtime.InteropServices;
 
 namespace net.r_eg.Conari.Extension
 {
+    using static Static.Members;
+
     public static class IntPtrExtension
     {
         /// <summary>
@@ -81,7 +83,7 @@ namespace net.r_eg.Conari.Extension
         public static byte[] GetStringBytes(this IntPtr ptr, int length)
         {
             if(length < 1 || ptr == IntPtr.Zero) {
-                return new byte[0];
+                return EmptyArray<byte>();
             }
 
             byte[] ret = new byte[length];

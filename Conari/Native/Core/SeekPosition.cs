@@ -23,27 +23,26 @@
  * THE SOFTWARE.
 */
 
-using System.Diagnostics;
+using System;
 
-namespace net.r_eg.Conari.Core
+namespace net.r_eg.Conari.Native.Core
 {
-    [DebuggerDisplay("{(string)this}")]
-    public struct LpProcName
+    [Serializable]
+    public enum SeekPosition
     {
-        public string origin;
-        public string prefixed;
+        /// <summary>
+        /// Initial state of the used position in a specified container.
+        /// </summary>
+        Initial,
 
-        public static explicit operator string(LpProcName proc)
-        {
-            return proc.prefixed ?? proc.origin;
-        }
+        /// <summary>
+        /// The beginning of active area in container.
+        /// </summary>
+        Region,
 
-        public static implicit operator LpProcName(string proc) => new(proc);
-
-        public LpProcName(string origin, string prefixed = null)
-        {
-            this.origin     = origin;
-            this.prefixed   = prefixed;
-        }
+        /// <summary>
+        /// Current position in a specific region.
+        /// </summary>
+        Current,
     }
 }

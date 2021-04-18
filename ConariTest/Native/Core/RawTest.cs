@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using ConariTest._svc;
 using net.r_eg.Conari.Native.Core;
 using Xunit;
 
@@ -10,15 +11,30 @@ namespace ConariTest.Native.Core
         [Fact]
         public void ctorTest1()
         {
-            Assert.Throws<ArgumentException>(() => 
-                new Raw(IntPtr.Zero, 4)
-            );
+            var seq = new byte[] { 1, 2, 4, 5 };
+            using var exp = new Allocator(seq);
+            Memory mem = exp.ptr;
+
+            var raw = new Raw(mem, seq.Length, 1);
+            byte[] final = raw.Values;
+
+            Assert.Equal(3, final.Length);
+            Assert.Equal(seq[1], final[0]);
+            Assert.Equal(seq[2], final[1]);
+            Assert.Equal(seq[3], final[2]);
+
+            var itres = raw.Iter.ToArray();
+
+            Assert.Equal(3, itres.Length);
+            Assert.Equal(seq[1], itres[0]);
+            Assert.Equal(seq[2], itres[1]);
+            Assert.Equal(seq[3], itres[2]);
         }
 
         [Fact]
         public void ctorTest2()
         {
-            Assert.Throws<ArgumentException>(() => 
+            Assert.Throws<ArgumentNullException>(() => 
                 new Raw((byte[])null)
             );
         }

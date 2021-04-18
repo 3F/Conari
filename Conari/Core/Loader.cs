@@ -34,6 +34,7 @@ using net.r_eg.Conari.Log;
 using net.r_eg.Conari.PE;
 using net.r_eg.Conari.PE.WinNT;
 using net.r_eg.Conari.Resources;
+using net.r_eg.Conari.Types;
 using net.r_eg.Conari.WinAPI;
 
 namespace net.r_eg.Conari.Core
@@ -76,6 +77,7 @@ namespace net.r_eg.Conari.Core
         internal bool Disposed => disposed;
 
         public static explicit operator IntPtr(Loader l) => l.Library.handle;
+        public static explicit operator VPtr(Loader l) => l.Library.handle;
 
         /// <summary>
         /// Loads library into the address space.

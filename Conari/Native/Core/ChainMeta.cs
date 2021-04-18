@@ -23,27 +23,31 @@
  * THE SOFTWARE.
 */
 
-using System.Diagnostics;
-
-namespace net.r_eg.Conari.Core
+namespace net.r_eg.Conari.Native.Core
 {
-    [DebuggerDisplay("{(string)this}")]
-    public struct LpProcName
+    internal sealed class ChainMeta
     {
-        public string origin;
-        public string prefixed;
+        private int flaggedChainSize;
 
-        public static explicit operator string(LpProcName proc)
+        /// <summary>
+        /// Produced data size in the chain before final build.
+        /// </summary>
+        public int ChainSize { get; private set; }
+
+        /// <summary>
+        /// Produced data size in the chain before final build between specific points.
+        /// Returns 0 if delta is zero.
+        /// </summary>
+        public int FlaggedChainSize => ChainSize == flaggedChainSize ? 0 : flaggedChainSize;
+
+        public int updateSize(int size, bool ignoreFlagged = false)
         {
-            return proc.prefixed ?? proc.origin;
+            ChainSize += size;
+            if(!ignoreFlagged) flaggedChainSize += size;
+            return size;
         }
 
-        public static implicit operator LpProcName(string proc) => new(proc);
-
-        public LpProcName(string origin, string prefixed = null)
-        {
-            this.origin     = origin;
-            this.prefixed   = prefixed;
-        }
+        public void resetChainSize() => ChainSize = 0;
+        public void resetFlaggedChainSize() => flaggedChainSize = 0;
     }
 }

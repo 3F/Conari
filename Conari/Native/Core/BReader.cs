@@ -28,6 +28,8 @@ using net.r_eg.Conari.Types;
 
 namespace net.r_eg.Conari.Native.Core
 {
+    using static Static.Members;
+
     public sealed class BReader
     {
         private byte[] data;
@@ -205,7 +207,7 @@ namespace net.r_eg.Conari.Native.Core
 
         private static IntPtr asIntPtr(byte[] val)
         {
-            if(IntPtr.Size == sizeof(Int64)) {
+            if(Is64bit) {
                 return (IntPtr)BitConverter.ToInt64(val, 0);
             }
             return (IntPtr)BitConverter.ToInt32(val, 0);
@@ -213,7 +215,7 @@ namespace net.r_eg.Conari.Native.Core
 
         private static UIntPtr asUIntPtr(byte[] val)
         {
-            if(UIntPtr.Size == sizeof(UInt64)) {
+            if(Is64bit) {
                 return (UIntPtr)BitConverter.ToUInt64(val, 0);
             }
             return (UIntPtr)BitConverter.ToUInt32(val, 0);

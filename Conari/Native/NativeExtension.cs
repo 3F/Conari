@@ -24,40 +24,39 @@
 */
 
 using System;
+using net.r_eg.Conari.Native.Core;
 
 namespace net.r_eg.Conari.Native
 {
     public static class NativeExtension
     {
         /// <summary>
-        /// To work with native data via pointer.
+        /// Initialize <see cref="NativeData"/> via pointer.
         /// </summary>
-        /// <param name="ptr">pointer to data structure.</param>
+        /// <param name="ptr">Some region.</param>
         /// <returns></returns>
-        public static NativeData Native(this IntPtr ptr)
-        {
-            return NativeData._(ptr);
-        }
+        public static NativeData Native(this IntPtr ptr) => new(ptr);
 
         /// <summary>
-        /// To work with native data via byte-array.
+        /// Initialize <see cref="NativeData"/> via <see cref="INativeReader"/> implementation.
         /// </summary>
-        /// <param name="bytes">local raw data.</param>
+        /// <param name="reader"></param>
         /// <returns></returns>
-        public static NativeData Native(this byte[] bytes)
-        {
-            return NativeData._(bytes);
-        }
+        public static NativeData Native(this INativeReader reader) => new(reader);
+
+        /// <summary>
+        /// Initialize <see cref="NativeData"/> via local bytes sequence.
+        /// </summary>
+        /// <param name="bytes">Some local raw data.</param>
+        /// <returns></returns>
+        public static NativeData Native(this byte[] bytes) => new(bytes);
 
         /// <summary>
         /// Alias to `NativeData.SizeOf ...`
-        /// Gets size of selected type in bytes that's should be considered as unmanaged type.
+        /// Gets size of selected type in bytes that must be considered as unmanaged type.
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static int NativeSize(this Type type)
-        {
-            return NativeData.SizeOf(type);
-        }
+        public static int NativeSize(this Type type) => NativeData.SizeOf(type);
     }
 }

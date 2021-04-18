@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using net.r_eg.Conari;
+using net.r_eg.Conari.Native;
 using net.r_eg.Conari.PE;
+using net.r_eg.Conari.PE.Hole;
 using net.r_eg.Conari.PE.WinNT;
 using Xunit;
 

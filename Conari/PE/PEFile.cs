@@ -31,6 +31,8 @@ using net.r_eg.Conari.PE.WinNT;
 
 namespace net.r_eg.Conari.PE
 {
+    using static Static.Members;
+
     public sealed class PEFile: IPE, IDisposable
     {
         private readonly ExportDirectory exdir;
@@ -91,7 +93,7 @@ namespace net.r_eg.Conari.PE
         /// Current image.
         /// </summary>
         public Magic Current { get; } 
-            = IntPtr.Size == 8 ? Magic.PE64 : Magic.PE32;
+            = Is64bit ? Magic.PE64 : Magic.PE32;
 
         /// <summary>
         /// Full path to current image.

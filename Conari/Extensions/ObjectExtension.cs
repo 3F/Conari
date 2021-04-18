@@ -30,6 +30,7 @@ using System.Reflection;
 namespace net.r_eg.Conari.Extension
 {
     using Act = KeyValuePair<bool, object>;
+    using static Static.Members;
 
     public static class ObjectExtension
     {
@@ -67,7 +68,7 @@ namespace net.r_eg.Conari.Extension
 
                 return new Act(
                     mi != null,
-                    mi?.Invoke(obj, args ?? new object[0])
+                    mi?.Invoke(obj, args ?? EmptyArray<object>())
                 );
             },
             obj, name);
@@ -172,28 +173,25 @@ namespace net.r_eg.Conari.Extension
         }
 
         /// <summary>
-        /// Execute action separately from result.
+        /// Execute action on value in the chain separately from result.
         /// </summary>
-        /// <typeparam name="T">The type of value that should be returned.</typeparam>
-        /// <param name="obj">Unspecified object.</param>
-        /// <param name="act">Any action that should be executed.</param>
-        /// <returns>Same value from selected object as T type.</returns>
-        public static T E<T>(this object obj, Action act)
-        {
-            act();
-            return (T)obj;
-        }
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj"></param>
+        /// <param name="act"></param>
+        /// <returns>Input value.</returns>
+        public static T E<T>(this T obj, Action act) => E(obj, _=> act());
 
         /// <summary>
-        /// Execute action separately from result.
-        /// Alias to `E&lt;object&gt;()`
+        /// Execute action on value in the chain separately from result.
         /// </summary>
-        /// <param name="obj">Unspecified object.</param>
-        /// <param name="act">Any action that should be executed.</param>
-        /// <returns>Same value from selected object.</returns>
-        public static object E(this object obj, Action act)
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj"></param>
+        /// <param name="act"></param>
+        /// <returns>Input value.</returns>
+        public static T E<T>(this T obj, Action<T> act)
         {
-            return E<object>(obj, act);
+            act?.Invoke(obj);
+            return obj;
         }
 
         private static BindingFlags DefaultFlags(bool nonPublic = false, bool isStatic = false)

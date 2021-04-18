@@ -1,5 +1,6 @@
 ﻿using System;
 using net.r_eg.Conari;
+using net.r_eg.Conari.Types;
 using Xunit;
 
 namespace ConariTest
@@ -63,7 +64,7 @@ namespace ConariTest
                 Assert.Equal
                 (
                     l.Svc.native(proc),
-                    l.addr(proc)
+                    (VPtr)l.addr(proc)
                 );
             }
         }

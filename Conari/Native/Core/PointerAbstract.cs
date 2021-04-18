@@ -23,27 +23,46 @@
  * THE SOFTWARE.
 */
 
-using System.Diagnostics;
+using net.r_eg.Conari.Types;
 
-namespace net.r_eg.Conari.Core
+namespace net.r_eg.Conari.Native.Core
 {
-    [DebuggerDisplay("{(string)this}")]
-    public struct LpProcName
+    public abstract class PointerAbstract: IPointer
     {
-        public string origin;
-        public string prefixed;
+        private readonly VPtr initial;
+        private VPtr region;
 
-        public static explicit operator string(LpProcName proc)
+        public abstract VPtr CurrentPtr { get; set; }
+
+        public VPtr InitialPtr => initial;
+
+        public VPtr RegionPtr => region;
+
+        public VPtr resetPtr() => region = CurrentPtr = InitialPtr;
+
+        public VPtr shiftRegionPtr() => region = CurrentPtr;
+
+        public VPtr resetRegionPtr() => CurrentPtr = RegionPtr;
+
+        public VPtr getPtrFrom(long offset) => CurrentPtr + offset;
+
+        public VPtr getAddr(long offset) => InitialPtr + offset;
+
+        public VPtr upPtr(ref VPtr ptr)
         {
-            return proc.prefixed ?? proc.origin;
+            ptr += 1;
+            CurrentPtr += 1;
+            return CurrentPtr;
         }
 
-        public static implicit operator LpProcName(string proc) => new(proc);
+        public VPtr upPtr(long offset = 1) => CurrentPtr += offset;
 
-        public LpProcName(string origin, string prefixed = null)
+        public static implicit operator VPtr(PointerAbstract v) => v.CurrentPtr;
+
+        protected PointerAbstract(VPtr ptr)
         {
-            this.origin     = origin;
-            this.prefixed   = prefixed;
+            initial = CurrentPtr = ptr;
+            shiftRegionPtr();
         }
     }
 }

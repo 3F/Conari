@@ -9,6 +9,7 @@ using Xunit;
 
 namespace ConariTest
 {
+    using static net.r_eg.Conari.Static.Members;
     using static _svc.TestHelper;
 
     /// <summary>
@@ -364,7 +365,7 @@ namespace ConariTest
             using(dynamic l = new ConariX(gCfgUnlib))
             {
                 string xfun;
-                if(IntPtr.Size == sizeof(Int64)) {
+                if(Is64bit) {
                     xfun = "?getD_HelloWorld@API@UnLib@Conari@r_eg@net@@YAPEBDXZ";
                 }
                 else {
@@ -446,7 +447,7 @@ namespace ConariTest
                 Mangling = false
             };
 
-            if(IntPtr.Size == sizeof(Int64))
+            if(Is64bit)
             {
                 Assert.Equal((ushort)7, l.get_SevenStdCall<ushort>());
                 return;
@@ -473,7 +474,7 @@ namespace ConariTest
 
             var xfun = l.bind<Func<ushort>>("get_SevenStdCall");
 
-            if(IntPtr.Size == sizeof(Int64))
+            if(Is64bit)
             {
                 Assert.Equal((ushort)7, xfun());
                 return;
@@ -501,7 +502,7 @@ namespace ConariTest
             var xfun = l.bind(Dynamic.GetMethodInfo(typeof(ushort)), "get_SevenStdCall")
                         .dynamic;
 
-            if(IntPtr.Size == sizeof(Int64))
+            if(Is64bit)
             {
                 Assert.Equal((ushort)7, xfun.Invoke(null, Array.Empty<object>()));
                 return;

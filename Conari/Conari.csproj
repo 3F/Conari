@@ -15,49 +15,42 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>Conari</PackageId>
     <Copyright>Copyright (c) 2016-2021  Denis Kuzmin &lt;x-3F@outlook.com&gt; github/3F</Copyright>
-    <Title>[ Conari ] platform for unmanaged memory, pe-modules, PInvoke and more</Title>
+    <Title>[ Conari ] 🧬 One touch unmanaged memory, runtime dynamic use of the unmanaged native C/C++ in .NET world, and ...</Title>
     <PackageIcon>Conari_v1.png</PackageIcon>
     <IconUrl>https://raw.githubusercontent.com/3F/Conari/master/Conari/Resources/Conari_v1.png</IconUrl>
-    <Description>
-        🧬 An unmanaged memory, modules, and raw data in one touch.
-
-        Conari engine represents most flexible platform for working with unmanaged memory, modules, related P/Invoke features, and more around libraries, executable modules, runtime dynamic use of the unmanaged native C/C++ in .NET world and other raw data just in a few easy steps without configuring something, and... Even accessing to complex types like structures without their declaration at all.
+    <Description>🧬 One-touch unmanaged memory, libraries, executable modules, runtime dynamic use of the unmanaged native C/C++ in .NET world, related P/Invoke features,
+            and ... Even accessing to complex types like structures without their declaration at all.
 
         ## Why Conari ?
 
         It was designed to be loyal to your needs on the fly.
 
-        🔍 Easy to start:
+        🚀 Awesome speed
 
-        ```
-        using(var l = new ConariL("...")) {
-            // ...
-        }
-        ```
+        test of regXwild's algorithms [[340x10000 Unicode](https://github.com/3F/regXwild#speed)]
 
-        🚀 Awesome speed:
-
-        test of regXwild's algorithms [[340x10000 Unicode](https://github.com/3F/regXwild/blob/d9e4cd18e6f3fbc29b271b1feb4d8c659aa14bd7/Readme.md#speed-comparison)]
-
-        🔨 Its amazing DLR features:
+        🔨 Its amazing DLR features
 
         ```
         using(dynamic l = new ConariX("..."))
         {
             // just everything is yours ~
-            l.curl_easy_setopt(curl, 10002, "http://example.com");
+            l.curl_easy_setopt(curl, 10002, "https://example.com");
         }
         ```
 
-        🔧 Raw accessibility to any binary data in unmanaged memory:
+        🔧 The easiest (most ever) access to any data in unmanaged memory
 
         ```
-        ptr.Native().align&lt;int&gt;(2, "x", "y")
-                    .t&lt;IntPtr&gt;("data")
-                    .Raw;
+        dynamic l = ptr.Native().align&lt;int&gt;("x", "y").build();
+        l.x // 17
+        l.y // -23
         ```
 
-        🏄 Most powerful PInvoke and even most convenient use of WinAPI. Our recipe is simple: *Just use it!*
+        🏄 Most powerful PInvoke and even most convenient use of WinAPI without preparing something
+
+        Conari will generate and adapt everything at runtime! Specially for you!
+        For example, below we don't provide neither *user32.ShowWindow()* nor *user32.MessageBoxA(),* even no *kernel32.GetModuleHandleA/W()*
 
         ```
         dynamic user32 = new User32();
@@ -73,15 +66,6 @@
             kernel32.GetModuleHandleW&lt;IntPtr&gt;((WCharPtr)ustr);
         ```
 
-        **Important note:** Conari does not provide anything from above. It will just generate and adapt everything at runtime. Specially for you!
-
-        🔖 Modern **.NET Core**
-
-        Conari is ready for .NET Core starting from 1.4.
-
-        But we have even more, again. https://github.com/3F/Conari/issues/13
-        Conari also provides support for [ .NET Standard 2.0 ] layer which does not cover unmanaged EmitCalli due to missed implementation for System.Private.CoreLib.
-
         🍰 MIT License! Enjoy.
 
         . . . And more: https://github.com/3F/Conari
@@ -93,7 +77,6 @@
     gnt /p:ngpackages="Conari/$(Version)"
     ================== https://github.com/3F/GetNuTool
 
-    Build info:
 
     $(BuildInfoVSSBE)
     </Description>
@@ -101,11 +84,15 @@
     <PackageProjectUrl>https://github.com/3F/Conari</PackageProjectUrl>
     <RepositoryUrl>https://github.com/3F/Conari</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>memory unmanaged-memory exported-function DllExport unmanaged exports native c-func DllImport unmanaged-code binder binding pe-modules unmanaged-function exported-c-function export API dll cpp clang dotnet csharp pe32 pe64 pemodule Lua 7z 7zip Conari</PackageTags>
+    <PackageTags>memory unmanaged-memory runtime libraries exported-functions DllExport unmanaged exports native pinvoke DllImport exported-variables pinvoke-wrapper dynamic-runtime unmanaged-code binder binary-data binding unmanaged-function export import API dll cpp hack dotnet dotnetcore pe32 pe32-plus pe64 Lua 7z 7zip Conari</PackageTags>
     <PackageReleaseNotes> changelog: https://github.com/3F/Conari/blob/master/changelog.txt </PackageReleaseNotes>
     <Authors>github.com/3F/Conari</Authors>
     <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
+    <NeutralLanguage>en</NeutralLanguage>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <AnalysisMode>Default</AnalysisMode>
     <NoWarn>1701;1702;CS1591;IDE1006</NoWarn>
     <LangVersion>latest</LangVersion>
     <PackageIconUrl>https://raw.githubusercontent.com/3F/Conari/master/Conari/Resources/Conari_v1.png</PackageIconUrl>
@@ -129,9 +116,10 @@
     <Optimize>true</Optimize>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(IsNetCoreFamilyTarget)' == 'true'">
-    <DefineConstants>$(DefineConstants);NETCORE</DefineConstants>
-    <DefineConstants Condition=" '$(TargetFramework)' == 'netstandard2.0' ">$(DefineConstants);NETSTD20;NETSTD</DefineConstants>
+  <PropertyGroup>
+    <DefineConstants Condition="'$(IsNetCoreFamilyTarget)' == 'true'">NETCORE;$(DefineConstants)</DefineConstants>
+    <DefineConstants Condition="'$(TargetFramework)' == 'netstandard2.0'">NETSTD20;NETSTD;$(DefineConstants)</DefineConstants>
+    <DefineConstants Condition="'$(TargetFramework)' == 'net40'">NET40;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup>

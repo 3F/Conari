@@ -7,6 +7,7 @@ using Xunit;
 
 namespace ConariTest
 {
+    using static net.r_eg.Conari.Static.Members;
     using static _svc.TestHelper;
 
     /// <summary>
@@ -61,7 +62,7 @@ namespace ConariTest
             using(dynamic l = new ConariX(gCfgUnlib))
             {
                 string xfun;
-                if(IntPtr.Size == sizeof(Int64)) {
+                if(Is64bit) {
                     xfun = "?getD_HelloWorld@API@UnLib@Conari@r_eg@net@@YAPEBDXZ";
                 }
                 else {
@@ -172,7 +173,7 @@ namespace ConariTest
                 l.Prefix = "apiprefix_";
 
                 string xfun;
-                if(IntPtr.Size == sizeof(Int64)) {
+                if(Is64bit) {
                     xfun = "?getD_HelloWorld@API@UnLib@Conari@r_eg@net@@YAPEBDXZ";
                 }
                 else {

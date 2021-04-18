@@ -33,7 +33,7 @@ namespace net.r_eg.Conari.Native.Core
         public Type type;
 
         /// <summary>
-        /// Used size of type.
+        /// Native size for <see cref="type"/>.
         /// </summary>
         public int tsize;
 

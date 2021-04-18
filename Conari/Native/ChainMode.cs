@@ -23,27 +23,23 @@
  * THE SOFTWARE.
 */
 
-using System.Diagnostics;
-
-namespace net.r_eg.Conari.Core
+namespace net.r_eg.Conari.Native
 {
-    [DebuggerDisplay("{(string)this}")]
-    public struct LpProcName
+    public enum ChainMode
     {
-        public string origin;
-        public string prefixed;
+        /// <summary>
+        /// Do not control chain and its new fields.
+        /// </summary>
+        Fast,
 
-        public static explicit operator string(LpProcName proc)
-        {
-            return proc.prefixed ?? proc.origin;
-        }
+        /// <summary>
+        /// Replaces definitions with new information.
+        /// </summary>
+        Updating,
 
-        public static implicit operator LpProcName(string proc) => new(proc);
-
-        public LpProcName(string origin, string prefixed = null)
-        {
-            this.origin     = origin;
-            this.prefixed   = prefixed;
-        }
+        /// <summary>
+        /// Throws an exception if duplicates are found.
+        /// </summary>
+        Exception
     }
 }

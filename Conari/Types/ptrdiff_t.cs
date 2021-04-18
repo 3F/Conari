@@ -28,6 +28,8 @@ using System.Diagnostics;
 
 namespace net.r_eg.Conari.Types
 {
+    using static Static.Members;
+
     [DebuggerDisplay("(int_t) = {(long)val} [ IntPtr.Size: {System.IntPtr.Size} ]")]
     public struct ptrdiff_t
     {
@@ -53,7 +55,7 @@ namespace net.r_eg.Conari.Types
 
         public static implicit operator ptrdiff_t(IntPtr ptr)
         {
-            if(IntPtr.Size == int_t.SIZE_I64) {
+            if(Is64bit) {
                 return new ptrdiff_t(ptr.ToInt64());
             }
             return new ptrdiff_t(ptr.ToInt32());

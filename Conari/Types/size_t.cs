@@ -28,6 +28,8 @@ using System.Diagnostics;
 
 namespace net.r_eg.Conari.Types
 {
+    using static Static.Members;
+
     [DebuggerDisplay("(uint_t) = {(ulong)val} [ UIntPtr.Size: {System.UIntPtr.Size} ]")]
     public struct size_t
     {
@@ -53,10 +55,10 @@ namespace net.r_eg.Conari.Types
 
         public static implicit operator size_t(UIntPtr ptr)
         {
-            if(UIntPtr.Size == uint_t.SIZE_IU64) {
+            if(Is64bit) {
                 return new size_t(ptr.ToUInt64());
             }
-            return new size_t((uint_t)ptr.ToUInt32());
+            return new size_t(ptr.ToUInt32());
         }
 
         public static implicit operator long(size_t number)

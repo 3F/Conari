@@ -23,27 +23,41 @@
  * THE SOFTWARE.
 */
 
-using System.Diagnostics;
+using System;
+using System.Collections.Generic;
 
-namespace net.r_eg.Conari.Core
+namespace net.r_eg.Conari.Extension
 {
-    [DebuggerDisplay("{(string)this}")]
-    public struct LpProcName
+    public static class CollectionExtension
     {
-        public string origin;
-        public string prefixed;
-
-        public static explicit operator string(LpProcName proc)
+        /// <summary>
+        /// Foreach in Linq manner.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="items"></param>
+        /// <param name="act">The action that should be executed for each item.</param>
+        public static IEnumerable<T> ForEach<T>(this IEnumerable<T> items, Action<T> act)
         {
-            return proc.prefixed ?? proc.origin;
+            return items?.ForEach((x, i) => act(x));
         }
 
-        public static implicit operator LpProcName(string proc) => new(proc);
-
-        public LpProcName(string origin, string prefixed = null)
+        /// <summary>
+        /// Foreach in Linq manner.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="items"></param>
+        /// <param name="act">The action that should be executed for each item.</param>
+        public static IEnumerable<T> ForEach<T>(this IEnumerable<T> items, Action<T, long> act)
         {
-            this.origin     = origin;
-            this.prefixed   = prefixed;
+            if(items == null) {
+                return null;
+            }
+
+            long n = 0;
+            foreach(var item in items) {
+                act(item, n++);
+            }
+            return items;
         }
     }
 }

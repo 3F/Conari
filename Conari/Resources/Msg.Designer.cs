@@ -61,11 +61,47 @@ namespace net.r_eg.Conari.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Pointer must be a non-zero.
+        /// </summary>
+        internal static string ArgPointerZero {
+            get {
+                return ResourceManager.GetString("ArgPointerZero", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Field `{0}` is already defined in the chain. Reset/renew/or use other mode instead of `{1}`..
+        /// </summary>
+        internal static string field_0_defined_mode_1 {
+            get {
+                return ResourceManager.GetString("field_0_defined_mode_1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not yet implemented. https://github.com/3F/Conari.
+        /// </summary>
+        internal static string NotYetImpl {
+            get {
+                return ResourceManager.GetString("NotYetImpl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Sync wait limit reached: {0}.
         /// </summary>
         internal static string SyncLimit_0 {
             get {
                 return ResourceManager.GetString("SyncLimit_0", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to https://github.com/3F/Conari.
+        /// </summary>
+        internal static string UrlSrc {
+            get {
+                return ResourceManager.GetString("UrlSrc", resourceCulture);
             }
         }
     }

@@ -27,7 +27,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using net.r_eg.Conari.Extension;
 using net.r_eg.Conari.Native.Core;
+using net.r_eg.Conari.Resources;
 using net.r_eg.Conari.Types;
 
 namespace net.r_eg.Conari.Native
@@ -36,62 +38,48 @@ namespace net.r_eg.Conari.Native
 
     public class NativeData
     {
-        protected Fields map = new Fields();
-        protected byte[] local;
-        private readonly IntPtr pointer;
+        protected Fields map = new();
+        protected readonly INativeReader reader;
+        protected ChainMode chainMode = ChainMode.Fast;
+
+        internal readonly ChainMeta meta = new();
 
         /// <summary>
-        /// Get raw-data of complex native structure.
+        /// Access raw-data from the current chain to final build and other use.
         /// </summary>
-        /// <returns></returns>
-        public Raw Raw
-        {
-            get
-            {
-                if(pointer == IntPtr.Zero) {
-                    return new Raw(local, map);
-                }
-                return new Raw(pointer, map);
-            }
-        }
+        public Raw Raw => new(reader, map, meta);
 
         /// <summary>
-        /// To reset chain in zero.
+        /// Reset the whole chain. Alias to <see cref="reset(uint)"/> using default value.
         /// </summary>
-        public NativeData Zero
-        {
-            get {
-                reset();
-                return this;
-            }
-        }
+        public NativeData Zero => reset(0);
+
+        /// <summary>
+        /// Access to the data via <see cref="INativeReader"/> implementations.
+        /// Requires active pointer. Otherwise see <see cref="extend"/> method to continue the chain with bytes.
+        /// </summary>
+        public INativeReader Reader => reader;
+
+        /// <inheritdoc cref="Raw.DLR"/>
+        public dynamic DLR => Raw.DLR;
 
         /// <summary>
         /// Align by max size of existing types without changing of original types.
         /// </summary>
         public NativeData AlignSizeByMax => alignSizeBy(map.Max(m => m.tsize));
 
-        public static implicit operator IntPtr(NativeData v) => v.pointer;
-
         /// <summary>
-        /// Gets size of selected types in bytes that are should be considered as unmanaged types.
+        /// Size of the selected types in bytes that must be considered as unmanaged types.
         /// </summary>
         /// <param name="types"></param>
-        /// <returns>the size in bytes.</returns>
-        public static int SizeOf(params Type[] types)
-        {
-            int sum = 0;
-            foreach(Type t in types) {
-                sum += SizeOf(t);
-            }
-            return sum;
-        }
-        
+        /// <returns>Native size in bytes.</returns>
+        public static int SizeOf(params Type[] types) => types?.Sum(t => SizeOf(t)) ?? 0;
+
         /// <summary>
-        /// Gets size of selected type in bytes that's should be considered as unmanaged type.
+        /// Size of the selected type in bytes that must be considered as unmanaged type.
         /// </summary>
         /// <param name="type"></param>
-        /// <returns>the size in bytes.</returns>
+        /// <returns>Native size in bytes.</returns>
         public static int SizeOf(Type type)
         {
             if(type == typeof(string) 
@@ -105,15 +93,9 @@ namespace net.r_eg.Conari.Native
             return Marshal.SizeOf(type);
         }
 
-        /// <summary>
-        /// Alias to `int SizeOf(Type type)`
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public static int SizeOf<T>()
-        {
-            return SizeOf(typeof(T));
-        }
+        /// <inheritdoc cref="SizeOf(Type)"/>
+        /// <remarks>Alias to <see cref="SizeOf(Type)"/></remarks>
+        public static int SizeOf<T>() => SizeOf(typeof(T));
 
         /// <summary>
         /// Align size by specific type.
@@ -130,22 +112,20 @@ namespace net.r_eg.Conari.Native
         }
 
         /// <summary>
-        /// Alias to get instance: `new NativeData(IntPtr)`
+        /// Alias to <see cref="NativeData(IntPtr)"/>
         /// </summary>
-        /// <param name="ptr">pointer to data structure.</param>
-        public static NativeData _(IntPtr ptr)
-        {
-            return new NativeData(ptr);
-        }
+        public static NativeData _(IntPtr ptr) => new(ptr);
 
         /// <summary>
-        /// Alias to get instance: `new NativeData(byte[])`
+        /// Alias to <see cref="NativeData(INativeReader)"/>
+        /// </summary>
+        public static NativeData _(INativeReader reader) => new(reader);
+
+        /// <summary>
+        /// Alias to <see cref="NativeData(byte[])"/>
         /// </summary>
         /// <param name="bytes">local raw data.</param>
-        public static NativeData _(byte[] bytes)
-        {
-            return new NativeData(bytes);
-        }
+        public static NativeData _(byte[] bytes) => new(bytes);
 
         /// <summary>
         /// Align the chain by specific type at the right.
@@ -175,10 +155,10 @@ namespace net.r_eg.Conari.Native
         }
 
         /// <summary>
-        /// To assign custom names.
+        /// Assigns (if it was null before) or Overrides custom field names for already specified fields in the chain.
         /// </summary>
-        /// <param name="offset">Initial offset for present data with.</param>
-        /// <param name="names">The names, starting from offset.</param>
+        /// <param name="offset">Offset from the start of the chain.</param>
+        /// <param name="names">The names, starting from specified offset.</param>
         /// <returns></returns>
         public NativeData assign(int offset, params string[] names)
         {
@@ -192,7 +172,7 @@ namespace net.r_eg.Conari.Native
                 }
 
                 throw new ArgumentException(
-                    $"offset {offset} is not available. The names to assign: {names.Length} / chain: {map.Count}"
+                    $"offset {offset} is not allowed. The names to assign: {names.Length} / chain: {map.Count}"
                 );
             }
 
@@ -200,14 +180,141 @@ namespace net.r_eg.Conari.Native
         }
 
         /// <summary>
-        /// To reset chain.
+        /// Assigns new fields for each presented name.
         /// </summary>
-        /// <param name="pos">absolute position.</param>
-        public void reset(uint pos = 0)
+        /// <typeparam name="T">Data type of the new field.</typeparam>
+        /// <param name="names">Field names.</param>
+        public NativeData assign<T>(params string[] names) => align<T>(names?.Length ?? 0, names);
+
+        /// <inheritdoc cref="assign(string[])"/>
+        /// <remarks>Alias to <see cref="assign(string[])"/>.</remarks>
+        public NativeData f<T>(params string[] names) => assign<T>(names);
+
+        /// <summary>
+        /// Use offset to the data.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="index">The zero-based position of the data to be read.</param>
+        /// <param name="names">Optional assigned names.</param>
+        /// <returns></returns>
+        public NativeData ofs<T>(int index, params string[] names)
+        {
+            align<T>(index);
+            return f<T>(names);
+        }
+
+        /// <summary>
+        /// To reset the chain.
+        /// </summary>
+        /// <param name="after">
+        ///     Absolute position from the start of the chain. 
+        ///     Eg.: count of the mapped fields such from `.t` and related.
+        /// </param>
+        public NativeData reset(uint after = 0)
         {
             map = new Fields(
-                map.Take((int)pos)
+                map.Take(unchecked((int)after))
             );
+            meta.resetChainSize();
+
+            int totalChainSize = map.Sum(x => x.tsize);
+
+            if(meta.FlaggedChainSize > totalChainSize) {
+                meta.resetFlaggedChainSize();
+            }
+            reader.resetRegionPtr();
+
+            meta.updateSize(totalChainSize, ignoreFlagged: true);
+            return this;
+        }
+
+        /// <summary>
+        /// Extends local data using additional bytes.
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <returns></returns>
+        public NativeData extend(byte[] bytes)
+        {
+            if(bytes == null) throw new ArgumentNullException(nameof(bytes));
+            if(reader is not LocalReader) throw new NotSupportedException($"Current chain was initialized as a `{reader}` but this requires {nameof(LocalReader)} based reader");
+
+            ((ILocalReader)reader).extend(bytes);
+            return this;
+        }
+
+        /// <summary>
+        /// Set new chain mode.
+        /// </summary>
+        /// <param name="def"></param>
+        /// <returns></returns>
+        public NativeData mode(ChainMode def)
+        {
+            chainMode = def;
+            return this;
+        }
+
+        /// <summary>
+        /// An additional way to start the chain with specific <see cref="SeekPosition"/>.
+        /// </summary>
+        /// <param name="seek"></param>
+        public NativeData renew(SeekPosition seek = SeekPosition.Current)
+        {
+            switch(seek)
+            {
+                case SeekPosition.Current:  { reader.shiftRegionPtr(); break; }
+                case SeekPosition.Region:   { reader.resetRegionPtr(); break; }
+                case SeekPosition.Initial:  { reader.resetPtr(); break; }
+                default: throw new NotImplementedException();
+            }
+            return reset();
+        }
+
+        /// <inheritdoc cref="renew(SeekPosition)"/>
+        /// <param name="position">Returns current position after renew chain.</param>
+        /// <param name="seek"></param>
+        public NativeData renew(out VPtr position, SeekPosition seek = SeekPosition.Current)
+        {
+            renew();
+            position = Reader.CurrentPtr;
+            return this;
+        }
+
+        /// <inheritdoc cref="Raw.build()"/>
+        /// <remarks>Alias to <see cref="Raw.build()"/></remarks>
+        public BType build() => Raw.build();
+
+        /// <remarks>Chained <see cref="build()"/></remarks>
+        /// <inheritdoc cref="build()"/>
+        public NativeData build(out dynamic result)
+        {
+            result = build();
+            return renew();
+        }
+
+        /// <summary>
+        /// Mark new region in the chain.
+        /// </summary>
+        /// <returns></returns>
+        public NativeData region()
+        {
+            meta.resetFlaggedChainSize();
+            return this;
+        }
+
+        /// <inheritdoc cref="region()"/>
+        /// <param name="current">Produced data size in the chain to the current point.</param>
+        public NativeData region(out int current)
+        {
+            current = meta.ChainSize;
+            return region();
+        }
+
+        /// <inheritdoc cref="region()"/>
+        /// <param name="addr">Intended address in memory to the current data in the chain.</param>
+        public NativeData region(out VPtr addr)
+        {
+            addr = reader.getPtrFrom(meta.ChainSize);
+            return region();
         }
 
         /// <summary>
@@ -218,7 +325,7 @@ namespace net.r_eg.Conari.Native
         /// <returns></returns>
         public NativeData h(string file, string typedef)
         {
-            throw new NotImplementedException("Not yet implemented.");
+            throw new NotImplementedException(Msg.NotYetImpl);
         }
 
         public NativeData t(Type type, string name = null) { return _a(track(name, type)); }
@@ -258,22 +365,29 @@ namespace net.r_eg.Conari.Native
         public NativeData t<T, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31>(params string[] names) { return _a(track(names, typeof(T), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13), typeof(T14), typeof(T15), typeof(T16), typeof(T17), typeof(T18), typeof(T19), typeof(T20), typeof(T21), typeof(T22), typeof(T23), typeof(T24), typeof(T25), typeof(T26), typeof(T27), typeof(T28), typeof(T29), typeof(T30), typeof(T31))); }
         public NativeData t<T, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32>(params string[] names) { return _a(track(names, typeof(T), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13), typeof(T14), typeof(T15), typeof(T16), typeof(T17), typeof(T18), typeof(T19), typeof(T20), typeof(T21), typeof(T22), typeof(T23), typeof(T24), typeof(T25), typeof(T26), typeof(T27), typeof(T28), typeof(T29), typeof(T30), typeof(T31), typeof(T32))); }
 
+        public static explicit operator Memory(NativeData v) => (Memory)v.reader;
+        public static explicit operator LocalReader(NativeData v) => (LocalReader)v.reader;
+        public static explicit operator NativeStream(NativeData v) => (NativeStream)v.reader;
+        public static implicit operator VPtr(NativeData v) => v.reader.CurrentPtr;
+
         /// <param name="ptr">pointer to data structure.</param>
         public NativeData(IntPtr ptr)
+            : this(ptr != IntPtr.Zero ? new Memory(ptr) : throw new ArgumentException(Msg.ArgPointerZero))
         {
-            if(ptr == IntPtr.Zero) {
-                throw new ArgumentException("NativeData: pointer must be non-zero.");
-            }
-            pointer = ptr;
+
+        }
+
+        public NativeData(INativeReader reader)
+        {
+            this.reader = reader ?? throw new ArgumentNullException(nameof(reader));
+            reader.shiftRegionPtr();
         }
 
         /// <param name="bytes">local raw data.</param>
         public NativeData(byte[] bytes)
+            : this(new LocalReader(bytes))
         {
-            if(bytes == null) {
-                bytes = new byte[0];
-            }
-            local = bytes;
+
         }
 
         protected int track(string[] names, params Type[] types)
@@ -291,20 +405,20 @@ namespace net.r_eg.Conari.Native
         protected virtual int track(string name, Type type)
         {
             int size = SizeOf(type);
-            map.Add(new Field(type, size) {
+            addField(new Field(type, size) {
                 name = fieldName(name)
             });
 
-            return size;
+            return meta.updateSize(size);
         }
 
         protected virtual int track(string name, int size)
         {
-            map.Add(new Field(typeof(byte[]), size) {
+            addField(new Field(typeof(byte[]), size) {
                 name = fieldName(name)
             });
 
-            return size;
+            return meta.updateSize(size);
         }
 
         protected virtual string fieldName(string name)
@@ -323,6 +437,35 @@ namespace net.r_eg.Conari.Native
             //}
 
             return name;
+        }
+
+        protected void addField(Field fld)
+        {
+            if(fld.name == null)
+            {
+                map.Add(fld);
+                return;
+            }
+
+            switch(chainMode)
+            {
+                case ChainMode.Fast: break;
+                case ChainMode.Updating:
+                {
+                    map.Where(f => f.name == fld.name).ForEach(f => f.name = null);
+                    break;
+                }
+                case ChainMode.Exception:
+                {
+                    if(map.Any(f => f.name == fld.name)) {
+                        throw new ArgumentException(Msg.field_0_defined_mode_1.Format($"{fld.name}", $"{chainMode}"));
+                    } 
+                    break;
+                }
+            }
+
+            map.Add(fld);
+            return;
         }
 
         private NativeData _a(int len)

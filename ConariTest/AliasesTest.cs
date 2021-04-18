@@ -7,6 +7,7 @@ using Xunit;
 
 namespace ConariTest
 {
+    using static net.r_eg.Conari.Static.Members;
     using static _svc.TestHelper;
 
     public class AliasesTest
@@ -58,7 +59,7 @@ namespace ConariTest
             using(var l = new ConariL(gCfgUnlib))
             {
                 string xfun;
-                if(IntPtr.Size == sizeof(Int64)) {
+                if(Is64bit) {
                     xfun = "?getD_HelloWorld@API@UnLib@Conari@r_eg@net@@YAPEBDXZ";
                 }
                 else {
@@ -161,7 +162,7 @@ namespace ConariTest
                 l.Prefix = "apiprefix_";
 
                 string xfun;
-                if(IntPtr.Size == sizeof(Int64)) {
+                if(Is64bit) {
                     xfun = "?getD_HelloWorld@API@UnLib@Conari@r_eg@net@@YAPEBDXZ";
                 }
                 else {

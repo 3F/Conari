@@ -310,7 +310,7 @@ namespace net.r_eg.Conari.Core
         /// Returns address of the specific item such streams std::cin etc.
         /// Related: https://github.com/3F/Conari/issues/17
         /// </summary>
-        public IntPtr addr(LpProcName item) => Svc.native(item);
+        public IntPtr addr(LpProcName item) => Svc.getProcAddr(item);
 
         /// <summary>
         /// To free memory from the heap allocated from the unmanaged memory.

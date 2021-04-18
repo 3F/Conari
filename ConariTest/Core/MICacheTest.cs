@@ -33,7 +33,7 @@ namespace ConariTest.Core
             Assert.False(cache.ContainsKey(new[] { typeof(int), typeof(Int64) }));
             Assert.False(cache.ContainsKey(new[] { typeof(void), typeof(int) }));
             Assert.False(cache.ContainsKey(new[] { typeof(int) }));
-            Assert.False(cache.ContainsKey(new Type[0]));
+            Assert.False(cache.ContainsKey(Array.Empty<Type>()));
         }
     }
 }
