@@ -51,6 +51,8 @@ namespace net.r_eg.Conari
             return __l_impl.DLR.TryInvokeMember(binder, args, out result);
         }
 
+        public static explicit operator IntPtr(ConariX l) => l.Library.handle;
+
         /// <summary>
         /// Initialize Conari with specific calling convention.
         /// </summary>
@@ -109,6 +111,7 @@ namespace net.r_eg.Conari
         }
 
         #region ConariL implementation
+
         public IProviderDLR ConfigDLR => __l_impl.ConfigDLR;
 
         public dynamic DLR => __l_impl.DLR;
@@ -177,10 +180,9 @@ namespace net.r_eg.Conari
             remove => __l_impl.AfterLoad -= value;
         }
 
-        public string procName(string name)
-        {
-            return __l_impl.procName(name);
-        }
+        public string procName(string name) => __l_impl.procName(name);
+
+        public IntPtr addr(LpProcName item) => __l_impl.addr(item);
 
         public T bindFunc<T>(string lpProcName) where T : class
         {

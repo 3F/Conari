@@ -154,45 +154,23 @@ namespace net.r_eg.Conari.Core
         /// <summary>
         /// Additional services.
         /// </summary>
-        public IProviderSvc Svc
-        {
-            get {
-                if(svc == null) {
-                    svc = new ProviderSvc(this);
-                }
-                return svc;
-            }
-        }
-        private IProviderSvc svc;
+        public IProviderSvc Svc { get; }
 
         protected sealed class ProviderSvc: IProviderSvc
         {
-            private Provider provider;
+            private readonly Provider provider;
 
-            public IntPtr getProcAddr(LpProcName lpProcName)
-            {
-                return provider.getProcAddress(lpProcName);
-            }
+            public IntPtr getProcAddr(LpProcName lpProcName) => provider.getProcAddress(lpProcName);
 
-            public NativeData native(LpProcName lpProcName)
-            {
-                return getProcAddr(lpProcName).Native();
-            }
+            public NativeData native(LpProcName lpProcName) => getProcAddr(lpProcName).Native();
 
-            public LpProcName procName(string lpProcName, bool prefix)
-            {
-                return provider.procName(lpProcName, prefix);
-            }
+            public NativeData native(string lpProcName, bool prefix = false) => native(procName(lpProcName, prefix));
 
-            public string tryAlias(string name)
-            {
-                return provider.tryAlias(procName(name, true));
-            }
+            public LpProcName procName(string lpProcName, bool prefix) => provider.procName(lpProcName, prefix);
 
-            public ProviderSvc(Provider p)
-            {
-                provider = p;
-            }
+            public string tryAlias(string name) => provider.tryAlias(procName(name, true));
+
+            public ProviderSvc(Provider p) => provider = p;
         }
 
         /// <summary>
@@ -322,11 +300,17 @@ namespace net.r_eg.Conari.Core
         /// <param name="name">Exported function or variable name.</param>
         public virtual string procName(string name)
         {
-            if(String.IsNullOrWhiteSpace(name)) {
-                throw new ArgumentException("The name cannot be empty or null.");
+            if(string.IsNullOrWhiteSpace(name)) {
+                throw new ArgumentNullException(nameof(name));
             }
             return $"{Prefix}{name}";
         }
+
+        /// <summary>
+        /// Returns address of the specific item such streams std::cin etc.
+        /// Related: https://github.com/3F/Conari/issues/17
+        /// </summary>
+        public IntPtr addr(LpProcName item) => Svc.native(item);
 
         /// <summary>
         /// To free memory from the heap allocated from the unmanaged memory.
@@ -339,7 +323,8 @@ namespace net.r_eg.Conari.Core
 
         protected Provider()
         {
-            aliasDict = new AliasDict(this);
+            Svc         = new ProviderSvc(this);
+            aliasDict   = new AliasDict(this);
         }
 
         /// <param name="lpProcName">The name of exported function.</param>
@@ -383,7 +368,7 @@ namespace net.r_eg.Conari.Core
 
             LSender.Send(this, $"{msgerr} Trying to decorate with C rules.", Message.Level.Warn);
 
-            var func = CMangling.Decorate(lpProcName, ((ILoader)this).PE.ExportedProcNamesArray);
+            var func = CMangling.Decorate(lpProcName, ((ILoader)this).PE.ExportedProcNames.ToArray());
             if(func == null) {
                 throw new EntryPointNotFoundException(
                     $"{msgerr} The `Mangling.C` does not help. Check a correct name manually. Related issue: https://github.com/3F/Conari/issues/3"
@@ -408,13 +393,11 @@ namespace net.r_eg.Conari.Core
             };
         }
 
-        protected LpProcName procName(string lpProcName, bool prefix)
-        {
-            return new LpProcName() {
-                origin      = lpProcName,
-                prefixed    = prefix ? procName(lpProcName) : null
-            };
-        }
+        protected LpProcName procName(string lpProcName, bool prefix) => new
+        (
+            lpProcName, 
+            prefix ? procName(lpProcName) : null
+        );
 
         protected T getDelegate<T>(LpProcName lpProcName) where T : class
         {

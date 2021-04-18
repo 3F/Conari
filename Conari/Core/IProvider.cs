@@ -87,5 +87,11 @@ namespace net.r_eg.Conari.Core
         /// </summary>
         /// <param name="name">Exported function or variable name.</param>
         string procName(string name);
+
+        /// <summary>
+        /// Returns address of the specific item such streams std::cin etc.
+        /// Related: https://github.com/3F/Conari/issues/17
+        /// </summary>
+        IntPtr addr(LpProcName item);
     }
 }

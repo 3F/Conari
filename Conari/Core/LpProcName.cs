@@ -34,5 +34,13 @@ namespace net.r_eg.Conari.Core
         {
             return proc.prefixed ?? proc.origin;
         }
+
+        public static implicit operator LpProcName(string proc) => new(proc);
+
+        public LpProcName(string origin, string prefixed = null)
+        {
+            this.origin     = origin;
+            this.prefixed   = prefixed;
+        }
     }
 }

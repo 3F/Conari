@@ -42,11 +42,11 @@ namespace ConariTest
         {
             var l = new ConariL(new Config("") { LazyLoading = true });
 
-            Assert.Throws<ArgumentException>(() =>
+            Assert.Throws<ArgumentNullException>(() =>
                 l.procName("")
             );
 
-            Assert.Throws<ArgumentException>(() =>
+            Assert.Throws<ArgumentNullException>(() =>
                 l.procName(null)
             );
 

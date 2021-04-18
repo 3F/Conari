@@ -69,12 +69,9 @@ namespace net.r_eg.Conari.Native
         /// <summary>
         /// Align by max size of existing types without changing of original types.
         /// </summary>
-        public NativeData AlignSizeByMax
-        {
-            get {
-                return alignSizeBy(map.Max(m => m.tsize));
-            }
-        }
+        public NativeData AlignSizeByMax => alignSizeBy(map.Max(m => m.tsize));
+
+        public static implicit operator IntPtr(NativeData v) => v.pointer;
 
         /// <summary>
         /// Gets size of selected types in bytes that are should be considered as unmanaged types.

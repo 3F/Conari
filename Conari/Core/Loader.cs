@@ -72,6 +72,8 @@ namespace net.r_eg.Conari.Core
 
         internal bool Disposed => disposed;
 
+        public static explicit operator IntPtr(Loader l) => l.Library.handle;
+
         /// <summary>
         /// Loads library into the address space.
         /// </summary>

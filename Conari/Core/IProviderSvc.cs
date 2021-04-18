@@ -45,10 +45,18 @@ namespace net.r_eg.Conari.Core
         NativeData native(LpProcName lpProcName);
 
         /// <summary>
+        /// Prepare NativeData for active provider.
+        /// </summary>
+        /// <param name="lpProcName">The name of function or variable, or the function's ordinal value.</param>
+        /// <param name="prefix">Add prefix if used.</param>
+        /// <returns></returns>
+        NativeData native(string lpProcName, bool prefix = false);
+
+        /// <summary>
         /// Extracts LpProcName.
         /// </summary>
         /// <param name="lpProcName">Original lpProcName.</param>
-        /// <param name="prefix">Uses prefix.</param>
+        /// <param name="prefix">Add prefix if used.</param>
         /// <returns></returns>
         LpProcName procName(string lpProcName, bool prefix);
 
