@@ -27,12 +27,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using net.r_eg.Conari.Core;
 
 namespace net.r_eg.Conari.Native.Core
 {
     using Fields = List<Field>;
 
-    public sealed class Raw: IEnumerable<byte>, IEnumerable
+    public sealed class Raw: IEnumerable<byte>, IEnumerable, IDlrAccessor
     {
         private readonly Fields fields;
 
@@ -73,6 +74,9 @@ namespace net.r_eg.Conari.Native.Core
         /// </summary>
         /// <remarks>Alias to <see cref="BType.DLR"/></remarks>
         public dynamic DLR => build().DLR;
+
+        /// <inheritdoc cref="BType.DLR"/>
+        public dynamic _ => build()._;
 
         private int FlaggedChainSize => meta?.FlaggedChainSize ?? 0;
 

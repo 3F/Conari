@@ -27,7 +27,10 @@ using System;
 using System.Runtime.InteropServices;
 using net.r_eg.Conari.Core;
 using net.r_eg.Conari.Log;
+using net.r_eg.Conari.Native;
+using net.r_eg.Conari.Native.Core;
 using net.r_eg.Conari.Resources;
+using net.r_eg.Conari.Types;
 
 namespace net.r_eg.Conari
 {
@@ -35,7 +38,7 @@ namespace net.r_eg.Conari
     /// Conari engine. An unmanaged memory, modules, and raw data in one touch.
     /// https://github.com/3F/Conari
     /// </summary>
-    public class ConariL: Provider, IConari, ILoader, IProvider, IBinder, IDisposable
+    public class ConariL: Provider, IConari, ILoader, IProvider, IBinder, IDlrAccessor, INativeAccessor, IDisposable
     {
         protected IConfig config;
 
@@ -44,15 +47,23 @@ namespace net.r_eg.Conari
         /// </summary>
         public IProviderDLR ConfigDLR => (IProviderDLR)DLR;
 
+        public dynamic DLR { get; protected set; }
+
+        public dynamic _ => DLR;
+
         /// <summary>
-        /// Provides dynamic features like adding 
-        /// and invoking of new exported-functions at runtime.
+        /// Access to unmanaged and binary data through flexible chains.
         /// </summary>
-        public dynamic DLR
-        {
-            get;
-            protected set;
-        }
+        public NativeData Native { get; protected set; }
+
+        /// <summary>
+        /// Raw access to unmanaged memory.
+        /// </summary>
+        public INativeReader Memory { get; protected set; }
+
+        /// <remarks>Alias to <see cref="ExVar"/></remarks>
+        /// <inheritdoc cref="ExVar"/>
+        public IExVar V => ExVar;
 
         /// <summary>
         /// Access to logger and its events.
@@ -190,6 +201,9 @@ namespace net.r_eg.Conari
             else {
                 load(cfg.Module);
             }
+
+            Memory = new Memory((VPtr)this);
+            Native = new NativeData(Memory);
 
             DLR = newDLR(Convention);
         }

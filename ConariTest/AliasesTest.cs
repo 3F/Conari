@@ -227,6 +227,24 @@ namespace ConariTest
         }
 
         [Fact]
+        public void aliasPrefixTest7()
+        {
+            using(var l = new ConariL(UNLIB_DLL, true, "apiprefix_"))
+            {
+                bool expected = false;
+
+                l.Aliases["GF"] = l.Aliases["apiprefix_GF"] = "GFlag";
+
+                Assert.Equal(expected, l.V._.GF<bool>());
+                Assert.Equal(expected, l.V.get<bool>("GF"));
+                Assert.Equal(expected, l.V.getVar<bool>("apiprefix_GF"));
+
+                Assert.Equal(expected, l.V.getField<bool>("apiprefix_GF").value);
+                Assert.Equal(expected, l.V.getField(typeof(bool), "apiprefix_GF").value);
+            }
+        }
+
+        [Fact]
         public void multiAliasTest1()
         {
             using(var l = new ConariL(gCfgUnlib))

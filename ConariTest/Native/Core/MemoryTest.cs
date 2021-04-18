@@ -210,5 +210,17 @@ namespace ConariTest.Native.Core
 
             Assert.Equal((ushort)265, memory.readUInt16());
         }
+
+        [Fact]
+        public void memTest9()
+        {
+            using var l = new ConariL(RXW_X64);
+
+            VPtr initial = (VPtr)l;
+            Assert.Equal(new VPtr(initial, +2), l.Memory.move(2).CurrentPtr);
+            Assert.Equal(initial, l.Memory.upPtr(-2));
+
+            Assert.Equal(0x5A4D, l.Memory.readInt16());
+        }
     }
 }

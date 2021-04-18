@@ -31,7 +31,10 @@ using System.Runtime.InteropServices;
 using net.r_eg.Conari.Aliases;
 using net.r_eg.Conari.Core;
 using net.r_eg.Conari.Log;
+using net.r_eg.Conari.Native;
+using net.r_eg.Conari.Native.Core;
 using net.r_eg.Conari.PE;
+using net.r_eg.Conari.Types;
 using net.r_eg.Conari.Types.Methods;
 
 namespace net.r_eg.Conari
@@ -40,10 +43,13 @@ namespace net.r_eg.Conari
     /// Conari engine [DLR version]. An unmanaged memory, modules, and raw data in one touch.
     /// https://github.com/3F/Conari
     /// </summary>
-    public class ConariX: DynamicObject, IConari, ILoader, IProvider, IBinder, IDisposable
+    public class ConariX: DynamicObject, IConari, ILoader, IProvider, IBinder, IDlrAccessor, INativeAccessor, IDisposable
     {
         private readonly ConariL __l_impl;
 
+        /// <summary>
+        /// Dynamic access to exported variables.
+        /// </summary>
         public dynamic V => __l_impl.ExVar.DLR;
 
         public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
@@ -52,6 +58,7 @@ namespace net.r_eg.Conari
         }
 
         public static explicit operator IntPtr(ConariX l) => l.Library.handle;
+        public static explicit operator VPtr(ConariX l) => l.Library.handle;
 
         /// <summary>
         /// Initialize Conari with specific calling convention.
@@ -112,9 +119,15 @@ namespace net.r_eg.Conari
 
         #region ConariL implementation
 
+        public NativeData Native => __l_impl.Native;
+
+        public INativeReader Memory => __l_impl.Memory;
+
         public IProviderDLR ConfigDLR => __l_impl.ConfigDLR;
 
         public dynamic DLR => __l_impl.DLR;
+
+        public dynamic _ => __l_impl._;
 
         public ISender Log => __l_impl.Log;
 

@@ -29,13 +29,8 @@ namespace net.r_eg.Conari.Core
 {
     using DefaultType = Int32;
 
-    public interface IExVar
+    public interface IExVar: IDlrAccessor
     {
-        /// <summary>
-        /// Provides dynamic features like getting exported-variables at runtime.
-        /// </summary>
-        dynamic DLR { get; }
-
         /// <summary>
         /// Gets value from exported Variable. Full name is required.
         /// </summary>

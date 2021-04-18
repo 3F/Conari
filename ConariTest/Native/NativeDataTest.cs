@@ -132,6 +132,27 @@ namespace ConariTest.Native
         }
 
         [Fact]
+        public void peMemTest6()
+        {
+            using var l = new ConariL(RXW_X64);
+
+            l.Native.Reader
+                .move(0x3C, SeekPosition.Initial)
+                .move(l.Memory.read<LONG>(), SeekPosition.Initial);
+
+            l.Native.renew()
+                .t<DWORD>()
+                .f<WORD>("Machine", "NumberOfSections")
+                .align<DWORD>(3)
+                .f<WORD>("SizeOfOptionalHeader")
+                .build(out dynamic ifh);
+
+            Assert.Equal(MachineTypes.IMAGE_FILE_MACHINE_AMD64, (MachineTypes)ifh.Machine);
+            Assert.Equal(6, ifh.NumberOfSections);
+            Assert.Equal(0xF0, ifh.SizeOfOptionalHeader);
+        }
+
+        [Fact]
         public void peMemFlaggedChainTest1()
         {
             using var l = new ConariL(RXW_X64);
@@ -274,8 +295,8 @@ namespace ConariTest.Native
 
             Assert.Throws<ArgumentException>(() => native.t<byte>("z").DLR.z);
 
-            Assert.Equal((byte)2, native.mode(ChainMode.Fast).t<byte>("z").DLR.z);
-            Assert.Equal((byte)4, native.mode(ChainMode.Updating).t<byte>("z").DLR.z);
+            Assert.Equal((byte)2, native.mode(ChainMode.Fast).t<byte>("z").Raw._.z);
+            Assert.Equal((byte)4, native.mode(ChainMode.Updating).t<byte>("z")._.z);
         }
 
         [Fact]
@@ -293,7 +314,7 @@ namespace ConariTest.Native
         public void localTest2()
         {
             var exp = new byte[] { 8 };
-            var raw = NativeData._(exp).Raw;
+            var raw = exp.Native().Raw;
 
             Assert.Single(raw.Values);
             Assert.Equal(exp[0], raw.Values[0]);

@@ -35,19 +35,16 @@ namespace net.r_eg.Conari.Core
 {
     using DefaultType = Int32;
 
-    public class ExVar: DynamicObject, IExVar
+    public class ExVar: DynamicObject, IExVar, IDlrAccessor
     {
         private readonly IProvider provider;
 
         /// <summary>
         /// Access to dynamic features like getting exported-variables at runtime.
         /// </summary>
-        public dynamic DLR
-        {
-            get {
-                return this;
-            }
-        }
+        public dynamic DLR => this;
+
+        public dynamic _ => this;
 
         /// <summary>
         /// Gets value from exported Variable. Full name is required.

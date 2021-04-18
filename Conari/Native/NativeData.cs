@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using net.r_eg.Conari.Core;
 using net.r_eg.Conari.Extension;
 using net.r_eg.Conari.Native.Core;
 using net.r_eg.Conari.Resources;
@@ -36,7 +37,7 @@ namespace net.r_eg.Conari.Native
 {
     using Fields = List<Field>;
 
-    public class NativeData
+    public class NativeData: IDlrAccessor
     {
         protected Fields map = new();
         protected readonly INativeReader reader;
@@ -60,8 +61,9 @@ namespace net.r_eg.Conari.Native
         /// </summary>
         public INativeReader Reader => reader;
 
-        /// <inheritdoc cref="Raw.DLR"/>
         public dynamic DLR => Raw.DLR;
+
+        public dynamic _ => Raw._;
 
         /// <summary>
         /// Align by max size of existing types without changing of original types.
@@ -110,22 +112,6 @@ namespace net.r_eg.Conari.Native
             }
             return SizeOf(type) * count;
         }
-
-        /// <summary>
-        /// Alias to <see cref="NativeData(IntPtr)"/>
-        /// </summary>
-        public static NativeData _(IntPtr ptr) => new(ptr);
-
-        /// <summary>
-        /// Alias to <see cref="NativeData(INativeReader)"/>
-        /// </summary>
-        public static NativeData _(INativeReader reader) => new(reader);
-
-        /// <summary>
-        /// Alias to <see cref="NativeData(byte[])"/>
-        /// </summary>
-        /// <param name="bytes">local raw data.</param>
-        public static NativeData _(byte[] bytes) => new(bytes);
 
         /// <summary>
         /// Align the chain by specific type at the right.

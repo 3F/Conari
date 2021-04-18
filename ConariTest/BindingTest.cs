@@ -22,6 +22,7 @@ namespace ConariTest
             using(var l = new ConariL(UNLIB_DLL, true))
             {
                 Assert.Equal(true, l.DLR.get_True<bool>());
+                Assert.Equal(true, l._.get_True<bool>());
                 Assert.True(l.bind<Func<bool>>("get_True")());
                 Assert.Equal(true, l.bind(Dynamic.GetMethodInfo(typeof(bool)), "get_True")
                                                     .dynamic
@@ -35,6 +36,7 @@ namespace ConariTest
             using(var l = new ConariL(gCfgUnlib))
             {
                 Assert.Equal(7, l.DLR.get_Seven<ushort>());
+                Assert.Equal(7, l._.get_Seven<ushort>());
                 Assert.Equal(7, l.bind<Func<ushort>>("get_Seven")());
                 Assert.Equal((ushort)7, l.bind(Dynamic.GetMethodInfo(typeof(ushort)), "get_Seven")
                                                          .dynamic
@@ -49,6 +51,7 @@ namespace ConariTest
             {
                 string exp = "Hello World !";
                 Assert.Equal(exp, l.DLR.get_HelloWorld<CharPtr>());
+                Assert.Equal(exp, l._.get_HelloWorld<CharPtr>());
                 Assert.Equal(exp, l.bind<Func<CharPtr>>("get_HelloWorld")());
 
                 var dyn = l.bind(Dynamic.GetMethodInfo(typeof(CharPtr)), "get_HelloWorld");
@@ -59,14 +62,11 @@ namespace ConariTest
         [Fact]
         public void basicTest4()
         {
-            Assert.Throws<WinFuncFailException>(() =>
-            {
-                using(var l = new ConariL(gCfgUnlib))
-                {
-                    l.Mangling = false;
-                    l.DLR.not_real_func_name<bool>();
-                }
-            });
+            using var l = new ConariL(gCfgUnlib);
+            l.Mangling = false;
+
+            Assert.Throws<WinFuncFailException>(() => l.DLR.not_real_func_name<bool>());
+            Assert.Throws<WinFuncFailException>(() => l._.not_real_func_name<bool>());
         }
 
         [Fact]
@@ -103,6 +103,7 @@ namespace ConariTest
             using(var l = new ConariL(gCfgUnlib))
             {
                 Assert.Equal((UserSpecUintType)7, l.DLR.get_Seven<UserSpecUintType>());
+                Assert.Equal((UserSpecUintType)7, l._.get_Seven<UserSpecUintType>());
                 Assert.Equal((UserSpecUintType)7, l.bind<Func<UserSpecUintType>>("get_Seven")());
 
                 Assert.Equal((UserSpecUintType)7, 
@@ -115,14 +116,11 @@ namespace ConariTest
         [Fact]
         public void basicTest8()
         {
-            Assert.Throws<EntryPointNotFoundException>(() =>
-            {
-                using(var l = new ConariL(gCfgUnlib))
-                {
-                    l.Mangling = true;
-                    l.DLR.not_real_func_name<bool>();
-                }
-            });
+            using var l = new ConariL(gCfgUnlib);
+            l.Mangling = true;
+
+            Assert.Throws<EntryPointNotFoundException>(() => l.DLR.not_real_func_name<bool>());
+            Assert.Throws<EntryPointNotFoundException>(() => l._.not_real_func_name<bool>());
         }
 
         [Fact]
@@ -159,6 +157,7 @@ namespace ConariTest
             using(var l = new ConariL(gCfgUnlib))
             {
                 Assert.Equal(false, l.DLR.get_False<bool>());
+                Assert.Equal(false, l._.get_False<bool>());
                 Assert.False(l.bind<Func<bool>>("get_False")());
                 Assert.Equal(false, l.bind(Dynamic.GetMethodInfo(typeof(bool)), "get_False")
                                                     .dynamic
@@ -235,6 +234,19 @@ namespace ConariTest
         }
 
         [Fact]
+        public void basicTest16()
+        {
+            using(var l = new ConariL(gCfgUnlib))
+            {
+                Assert.Equal(7, l._.get_VarSeven<int>());
+                Assert.Equal(null, l._.set_VarSeven(5));
+                Assert.Equal(5, l._.get_VarSeven<int>());
+                Assert.Equal(null, l._.reset_VarSeven());
+                Assert.Equal(-1, l._.get_VarSeven<int>());
+            }
+        }
+
+        [Fact]
         public void cacheTest1()
         {
             using(var l = new ConariL(gCfgUnlib))
@@ -291,9 +303,11 @@ namespace ConariTest
             using(var l = new ConariL(gCfgUnlib))
             {
                 Assert.Equal(7, l.DLR.get_Seven<ushort>());
+                Assert.Equal(7, l._.get_Seven<ushort>());
                 Assert.Equal(7, l.bind<Func<ushort>>("get_Seven")());
 
                 Assert.Equal(7, l.DLR.get_Seven<ushort>());
+                Assert.Equal(7, l._.get_Seven<ushort>());
                 Assert.Equal(7, l.bind<Func<ushort>>("get_Seven")());
             }
 
@@ -691,8 +705,7 @@ namespace ConariTest
                     s->name = "Conari";
 
                  */
-                var TSpecPtr = NativeData
-                                    ._(ptr1)
+                var TSpecPtr = ptr1.Native()
                                     .t<int, int>("a", "b")
                                     .t<CharPtr>("name");
                                     //.AlignSizeByMax; // byte = 4 / int = 4 / ptrx64 = 8
@@ -766,8 +779,7 @@ namespace ConariTest
                     B->s = TSpecA*;
 
                  */
-                var TSpecBPtr = NativeData
-                                    ._(ptr)
+                var TSpecBPtr = ptr.Native()
                                     .t<bool>("d")
                                     .t<IntPtr>("s")
                                     .AlignSizeByMax;
@@ -783,8 +795,7 @@ namespace ConariTest
 
                 // B->A
 
-                var TSpecAPtr = NativeData
-                                    ._(addrA)
+                var TSpecAPtr = new NativeData(addrA)
                                     .align<Int32>(2, "a", "b");
 
                 Assert.Equal(2, TSpecAPtr.Raw.Type.Fields.Count);
@@ -796,8 +807,7 @@ namespace ConariTest
 
                 // the test with reading memory again
 
-                dynamic attempt2 = NativeData
-                                    ._(addrA)
+                dynamic attempt2 = addrA.Native()
                                     .align<Int32>(2, "a", "b")
                                     .Raw.Type;
 

@@ -694,8 +694,7 @@ namespace ConariTest
                     s->name = "Conari";
 
                  */
-                var TSpecPtr = NativeData
-                                    ._(ptr1)
+                var TSpecPtr = ptr1.Native()
                                     .t<int, int>("a", "b")
                                     .t<CharPtr>("name");
                                     //.AlignSizeByMax; // byte = 4 / int = 4 / ptrx64 = 8
@@ -769,8 +768,7 @@ namespace ConariTest
                     B->s = TSpecA*;
 
                  */
-                var TSpecBPtr = NativeData
-                                    ._(ptr)
+                var TSpecBPtr = ptr.Native()
                                     .t<bool>("d")
                                     .t<IntPtr>("s")
                                     .AlignSizeByMax;
@@ -786,8 +784,7 @@ namespace ConariTest
 
                 // B->A
 
-                var TSpecAPtr = NativeData
-                                    ._(addrA)
+                var TSpecAPtr = addrA.Native()
                                     .align<Int32>(2, "a", "b");
 
                 Assert.Equal(2, TSpecAPtr.Raw.Type.Fields.Count);
@@ -799,8 +796,7 @@ namespace ConariTest
 
                 // the test with reading memory again
 
-                dynamic attempt2 = NativeData
-                                    ._(addrA)
+                dynamic attempt2 = new NativeData(addrA)
                                     .align<Int32>(2, "a", "b")
                                     .Raw.Type;
 

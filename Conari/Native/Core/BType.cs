@@ -27,39 +27,25 @@ using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
+using net.r_eg.Conari.Core;
 
 namespace net.r_eg.Conari.Native.Core
 {
     using TFields = List<Field>;
 
-    public class BType: DynamicObject
+    public class BType: DynamicObject, IDlrAccessor
     {
         public const string DYN_EMPTY_FLD_NAME = "$-noname-$";
 
         protected byte[] data;
 
-        /// <summary>
-        /// Access to dynamic features like getting of values at runtime from generated fields etc.
-        /// </summary>
-        public dynamic DLR
-        {
-            get {
-                return this;
-            }
-        }
+        public dynamic DLR => this;
 
-        public TFields Fields
-        {
-            get;
-            protected set;
-        }
+        public dynamic _ => this;
 
-        public Field FirstField
-        {
-            get {
-                return Fields?.FirstOrDefault();
-            }
-        }
+        public TFields Fields { get; protected set; }
+
+        public Field FirstField => Fields?.FirstOrDefault();
 
         public byte[] FieldsBinary
         {
