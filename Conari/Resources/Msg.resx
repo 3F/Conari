@@ -120,8 +120,14 @@
   <data name="ArgPointerZero" xml:space="preserve">
     <value>Pointer must be a non-zero</value>
   </data>
+  <data name="configure_once" xml:space="preserve">
+    <value>Can be configured once before any first call for the whole assembly.</value>
+  </data>
   <data name="field_0_defined_mode_1" xml:space="preserve">
     <value>Field `{0}` is already defined in the chain. Reset/renew/or use other mode instead of `{1}`.</value>
+  </data>
+  <data name="invalid_pointer" xml:space="preserve">
+    <value>Invalid pointer</value>
   </data>
   <data name="NotYetImpl" xml:space="preserve">
     <value>Not yet implemented. https://github.com/3F/Conari</value>

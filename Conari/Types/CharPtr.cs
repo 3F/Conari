@@ -26,83 +26,113 @@
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 using System.Text;
 using net.r_eg.Conari.Extension;
+using net.r_eg.Conari.Resources;
 
 namespace net.r_eg.Conari.Types
 {
-    [DebuggerDisplay("{(string)this} [ {\"0x\" + ptr.ToString(\"X\")} Length: {Length} ]")]
-    public struct CharPtr
+    /// <summary>
+    /// C-string (\0-terminated) that was based on 8-bit characters.
+    /// </summary>
+    [DebuggerDisplay("{dbgInfo()}")]
+    [Serializable]
+    public struct CharPtr: ISerializable
     {
-        private readonly IntPtr ptr;
+        private readonly IntPtr pointer;
 
-        public static int PtrSize => IntPtr.Size;
+        public static readonly CharPtr Null;
 
         /// <summary>
-        /// Raw byte-sequence
+        /// Access to byte-sequence.
         /// </summary>
-        public byte[] Raw
+        public byte[] Raw => pointer.GetStringBytes(Length);
+
+        /// <summary>
+        /// The length of used chars needed to represent a C-string (\0-terminated).
+        /// </summary>
+        public int Length => pointer.GetStringLength();
+
+        /// <summary>
+        /// Length of string.
+        /// </summary>
+        public int StrLength => Length;
+
+        public string Utf8 { get
         {
-            get {
-                return ptr.GetStringBytes(Length);
-            }
-        }
+            if(pointer == IntPtr.Zero) return null;
 
-        public int Length
-        {
-            get {
-                return ptr.GetStringLength();
-            }
-        }
+            if(Length < 1) return string.Empty;
 
-        public string Utf8
-        {
-            get
-            {
-                if(ptr == IntPtr.Zero) {
-                    return null;
-                }
+            return Encoding.UTF8.GetString(Raw, 0, Length);
+        }}
 
-                if(Length < 1) {
-                    return String.Empty;
-                }
-
-                return Encoding.UTF8.GetString(Raw, 0, Length);
-            }
-        }
+        [Obsolete]
+        public static int PtrSize => IntPtr.Size;
 
         [NativeType]
-        public static implicit operator IntPtr(CharPtr val)
-        {
-            return val.ptr;
-        }
+        public static implicit operator IntPtr(CharPtr v) => v.pointer;
 
-        public static implicit operator string(CharPtr val)
+        public static implicit operator string(CharPtr v) => v.ToString();
+
+        public static implicit operator CharPtr(IntPtr ptr) => new(ptr);
+
+        public static implicit operator CharPtr(Int64 v) => new((IntPtr)v);
+
+        public static implicit operator CharPtr(Int32 v) => new((IntPtr)v);
+
+        public static bool operator ==(CharPtr a, WCharPtr b) => a.Equals(b);
+
+        public static bool operator !=(CharPtr a, WCharPtr b) => !(a == b);
+
+        public static bool operator ==(CharPtr a, CharPtr b) => a.Equals(b);
+
+        public static bool operator !=(CharPtr a, CharPtr b) => !(a == b);
+
+        public override bool Equals(object obj)
         {
-            if(val.ptr == IntPtr.Zero) {
-                return null;
+            if(obj is null || obj is not CharPtr b) {
+                return false;
             }
-            return Marshal.PtrToStringAnsi(val.ptr);
+
+            return pointer == b.pointer
+                    || ToString() == b.ToString();
         }
 
-        public static implicit operator CharPtr(IntPtr ptr)
+        public override int GetHashCode()
         {
-            return new CharPtr(ptr);
+            return 0.CalculateHashCode
+            (
+                pointer
+            );
         }
 
-        public static implicit operator CharPtr(Int64 val)
+        public override string ToString()
         {
-            return new CharPtr((IntPtr)val);
+            if(pointer == IntPtr.Zero) return null;
+            return Marshal.PtrToStringAnsi(pointer);
         }
 
-        public static implicit operator CharPtr(Int32 val)
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            return new CharPtr((IntPtr)val);
+            if(info == null) throw new ArgumentNullException(nameof(info));
+
+            info.AddValue(nameof(pointer), pointer);
         }
 
-        public CharPtr(IntPtr ptr)
+        public CharPtr(IntPtr pointer)
         {
-            this.ptr = ptr;
+            if(pointer == IntPtr.Zero) throw new ArgumentOutOfRangeException(Msg.invalid_pointer);
+            this.pointer = pointer;
         }
+
+        #region DebuggerDisplay
+
+        private string dbgInfo()
+            => pointer == IntPtr.Zero ? "null" 
+                : $"{(string)this}    [ An {StrLength} of a 8-bit characters at 0x{pointer.ToString("x")} ]";
+
+        #endregion
     }
 }

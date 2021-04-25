@@ -70,11 +70,29 @@ namespace net.r_eg.Conari.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Can be configured once before any first call for the whole assembly..
+        /// </summary>
+        internal static string configure_once {
+            get {
+                return ResourceManager.GetString("configure_once", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Field `{0}` is already defined in the chain. Reset/renew/or use other mode instead of `{1}`..
         /// </summary>
         internal static string field_0_defined_mode_1 {
             get {
                 return ResourceManager.GetString("field_0_defined_mode_1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid pointer.
+        /// </summary>
+        internal static string invalid_pointer {
+            get {
+                return ResourceManager.GetString("invalid_pointer", resourceCulture);
             }
         }
         
