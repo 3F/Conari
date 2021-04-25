@@ -130,7 +130,7 @@ namespace net.r_eg.Conari.Types
 
         private string dbgInfo()
             => pointer == IntPtr.Zero ? "null" 
-                : $"{(string)this}    [ An {StrLength} of a 16-bit characters at 0x{pointer.ToString("x")} ]";
+                : $"{(string)this}    [ An {StrLength} of a 16-bit characters at 0x{pointer:x} ]";
 
         #endregion
     }

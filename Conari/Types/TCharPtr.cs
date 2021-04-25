@@ -159,7 +159,7 @@ namespace net.r_eg.Conari.Types
                 ptr     = data;
             }
 
-            return $"{(string)this}    [ An {StrLength} of a {cbit} characters at 0x{ptr.ToString("x")} ]";
+            return $"{(string)this}    [ An {StrLength} of a {cbit} characters at 0x{ptr:x} ]";
         }
 
         #endregion

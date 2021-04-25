@@ -51,6 +51,8 @@ namespace net.r_eg.Conari.Types
         /// </summary>
         public bool Owner { get; private set; }
 
+        internal bool Disposed => disposed;
+
         protected static bool IsWCharOrTCharWide
             => (typeof(T) == typeof(WCharPtr)) 
             || (typeof(T) == typeof(TCharPtr) && TCharPtr.Unicode);
@@ -302,7 +304,7 @@ namespace net.r_eg.Conari.Types
 
         private string dbgInfo()
             => pointer == IntPtr.Zero ? "null" 
-                : $"{(string)this}    [ at 0x{pointer.ToString("x")} ({(Owner ? "owner" : "access")}) ]";
+                : $"{(string)this}    [ at 0x{pointer:x} ({(Owner ? "owner" : "access")}) ]";
 
         #endregion
     }

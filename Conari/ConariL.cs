@@ -35,16 +35,19 @@ using net.r_eg.Conari.Types;
 namespace net.r_eg.Conari
 {
     /// <summary>
-    /// Conari engine. An unmanaged memory, modules, and raw data in one touch.
-    /// https://github.com/3F/Conari
+    /// Conari engine. An unmanaged memory, modules, and raw data in one-touch.
     /// </summary>
-    public class ConariL: Provider, IConari, ILoader, IProvider, IBinder, IDlrAccessor, INativeAccessor, IDisposable
+    /// <remarks>https://github.com/3F/Conari</remarks>
+    public class ConariL: Provider, IConari, ILoader, IProvider, IBinder, IDlrAccessor, INativeAccessor, IStringMaker, IDisposable
     {
         protected IConfig config;
 
-        /// <summary>
-        /// Access to available configuration data of dynamic DLR.
-        /// </summary>
+        protected readonly Lazy<NativeStringManager> strings = new(() => new NativeStringManager());
+
+        protected Lazy<dynamic> _dlrCdecl, _dlrStd, _dlrFast, _dlrVector;
+
+        public INativeStringManager Strings => strings.Value;
+
         public IProviderDLR ConfigDLR => (IProviderDLR)DLR;
 
         public dynamic DLR { get; protected set; }
@@ -73,60 +76,47 @@ namespace net.r_eg.Conari
         private protected override LLConfig LLCfg { get; set; }
 
         /// <summary>
-        /// DLR Features with `__cdecl` calling convention.
+        /// DLR Features using `__cdecl` calling convention.
         /// </summary>
-        public dynamic __cdecl
-        {
-            get
-            {
-                if(_dlrCdecl == null) {
-                    _dlrCdecl = newDLR(CallingConvention.Cdecl);
-                }
-                return _dlrCdecl;
-            }
-        }
-        protected dynamic _dlrCdecl;
+        public dynamic __cdecl => _dlrCdecl.Value;
 
         /// <summary>
-        /// DLR Features with `__stdcall` calling convention.
+        /// DLR Features using `__stdcall` calling convention.
         /// </summary>
-        public dynamic __stdcall
-        {
-            get
-            {
-                if(_dlrStd == null) {
-                    _dlrStd = newDLR(CallingConvention.StdCall);
-                }
-                return _dlrStd;
-            }
-        }
-        protected dynamic _dlrStd;
+        public dynamic __stdcall => _dlrStd.Value;
 
         /// <summary>
-        /// DLR Features with `__fastcall` calling convention.
+        /// DLR Features using `__fastcall` calling convention.
         /// </summary>
-        public dynamic __fastcall
-        {
-            get 
-            {
-                if(_dlrFast == null) {
-                    _dlrFast = newDLR(CallingConvention.FastCall);
-                }
-                return _dlrFast;
-            }
-        }
-        protected dynamic _dlrFast;
+        public dynamic __fastcall => _dlrFast.Value;
 
         /// <summary>
-        /// DLR Features with `__vectorcall` calling convention.
+        /// DLR Features using `__vectorcall` calling convention.
         /// https://msdn.microsoft.com/en-us/library/dn375768.aspx
         /// </summary>
-        public dynamic __vectorcall
-        {
-            get {
-                throw new NotSupportedException(Msg.NotYetImpl);
-            }
-        }
+        public dynamic __vectorcall => _dlrVector.Value;
+
+        public IntPtr _T(string input, int extend) => Strings._T(input, extend);
+
+        public IntPtr _T(string input) => Strings._T(input);
+
+        public IntPtr _T<Tin>(string input, int extend) where Tin : struct
+            => Strings._T<Tin>(input, extend);
+
+        public IntPtr _T<Tin>(string input) where Tin : struct
+            => Strings._T<Tin>(input);
+
+        public IntPtr _T(string input, int extend, out TCharPtr access)
+            => Strings._T(input, extend, out access);
+
+        public IntPtr _T(string input, out TCharPtr access)
+            => Strings._T(input, out access);
+
+        public IntPtr _T<Tin>(string input, int extend, out Tin access) where Tin : struct
+            => Strings._T<Tin>(input, extend, out access);
+
+        public IntPtr _T<Tin>(string input, out Tin access) where Tin : struct
+            => Strings._T<Tin>(input, out access);
 
         /// <summary>
         /// Initialize Conari with specific calling convention.
@@ -206,6 +196,19 @@ namespace net.r_eg.Conari
             Native = new NativeData(Memory);
 
             DLR = newDLR(Convention);
+
+            _dlrCdecl   = new Lazy<dynamic>(() => newDLR(CallingConvention.Cdecl));
+            _dlrStd     = new Lazy<dynamic>(() => newDLR(CallingConvention.StdCall));
+            _dlrFast    = new Lazy<dynamic>(() => newDLR(CallingConvention.FastCall));
+            _dlrVector  = new Lazy<dynamic>(() => throw new NotSupportedException(Msg.NotYetImpl));
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if(strings.IsValueCreated) {
+                strings.Value.Dispose();
+            }
+            base.Dispose(disposing);
         }
 
         private dynamic newDLR(CallingConvention conv)

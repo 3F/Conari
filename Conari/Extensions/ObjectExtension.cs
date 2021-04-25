@@ -178,7 +178,7 @@ namespace net.r_eg.Conari.Extension
         /// <typeparam name="T"></typeparam>
         /// <param name="obj"></param>
         /// <param name="act"></param>
-        /// <returns>Input value.</returns>
+        /// <returns>Input value to continue the chain.</returns>
         public static T E<T>(this T obj, Action act) => E(obj, _=> act());
 
         /// <summary>
@@ -187,10 +187,27 @@ namespace net.r_eg.Conari.Extension
         /// <typeparam name="T"></typeparam>
         /// <param name="obj"></param>
         /// <param name="act"></param>
-        /// <returns>Input value.</returns>
+        /// <returns>Input value to continue the chain.</returns>
         public static T E<T>(this T obj, Action<T> act)
         {
             act?.Invoke(obj);
+            return obj;
+        }
+
+        /// <summary>
+        /// Perform an action on the value in the chain according to the condition.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj"></param>
+        /// <param name="condition">Must be true to execute action.</param>
+        /// <param name="act">Executed when the result of the condition is true.</param>
+        /// <returns>Input value to continue the chain.</returns>
+        public static T If<T>(this T obj, Func<T, bool> condition, Action<T> act)
+        {
+            if(condition?.Invoke(obj) == true)
+            {
+                act?.Invoke(obj);
+            }
             return obj;
         }
 

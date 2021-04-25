@@ -24,40 +24,33 @@
 */
 
 using System;
-using System.Collections.Generic;
+using System.Text;
+using net.r_eg.Conari.Extension;
+using net.r_eg.Conari.Native;
 
-namespace net.r_eg.Conari.Extension
+namespace net.r_eg.Conari.Exceptions
 {
-    public static class CollectionExtension
+    [Serializable]
+    public class AbandonedPointerException: CommonException
     {
-        /// <summary>
-        /// Foreach in Linq manner.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="items"></param>
-        /// <param name="act">The action that should be executed for each item.</param>
-        public static IEnumerable<T> ForEach<T>(this IEnumerable<T> items, Action<T> act)
+        public AbandonedPointerException(IntPtr ptr)
+            : base($"Abandoned pointer at 0x{ptr:x}. Dump (hex): {TryDump(ptr)}")
         {
-            if(items == null || act == null) return items;
-            return items.ForEach((x, i) => act(x));
+
         }
 
-        /// <summary>
-        /// Foreach in Linq manner.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="items"></param>
-        /// <param name="act">The action that should be executed for each item.</param>
-        public static IEnumerable<T> ForEach<T>(this IEnumerable<T> items, Action<T, long> act)
+        protected static string TryDump(IntPtr ptr)
         {
-            if(items == null || act == null) return items;
-
-            long n = 0;
-            foreach(var item in items)
+            try
             {
-                act.Invoke(item, n++);
+                StringBuilder sb = new();
+                ptr.Native().Reader.bytes(8).ForEach(b => sb.Append($"{b:x} "));
+                return sb.Append("...").ToString();
             }
-            return items;
+            catch(Exception) // can't be addressed anymore
+            {
+                return "?<...>";
+            }
         }
     }
 }

@@ -40,10 +40,10 @@ using net.r_eg.Conari.Types.Methods;
 namespace net.r_eg.Conari
 {
     /// <summary>
-    /// Conari engine [DLR version]. An unmanaged memory, modules, and raw data in one touch.
-    /// https://github.com/3F/Conari
+    /// Conari engine [DLR version]. An unmanaged memory, modules, and raw data in one-touch.
     /// </summary>
-    public class ConariX: DynamicObject, IConari, ILoader, IProvider, IBinder, IDlrAccessor, INativeAccessor, IDisposable
+    /// <remarks>https://github.com/3F/Conari</remarks>
+    public class ConariX: DynamicObject, IConari, ILoader, IProvider, IBinder, IDlrAccessor, INativeAccessor, IStringMaker, IDisposable
     {
         private readonly ConariL __l_impl;
 
@@ -123,6 +123,8 @@ namespace net.r_eg.Conari
 
         public INativeReader Memory => __l_impl.Memory;
 
+        public INativeStringManager Strings => __l_impl.Strings;
+
         public IProviderDLR ConfigDLR => __l_impl.ConfigDLR;
 
         public dynamic DLR => __l_impl.DLR;
@@ -196,6 +198,46 @@ namespace net.r_eg.Conari
         public string procName(string name) => __l_impl.procName(name);
 
         public IntPtr addr(LpProcName item) => __l_impl.addr(item);
+
+        public IntPtr _T(string input, int extend)
+        {
+            return __l_impl._T(input, extend);
+        }
+
+        public IntPtr _T(string input)
+        {
+            return __l_impl._T(input);
+        }
+
+        public IntPtr _T<Tin>(string input, int extend) where Tin : struct
+        {
+            return __l_impl._T<Tin>(input, extend);
+        }
+
+        public IntPtr _T<Tin>(string input) where Tin : struct
+        {
+            return __l_impl._T<Tin>(input);
+        }
+
+        public IntPtr _T(string input, int extend, out TCharPtr access)
+        {
+            return __l_impl._T(input, extend, out access);
+        }
+
+        public IntPtr _T(string input, out TCharPtr access)
+        {
+            return __l_impl._T(input, out access);
+        }
+
+        public IntPtr _T<Tin>(string input, int extend, out Tin access) where Tin : struct
+        {
+            return __l_impl._T<Tin>(input, extend, out access);
+        }
+
+        public IntPtr _T<Tin>(string input, out Tin access) where Tin : struct
+        {
+            return __l_impl._T<Tin>(input, out access);
+        }
 
         public T bindFunc<T>(string lpProcName) where T : class
         {

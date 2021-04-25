@@ -28,7 +28,21 @@ It was designed to be loyal to your needs on the fly.
 🔍 Easy to start
 
 ```csharp
-using var l = new ConariL("...");
+using ConariL l = new("...");
+```
+
+🧰 Powerful types
+
+Forget about the type conversions and memory management complexities. Because nothing easier than just use it,
+
+```csharp
+using ConariL l = new("regXwild");
+l._.replace<bool>
+(
+    l._T("number = 888;", out CharPtr result), 
+    l._T("+??;"), l._T("2034;")
+);
+// result: number = 2034;
 ```
 
 🚀 Awesome speed
@@ -110,9 +124,11 @@ Because our recipe is simple, *Just use it!* and have fun.
 
 Conari is ready for .NET Core starting from 1.4. Even for [.NET Standard **2.0**](https://github.com/3F/Conari/issues/13) which does not cover unmanaged *EmitCalli* due to missing implementation for *System.Private.CoreLib.* Now this is another one of independent solution for everyone as https://github.com/3F/UnmanagedEmitCalli
 
-🍰 Open and Free
+🍰 **Open and Free**
 
-Conari is available for everyone from 2016 🎉 Open Source project; MIT License, Yes! Enjoy!
+Open Source project; MIT License; *Fork! Star! Contribute! Share! Enjoy!*
+
+Conari is available for everyone from 2016 🎉
 
 ## 🗸 License
 
@@ -122,7 +138,7 @@ The [MIT License (MIT)](https://github.com/3F/Conari/blob/master/LICENSE)
 Copyright (c) 2016-2021  Denis Kuzmin <x-3F@outlook.com> github/3F
 ```
 
-[ [ ☕ Donate ](https://3F.github.io/Donation/) ]
+[ [ ☕ Make a donation ](https://3F.github.io/Donation/) ]
 
 Conari contributors https://github.com/3F/Conari/graphs/contributors
 
@@ -243,16 +259,20 @@ l.Aliases["Flag"] = l.Aliases["getFlag"] = l.Aliases["xFunc"]; //Flag() -> getFl
 l._.getFlag<bool>();
 ```
 
-**Additional types:**
+**Additional types**
 
-* BSTR, CharPtr, WCharPtr, float_t, int_t, ptrdiff_t, size_t, uint_t
-* UnmanagedString - allocation of the new unmanaged strings.
+* TCharPtr, CharPtr, WCharPtr, float_t, int_t, ptrdiff_t, size_t, uint_t,
+* NativeString (+NativeStringManager), UnmanagedStructure,
 * ...
 
 ```csharp
-size_t len;
-CharPtr name = c.bind<FuncOut3<int, size_t, IntPtr>>("to")(1, out len);
-string myName += name; // (IntPtr)name; .Raw; .Ansi; .Utf8; ...
+CharPtr name = c.bind<FuncOut3<int, size_t, IntPtr>>("to")(1, out size_t len);
+string myName += name; // 8 bit C-string and managed string (UTF-16)
+```
+
+```csharp
+using var a = new NativeString<WCharPtr>("Hello");
+using var b = a + " world!"; // unmanaged C-string, a Unicode characters
 ```
 
 and more ...
@@ -287,4 +307,3 @@ REGXWILD_API_L bool match
 * [GitHub Releases](https://github.com/3F/Conari/releases) [ [latest](https://github.com/3F/Conari/releases/latest) ]
 * CI builds at your own risk. Find latest binaries in [`/artifacts`](https://ci.appveyor.com/project/3Fs/conari-wkygr/history) page.
 
-*Enjoy!*

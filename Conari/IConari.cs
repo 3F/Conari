@@ -29,8 +29,13 @@ using net.r_eg.Conari.Log;
 
 namespace net.r_eg.Conari
 {
-    public interface IConari: IBinder, IProvider, ILoader, INativeAccessor, IDisposable
+    public interface IConari: IBinder, IProvider, ILoader, INativeAccessor, IStringMaker, IDisposable
     {
+        /// <summary>
+        /// Access to used string manager.
+        /// </summary>
+        INativeStringManager Strings { get; }
+
         /// <summary>
         /// Access to available configuration data of dynamic DLR.
         /// </summary>
