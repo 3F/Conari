@@ -535,7 +535,7 @@ namespace ConariTest
             {
                 string exp = "my string-123 !";
 
-                using(var uns = new UnmanagedString(exp, UnmanagedString.SType.Ansi))
+                using(var uns = new NativeString<CharPtr>(exp))
                 {
                     CharPtr chrptr = uns;
 
@@ -558,7 +558,7 @@ namespace ConariTest
             {
                 string exp = "my string-123 !";
 
-                using(var uns = new UnmanagedString(exp, UnmanagedString.SType.Unicode))
+                using(var uns = new NativeString<WCharPtr>(exp))
                 {
                     WCharPtr wchrptr = uns;
 
@@ -571,9 +571,7 @@ namespace ConariTest
             }
         }
 
-        /// <summary>
-        /// get_BSTRVal
-        /// </summary>
+#pragma warning disable CS0618 // Type or member is obsolete
         [Fact]
         public void echoTest3()
         {
@@ -593,6 +591,7 @@ namespace ConariTest
                 }
             }
         }
+#pragma warning restore CS0618 // Type or member is obsolete
 
         /// <summary>
         /// get_StringPtrVal
@@ -604,7 +603,7 @@ namespace ConariTest
             {
                 string exp = "my string-123 !";
 
-                using(var uns = new UnmanagedString(exp, UnmanagedString.SType.Ansi))
+                using(var uns = new NativeString<CharPtr>(exp))
                 {
                     CharPtr chrptr = uns;
 
@@ -627,7 +626,7 @@ namespace ConariTest
             {
                 string exp = "my string-123 !";
 
-                using(var uns = new UnmanagedString(exp, UnmanagedString.SType.Unicode))
+                using(var uns = new NativeString<WCharPtr>(exp))
                 {
                     WCharPtr wchrptr = uns;
 
@@ -843,9 +842,9 @@ namespace ConariTest
             {
                 string exp = "mystring-123 !";
 
-                using(var uns1 = new UnmanagedString(exp, UnmanagedString.SType.Ansi))
-                using(var uns2 = new UnmanagedString(exp, UnmanagedString.SType.Ansi))
-                using(var uns3 = new UnmanagedString(" " + exp, UnmanagedString.SType.Ansi))
+                using(var uns1 = new NativeString<CharPtr>(exp))
+                using(var uns2 = new NativeString<CharPtr>(exp))
+                using(var uns3 = new NativeString<CharPtr>(" " + exp))
                 {
                     CharPtr chrptr  = uns1;
                     CharPtr chrptr2 = uns2;
@@ -868,9 +867,9 @@ namespace ConariTest
             {
                 string exp = "mystring-123 !";
 
-                using(var uns1 = new UnmanagedString(exp, UnmanagedString.SType.Unicode))
-                using(var uns2 = new UnmanagedString(exp, UnmanagedString.SType.Unicode))
-                using(var uns3 = new UnmanagedString(" " + exp, UnmanagedString.SType.Unicode))
+                using(var uns1 = new NativeString<WCharPtr>(exp))
+                using(var uns2 = new NativeString<WCharPtr>(exp))
+                using(var uns3 = new NativeString<WCharPtr>(" " + exp))
                 {
                     WCharPtr wchrptr    = uns1;
                     WCharPtr wchrptr2   = uns2;
@@ -893,9 +892,9 @@ namespace ConariTest
             {
                 string exp = "mystring-123 !";
 
-                using(var uns1 = new UnmanagedString(exp, UnmanagedString.SType.Ansi))
-                using(var uns2 = new UnmanagedString(exp, UnmanagedString.SType.Ansi))
-                using(var uns3 = new UnmanagedString(" " + exp, UnmanagedString.SType.Ansi))
+                using(var uns1 = new NativeString<CharPtr>(exp))
+                using(var uns2 = new NativeString<CharPtr>(exp))
+                using(var uns3 = new NativeString<CharPtr>(" " + exp))
                 {
                     CharPtr chrptr  = uns1;
                     CharPtr chrptr2 = uns2;
@@ -918,9 +917,9 @@ namespace ConariTest
             {
                 string exp = "mystring-123 !";
 
-                using(var uns1 = new UnmanagedString(exp, UnmanagedString.SType.Unicode))
-                using(var uns2 = new UnmanagedString(exp, UnmanagedString.SType.Unicode))
-                using(var uns3 = new UnmanagedString(" " + exp, UnmanagedString.SType.Unicode))
+                using(var uns1 = new NativeString<WCharPtr>(exp))
+                using(var uns2 = new NativeString<WCharPtr>(exp))
+                using(var uns3 = new NativeString<WCharPtr>(" " + exp))
                 {
                     WCharPtr chrptr  = uns1;
                     WCharPtr chrptr2 = uns2;

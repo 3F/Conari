@@ -85,9 +85,11 @@ namespace net.r_eg.Conari.Native
         public static int SizeOf(Type type)
         {
             if(type == typeof(string) 
-                || type == typeof(CharPtr) 
-                || type == typeof(WCharPtr) 
-                || type == typeof(BSTR)) 
+                || type == typeof(CharPtr)
+#pragma warning disable CS0618 // Type or member is obsolete
+                || type == typeof(BSTR)
+#pragma warning restore CS0618 // Type or member is obsolete
+                || type == typeof(WCharPtr)) 
             {
                 type = typeof(IntPtr); // aligned pointer to allocated data: char* and so on.
             }

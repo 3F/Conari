@@ -26,44 +26,30 @@
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using net.r_eg.Conari.Resources;
 
 namespace net.r_eg.Conari.Types
 {
     [DebuggerDisplay("{Data} [ {\"0x\" + Pointer.ToString(\"X\")} ]")]
+    [Obsolete("Use modern " + nameof(NativeString<WCharPtr>) + ", " + nameof(NativeString<CharPtr>))]
     public sealed class UnmanagedString: IDisposable
     {
         /// <summary>
         /// Pointer to allocated string.
         /// </summary>
-        public IntPtr Pointer
-        {
-            get;
-            private set;
-        }
+        public IntPtr Pointer { get; private set; }
 
         /// <summary>
         /// Who is the owner for unmanaged string.
         /// </summary>
-        public bool Owner
-        {
-            get;
-            private set;
-        }
+        public bool Owner { get; private set; }
 
         /// <summary>
         /// Access to managed or unmanaged string data.
         /// </summary>
-        public string Data
-        {
-            get;
-            private set;
-        }
+        public string Data { get; private set; }
 
-        public SType Type
-        {
-            get;
-            private set;
-        }
+        public SType Type { get; private set; }
 
         public enum SType
         {
@@ -74,25 +60,13 @@ namespace net.r_eg.Conari.Types
         }
 
         [NativeType]
-        public static implicit operator IntPtr(UnmanagedString val)
-        {
-            return val.Pointer;
-        }
+        public static implicit operator IntPtr(UnmanagedString v) => v.Pointer;
 
-        public static implicit operator CharPtr(UnmanagedString val)
-        {
-            return new CharPtr(val.Pointer);
-        }
+        public static implicit operator CharPtr(UnmanagedString v) => new(v.Pointer);
 
-        public static implicit operator WCharPtr(UnmanagedString val)
-        {
-            return new WCharPtr(val.Pointer);
-        }
+        public static implicit operator WCharPtr(UnmanagedString v) => new(v.Pointer);
 
-        public static implicit operator BSTR(UnmanagedString val)
-        {
-            return new BSTR(val.Pointer);
-        }
+        public static implicit operator BSTR(UnmanagedString v) => new(v.Pointer);
 
         public UnmanagedString(string str, SType type = SType.Auto)
         {
@@ -104,9 +78,7 @@ namespace net.r_eg.Conari.Types
 
         public UnmanagedString(IntPtr ptr, SType type)
         {
-            if(ptr == IntPtr.Zero) {
-                throw new ArgumentException("Pointer must be non-zero for UnmanagedString.");
-            }
+            if(ptr == IntPtr.Zero) throw new ArgumentException(Msg.invalid_pointer);
 
             Type = type;
             Data = alloc(ptr);
@@ -119,18 +91,11 @@ namespace net.r_eg.Conari.Types
 
             switch(Type)
             {
-                case SType.Ansi: {
-                    return (CharPtr)ptr;
-                }
-                case SType.Unicode: {
-                    return (WCharPtr)ptr;
-                }
-                case SType.BSTR: {
-                    return (BSTR)ptr;
-                }
+                case SType.Ansi: return (CharPtr)ptr;
+                case SType.Unicode: return (WCharPtr)ptr;
+                case SType.BSTR: return (BSTR)ptr;
             }
 
-            //TODO: SType.Auto
             throw new NotImplementedException($"the type '{Type}' is not implemented yet.");
         }
 
@@ -162,9 +127,7 @@ namespace net.r_eg.Conari.Types
 
         private void free(IntPtr ptr, SType type)
         {
-            if(ptr == IntPtr.Zero) {
-                return;
-            }
+            if(ptr == IntPtr.Zero) return;
 
             switch(type)
             {

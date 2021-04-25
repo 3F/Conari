@@ -12,20 +12,20 @@ namespace ConariTest.Types
             string str1 = "あいうえお ;";
             string str2 = "あいうえお .";
 
-            using UnmanagedString uns = new(str1, UnmanagedString.SType.Unicode);
+            using NativeString<WCharPtr> uns = new(str1);
 
             WCharPtr ch = uns;
             Assert.Equal("あいうえお ;", ch);
             Assert.Equal(7, ch.StrLength);
             Assert.Equal(14, ch.Length);
 
-            using UnmanagedString uns2 = new(str1, UnmanagedString.SType.Unicode);
+            using NativeString<WCharPtr> uns2 = new(str1);
             WCharPtr ch2 = uns2;
             WCharPtr ch3 = uns;
             Assert.Equal(ch2, ch);
             Assert.Equal(ch3, ch);
 
-            using UnmanagedString uns3 = new(str2, UnmanagedString.SType.Unicode);
+            using NativeString<WCharPtr> uns3 = new(str2);
             WCharPtr ch4 = uns3;
             Assert.NotEqual(ch4, ch);
         }
@@ -33,7 +33,7 @@ namespace ConariTest.Types
         [Fact]
         public void wcharCtorTest1()
         {
-            using UnmanagedString uns = new(String.Empty, UnmanagedString.SType.Unicode);
+            using NativeString<WCharPtr> uns = new(String.Empty);
 
             WCharPtr ch = uns;
             Assert.NotEqual(WCharPtr.Null, ch);
@@ -47,7 +47,7 @@ namespace ConariTest.Types
         [Fact]
         public void wcharCtorTest2()
         {
-            using UnmanagedString uns = new(" ", UnmanagedString.SType.Unicode);
+            using NativeString<WCharPtr> uns = new(" ");
 
             WCharPtr ch = uns;
             Assert.NotEqual(WCharPtr.Null, ch);
@@ -61,20 +61,20 @@ namespace ConariTest.Types
             string str1 = "test of chars ;";
             string str2 = "test of chars .";
 
-            using UnmanagedString uns = new(str1, UnmanagedString.SType.Ansi);
+            using NativeString<CharPtr> uns = new(str1);
 
             CharPtr ch = uns;
             Assert.Equal("test of chars ;", ch);
             Assert.Equal(15, ch.StrLength);
             Assert.Equal(15, ch.Length);
 
-            using UnmanagedString uns2 = new(str1, UnmanagedString.SType.Ansi);
+            using NativeString<CharPtr> uns2 = new(str1);
             CharPtr ch2 = uns2;
             CharPtr ch3 = uns;
             Assert.Equal(ch2, ch);
             Assert.Equal(ch3, ch);
 
-            using UnmanagedString uns3 = new(str2, UnmanagedString.SType.Ansi);
+            using NativeString<CharPtr> uns3 = new(str2);
             CharPtr ch4 = uns3;
             Assert.NotEqual(ch4, ch);
         }
@@ -82,7 +82,7 @@ namespace ConariTest.Types
         [Fact]
         public void charCtorTest1()
         {
-            using UnmanagedString uns = new(String.Empty, UnmanagedString.SType.Ansi);
+            using NativeString<CharPtr> uns = new(string.Empty);
 
             CharPtr ch = uns;
             Assert.NotEqual(CharPtr.Null, ch);
@@ -96,7 +96,7 @@ namespace ConariTest.Types
         [Fact]
         public void charCtorTest2()
         {
-            using UnmanagedString uns = new(" ", UnmanagedString.SType.Ansi);
+            using NativeString<CharPtr> uns = new(" ");
 
             CharPtr ch = uns;
             Assert.NotEqual(CharPtr.Null, ch);
@@ -109,10 +109,10 @@ namespace ConariTest.Types
         {
             string str1 = "Hello, ... !";
 
-            using UnmanagedString uns1 = new(str1, UnmanagedString.SType.Unicode);
+            using NativeString<WCharPtr> uns1 = new(str1);
             TCharPtr ch1 = (WCharPtr)uns1;
 
-            using UnmanagedString uns2 = new(str1, UnmanagedString.SType.Ansi);
+            using NativeString<CharPtr> uns2 = new(str1);
             TCharPtr ch2 = (CharPtr)uns2;
 
             Assert.Equal(str1, ch1);

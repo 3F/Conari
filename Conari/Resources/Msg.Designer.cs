@@ -70,11 +70,29 @@ namespace net.r_eg.Conari.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot be re-allocated..
+        /// </summary>
+        internal static string cannot_realloc {
+            get {
+                return ResourceManager.GetString("cannot_realloc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Can be configured once before any first call for the whole assembly..
         /// </summary>
         internal static string configure_once {
             get {
                 return ResourceManager.GetString("configure_once", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The new data ({0}) extend beyond the allocated space ({1}).
+        /// </summary>
+        internal static string data_0_beyond_allocated_1 {
+            get {
+                return ResourceManager.GetString("data_0_beyond_allocated_1", resourceCulture);
             }
         }
         
@@ -97,11 +115,29 @@ namespace net.r_eg.Conari.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to null is not supported for C-strings..
+        /// </summary>
+        internal static string no_support_null_cstr {
+            get {
+                return ResourceManager.GetString("no_support_null_cstr", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Not yet implemented. https://github.com/3F/Conari.
         /// </summary>
         internal static string NotYetImpl {
             get {
                 return ResourceManager.GetString("NotYetImpl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only {0} are supported yet..
+        /// </summary>
+        internal static string only_0_supported_yet {
+            get {
+                return ResourceManager.GetString("only_0_supported_yet", resourceCulture);
             }
         }
         

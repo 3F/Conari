@@ -4,6 +4,7 @@ using Xunit;
 
 namespace ConariTest.Types
 {
+#pragma warning disable CS0618 // Type or member is obsolete
     public class UnmanagedStringTest
     {
         [Fact]
@@ -95,4 +96,5 @@ namespace ConariTest.Types
             );
         }
     }
+#pragma warning restore CS0618 // Type or member is obsolete
 }

@@ -113,8 +113,10 @@ namespace net.r_eg.Conari.Native.Core
 
             if(type == typeof(string) 
                 || type == typeof(CharPtr)
-                || type == typeof(WCharPtr)
-                || type == typeof(BSTR)) 
+#pragma warning disable CS0618 // Type or member is obsolete
+                || type == typeof(BSTR)
+#pragma warning restore CS0618 // Type or member is obsolete
+                || type == typeof(WCharPtr)) 
             {
                 //return new Types.CharPtr((IntPtr)field.value);
                 return asIntPtr(val);

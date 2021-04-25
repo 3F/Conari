@@ -26,98 +26,121 @@
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 using net.r_eg.Conari.Extension;
+using net.r_eg.Conari.Resources;
 
 namespace net.r_eg.Conari.Types
 {
     /// <summary>
-    /// A BSTR (Basic string or binary string) is a string data type that is used by COM, Automation, and Interop functions.
-    /// https://msdn.microsoft.com/en-us/library/windows/desktop/ms221069(v=vs.85).aspx
-    /// 
-    /// A BSTR is a composite data type that consists of a length prefix, a data string, and a terminator:
-    /// * Length prefix - A 4-byte integer that contains the number of bytes in the following data string. 
-    ///                   It appears immediately before the first character of the data string. 
-    /// 
-    /// * Data string   - A string of Unicode characters. May contain multiple embedded null characters.
+    /// A BSTR (Basic string or binary string) is a composite data type that consists of a length prefix, a data string, and a terminator: <br/>
+    /// * Length prefix - A 4-byte integer that contains the number of bytes in the following data string. <br/>
+    ///                   It appears immediately before the first character of the data string. <br/>
+    /// <br/>
+    /// * Data string   - A string of Unicode characters. May contain multiple embedded null characters. <br/>
     /// * Terminator    - 2-null characters.
     /// </summary>
-    [DebuggerDisplay("{(string)this} [ {\"0x\" + ptr.ToString(\"X\")} Length: {Length} ]")]
-    public struct BSTR
+    [DebuggerDisplay("{dbgInfo()}")]
+    [Serializable]
+    [Obsolete("Use " + nameof(WCharPtr) + " together with powerful " + nameof(NativeString<WCharPtr>))]
+    public struct BSTR: ISerializable
     {
-        private IntPtr ptr;
+        private IntPtr pointer;
 
+        public static readonly BSTR Null;
+
+        /// <inheritdoc cref="CharPtr.Raw"/>
+        public byte[] Raw => pointer.GetStringBytes(Length);
+
+        /// <inheritdoc cref="CharPtr.Length"/>
+        public int Length => pointer.GetStringLength(2);
+
+        /// <inheritdoc cref="CharPtr.StrLength"/>
+        public int StrLength { get
+        {
+            int len = Length;
+            if(len > 1) len /= 2;
+            return len;
+        }}
+
+        public string Unicode { get
+        {
+            if(pointer == IntPtr.Zero) return null;
+            return Marshal.PtrToStringUni(pointer);
+        }}
+
+        [Obsolete]
         public static int PtrSize => IntPtr.Size;
 
-        /// <summary>
-        /// Raw byte-sequence
-        /// </summary>
-        public byte[] Raw
-        {
-            get {
-                return ptr.GetStringBytes(Length);
-            }
-        }
-
-        public int Length
-        {
-            get {
-                return ptr.GetStringLength(2);
-            }
-        }
-
-        public string Unicode
-        {
-            get
-            {
-                if(ptr == IntPtr.Zero) {
-                    return null;
-                }
-                return Marshal.PtrToStringUni(ptr);
-            }
-        }
-
         [NativeType]
-        public static implicit operator IntPtr(BSTR val)
-        {
-            return val.ptr;
-        }
+        public static implicit operator IntPtr(BSTR v) => v.pointer;
 
-        public static implicit operator string(BSTR val)
+        public static implicit operator string(BSTR v) => v.ToString();
+
+        public static implicit operator BSTR(IntPtr ptr) => new(ptr);
+
+        public static implicit operator BSTR(Int64 v) => new((IntPtr)v);
+
+        public static implicit operator BSTR(Int32 v) => new((IntPtr)v);
+
+        public static bool operator ==(BSTR a, CharPtr b) => a.Equals(b);
+
+        public static bool operator !=(BSTR a, CharPtr b) => !(a == b);
+
+        public static bool operator ==(BSTR a, BSTR b) => a.Equals(b);
+
+        public static bool operator !=(BSTR a, BSTR b) => !(a == b);
+
+        public override bool Equals(object obj)
         {
-            if(val.ptr == IntPtr.Zero) {
-                return null;
+            if(obj is null || obj is not BSTR b) {
+                return false;
             }
-            return Marshal.PtrToStringBSTR(val.ptr);
+
+            return pointer == b.pointer
+                    || ToString() == b.ToString();
         }
 
-        public static implicit operator BSTR(IntPtr ptr)
+        public override int GetHashCode()
         {
-            return new BSTR(ptr);
+            return 0.CalculateHashCode
+            (
+                pointer
+            );
         }
 
-        public static implicit operator BSTR(Int64 val)
+        public override string ToString()
         {
-            return new BSTR((IntPtr)val);
+            if(pointer == IntPtr.Zero) return null;
+            return Marshal.PtrToStringBSTR(pointer);
         }
 
-        public static implicit operator BSTR(Int32 val)
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            return new BSTR((IntPtr)val);
+            if(info == null) throw new ArgumentNullException(nameof(info));
+
+            info.AddValue(nameof(pointer), pointer);
         }
 
-        /// <summary>
-        /// Frees a BSTR using the COM SysFreeString function:
-        /// https://msdn.microsoft.com/en-us/Library/ms221481.aspx
-        /// </summary>
+        [Obsolete]
         public void free()
         {
-            Marshal.FreeBSTR(ptr);
-            ptr = IntPtr.Zero;
+            Marshal.FreeBSTR(pointer);
+            pointer = IntPtr.Zero;
         }
 
-        public BSTR(IntPtr ptr)
+        public BSTR(IntPtr pointer)
         {
-            this.ptr = ptr;
+            if(pointer == IntPtr.Zero) throw new ArgumentOutOfRangeException(Msg.invalid_pointer);
+            this.pointer = pointer;
         }
+
+        #region DebuggerDisplay
+
+        private string dbgInfo()
+            => pointer == IntPtr.Zero ? "null"
+                : $"{(string)this}    [ An {StrLength} of a BSTR at 0x{pointer.ToString("x")} ]";
+
+        #endregion
     }
 }

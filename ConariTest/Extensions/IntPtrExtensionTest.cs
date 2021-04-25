@@ -15,7 +15,7 @@ namespace ConariTest.Extensions
             const int BSIZE = 1;
             string managed  = " my string 123 ";
 
-            using(var uns = new UnmanagedString(managed, UnmanagedString.SType.Ansi)) {
+            using(var uns = new NativeString<CharPtr>(managed)) {
                 IntPtr ptr = uns;
                 Assert.Equal(managed.Length * BSIZE, ptr.GetStringLength(BSIZE));
             }
@@ -27,12 +27,13 @@ namespace ConariTest.Extensions
             const int BSIZE = 2;
             string managed  = " my string 123 ";
 
-            using(var uns = new UnmanagedString(managed, UnmanagedString.SType.Unicode)) {
+            using(var uns = new NativeString<WCharPtr>(managed)) {
                 IntPtr ptr = uns;
                 Assert.Equal(managed.Length * BSIZE, ptr.GetStringLength(BSIZE));
             }
         }
 
+#pragma warning disable CS0618 // Type or member is obsolete
         [Fact]
         public void GetStringLengthTest3()
         {
@@ -44,13 +45,14 @@ namespace ConariTest.Extensions
                 Assert.Equal(managed.Length * BSIZE, ptr.GetStringLength(BSIZE));
             }
         }
+#pragma warning restore CS0618 // Type or member is obsolete
 
         [Fact]
         public void GetStringBytesTest1()
         {
             string managed = " mystring ";
 
-            using(var uns = new UnmanagedString(managed, UnmanagedString.SType.Ansi)) {
+            using(var uns = new NativeString<CharPtr>(managed)) {
                 IntPtr ptr = uns;
 
                 Assert.Empty(ptr.GetStringBytes(-1));
