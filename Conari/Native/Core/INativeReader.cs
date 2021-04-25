@@ -24,6 +24,7 @@
 */
 
 using System;
+using net.r_eg.Conari.Types;
 
 namespace net.r_eg.Conari.Native.Core
 {
@@ -37,6 +38,12 @@ namespace net.r_eg.Conari.Native.Core
         INativeReader move(long offset, SeekPosition region = SeekPosition.Current);
 
         /// <summary>
+        /// Go to a new address using absolute position.
+        /// </summary>
+        /// <param name="addr"></param>
+        INativeReader @goto(VPtr addr);
+
+        /// <summary>
         /// Read unsigned bytes, signed bytes, or chars using current possition.
         /// </summary>
         /// <typeparam name="T"><see cref="byte"/>, <see cref="sbyte"/>, <see cref="char"/></typeparam>
@@ -44,12 +51,12 @@ namespace net.r_eg.Conari.Native.Core
         /// <returns></returns>
         T[] bytes<T>(int length) where T : struct;
 
-        /// <inheritdoc cref="bytes&lt;T&gt;(int)"/>
+        /// <inheritdoc cref="bytes{T}(int)"/>
         /// <param name="length">Length of data.</param>
         /// <param name="def">Optional definition of the input length in the chain.</param>
         T[] bytes<T>(int length, out int def) where T : struct;
 
-        /// <inheritdoc cref="bytes&lt;T&gt;(int)"/>
+        /// <inheritdoc cref="bytes{T}(int)"/>
         byte[] bytes(int length);
 
         /// <inheritdoc cref="bytes(int)"/>
@@ -69,19 +76,19 @@ namespace net.r_eg.Conari.Native.Core
         /// <returns></returns>
         T read<T>() where T : struct;
 
-        /// <inheritdoc cref="read&lt;T&gt;()"/>
-        /// <remarks>Chained <see cref="read&lt;T&gt;()"/>.</remarks>
+        /// <inheritdoc cref="read{T}()"/>
+        /// <remarks>Chained <see cref="read{T}()"/>.</remarks>
         /// <param name="readed">The result of the reading.</param>
         INativeReader read<T>(out T readed) where T : struct;
 
-        /// <inheritdoc cref="bytes&lt;T&gt;(int)"/>
-        /// <remarks>Chained <see cref="bytes&lt;T&gt;(int)"/>.</remarks>
+        /// <inheritdoc cref="bytes{T}(int)"/>
+        /// <remarks>Chained <see cref="bytes{T}(int)"/>.</remarks>
         INativeReader read<T>(int length, out T[] readed) where T : struct;
 
-        /// <inheritdoc cref="read&lt;T&gt;(out T)"/>
+        /// <inheritdoc cref="read{T}(out T)"/>
         INativeReader next<T>(ref T readed) where T : struct;
 
-        /// <inheritdoc cref="read&lt;T&gt;(int, out T[])"/>
+        /// <inheritdoc cref="read{T}(int, out T[])"/>
         INativeReader bytes<T>(int length, ref T[] readed) where T : struct;
 
         UIntPtr readUIntPtr();
@@ -102,8 +109,79 @@ namespace net.r_eg.Conari.Native.Core
 
         byte readByte();
 
+        /// <summary>
+        /// Read as a 8 bit character.
+        /// </summary>
         char readChar();
 
+        /// <summary>
+        /// Read as a 16 bit character.
+        /// </summary>
+        char readWChar();
+
+        /// <summary>
+        /// Read either as a 16 bit or a 8 bit character 
+        /// depending on the configuration. See <see cref="set(CharType)"/>
+        /// </summary>
+        char readTChar();
+
+        /// <summary>
+        /// Read either as a 16 bit or a 8 bit character 
+        /// depending on specified type (ignores <see cref="set(CharType)"/>).
+        /// </summary>
+        /// <param name="type"></param>
+        char readTChar(CharType type);
+
         sbyte readSByte();
+
+        /// <summary>
+        /// Set encoding system for methods like <see cref="readTChar()"/>.
+        /// </summary>
+        INativeReader set(CharType enc);
+
+        /// <inheritdoc cref="eq{T}(T)"/>
+        INativeReader eq<T>(params T[] input) where T : struct;
+
+        /// <summary>
+        /// Verifies that input T is equal to T using <see cref="read{T}()"/>.
+        /// Use <see cref="check"/>, <see cref="ifTrue(Action{INativeReader})"/>,
+        /// and  <see cref="ifFalse(Action{INativeReader})"/> to check the result.
+        /// </summary>
+        /// <typeparam name="T">Supported type for <see cref="read{T}()"/></typeparam>
+        /// <param name="input">To compare with <see cref="read{T}()"/>.</param>
+        INativeReader eq<T>(T input) where T : struct;
+
+        /// <summary>
+        /// Logical boolean for <see cref="eq{T}(T)"/> chain.
+        /// </summary>
+        INativeReader or();
+
+        /// <summary>
+        /// Check the result of <see cref="eq{T}(T)"/> and <see cref="or()"/> as boolean value.
+        /// </summary>
+        /// <returns>
+        ///     True if all <see cref="eq{T}(T)"/> are true.
+        ///     Or at least for one of the <see cref="or()"/> if it was applied.
+        ///     Otherwise return false.
+        /// </returns>
+        bool check();
+
+        /// <summary>
+        /// Check the result as <see cref="check()"/> but invoke the action if both are equal.
+        /// </summary>
+        /// <param name="act">The action to be executed if the result is true.</param>
+        INativeReader ifTrue(Action<INativeReader> act);
+
+        /// <summary>
+        /// Check the result as <see cref="check()"/> but invoke the action if both are not equal.
+        /// </summary>
+        /// <param name="act">The action to be executed if the result is false.</param>
+        INativeReader ifFalse(Action<INativeReader> act);
+
+        /// <summary>
+        /// Rewind the chain to a specific region.
+        /// </summary>
+        /// <param name="region"></param>
+        INativeReader rewind(SeekPosition region = SeekPosition.Region);
     }
 }

@@ -24,6 +24,7 @@
 */
 
 using System;
+using net.r_eg.Conari.Extension;
 using net.r_eg.Conari.Types;
 
 namespace net.r_eg.Conari.Native.Core
@@ -32,9 +33,14 @@ namespace net.r_eg.Conari.Native.Core
 
     public abstract class NativeReaderAbstract: PointerAbstract, INativeReader
     {
+        private bool? equaled;
+        private VPtr firstEq;
+        private bool hasTrueForOr;
+
+        protected CharType charType = CharType.OneByte;
+
         #region abstract reading
 
-        public abstract char readChar();
         public abstract byte readByte();
         public abstract sbyte readSByte();
         public abstract Int16 readInt16();
@@ -55,13 +61,15 @@ namespace net.r_eg.Conari.Native.Core
         /// <param name="region"></param>
         public virtual INativeReader move(long offset, SeekPosition region = SeekPosition.Current)
         {
-            if(region == SeekPosition.Initial) {
-                resetPtr();
-            }
-            else if(region == SeekPosition.Region) {
-                resetRegionPtr();
-            }
+            rewind(region);
             upPtr(offset);
+            return this;
+        }
+
+        public virtual INativeReader @goto(VPtr addr)
+        {
+            CurrentPtr = addr;
+            shiftRegionPtr();
             return this;
         }
 
@@ -90,7 +98,7 @@ namespace net.r_eg.Conari.Native.Core
             return ret;
         }
 
-        /// <inheritdoc cref="bytes&lt;T&gt;(int)"/>
+        /// <inheritdoc cref="bytes{T}(int)"/>
         /// <param name="length">Length of data.</param>
         /// <param name="def">Optional definition of the input length in the chain.</param>
         public T[] bytes<T>(int length, out int def) where T : struct
@@ -99,7 +107,7 @@ namespace net.r_eg.Conari.Native.Core
             return bytes<T>(length);
         }
 
-        /// <inheritdoc cref="bytes&lt;T&gt;(int)"/>
+        /// <inheritdoc cref="bytes{T}(int)"/>
         public byte[] bytes(int length) => bytes<byte>(length);
 
         /// <inheritdoc cref="bytes(int)"/>
@@ -135,7 +143,7 @@ namespace net.r_eg.Conari.Native.Core
             if(typeof(Int16) == t) return (dynamic)readInt16();
             if(typeof(SByte) == t) return (dynamic)readSByte();
             if(typeof(byte) == t) return (dynamic)readByte();
-            if(typeof(char) == t) return (dynamic)readChar();
+            if(typeof(char) == t) return (dynamic)readTChar();
 
             throw new NotSupportedException();
         }
@@ -161,6 +169,83 @@ namespace net.r_eg.Conari.Native.Core
         public INativeReader bytes<T>(int length, ref T[] readed) where T : struct
         {
             readed = bytes<T>(length);
+            return this;
+        }
+
+        public char readChar() => Convert.ToChar(readByte());
+
+        public char readWChar() => Convert.ToChar(readUInt16());
+
+        public char readTChar() => readTChar(charType);
+
+        public char readTChar(CharType enc) 
+            => (enc == CharType.OneByte) ? readChar() : readWChar();
+
+        public INativeReader set(CharType enc)
+        {
+            charType = enc;
+            return this;
+        }
+
+        public INativeReader eq<T>(params T[] input) where T : struct
+        {
+            input?.ForEach(x => eq(x));
+            return this;
+        }
+
+        public INativeReader eq<T>(T input) where T: struct
+        {
+            if(hasTrueForOr || equaled == false)
+            {
+                upPtr(SizeOf<T>());
+                return this;
+            }
+
+            if(equaled == null) firstEq = CurrentPtr;
+
+            equaled = input.Equals(read<T>());
+            return this;
+        }
+
+        public INativeReader or()
+        {
+            if(equaled != true)
+            {
+                CurrentPtr  = firstEq;
+                equaled     = null;
+            }
+            else hasTrueForOr = true;
+            return this;
+        }
+
+        public bool check()
+        {
+            bool ret        = equaled != false;
+            equaled         = null;
+            hasTrueForOr    = false;
+            return ret;
+        }
+
+        public INativeReader ifTrue(Action<INativeReader> act)
+        {
+            if(check()) act?.Invoke(this);
+            return this;
+        }
+
+        public INativeReader ifFalse(Action<INativeReader> act)
+        {
+            if(!check()) act?.Invoke(this);
+            return this;
+        }
+
+        public INativeReader rewind(SeekPosition region = SeekPosition.Region)
+        {
+            if(region == SeekPosition.Initial) {
+                resetPtr();
+            }
+            else if(region == SeekPosition.Region) {
+                resetRegionPtr();
+            }
             return this;
         }
 

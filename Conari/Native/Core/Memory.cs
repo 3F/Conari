@@ -59,8 +59,6 @@ namespace net.r_eg.Conari.Native.Core
 
         public override byte readByte() => atomic(_ => Marshal.ReadByte(CurrentPtr));
 
-        public override char readChar() => Convert.ToChar(readByte());
-
         public override sbyte readSByte() => unchecked((sbyte)readByte());
 
         public Memory(VPtr ptr)

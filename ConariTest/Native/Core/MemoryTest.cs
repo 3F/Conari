@@ -1,6 +1,7 @@
 ﻿using System;
 using ConariTest._svc;
 using net.r_eg.Conari;
+using net.r_eg.Conari.Exceptions;
 using net.r_eg.Conari.Native;
 using net.r_eg.Conari.Native.Core;
 using net.r_eg.Conari.Types;
@@ -95,10 +96,10 @@ namespace ConariTest.Native.Core
         [Fact]
         public void memTest5()
         {
-            using var alloc = new Allocator(new byte[]{ 0, 0x31, 2, 3, 4, 5, 6, 7, 8, 9 });
+            using var alloc = new Allocator(new byte[]{ 0x30, 0x31, 2, 3, 4, 5, 6, 7, 8, 9 });
             Memory memory = new(alloc.ptr);
 
-            Assert.Equal(0, memory.readByte());
+            Assert.Equal(0x30, memory.readByte());
             Assert.Equal('1', memory.readChar());
 
             VPtr ptr = memory.CurrentPtr;
@@ -221,6 +222,259 @@ namespace ConariTest.Native.Core
             Assert.Equal(initial, l.Memory.upPtr(-2));
 
             Assert.Equal(0x5A4D, l.Memory.readInt16());
+        }
+
+        [Fact]
+        public void peEqTest1()
+        {
+            using var l = new ConariL(RXW_X64);
+
+            Assert.True
+            (
+                l.Memory
+                .move(0x3C, SeekPosition.Initial)
+                .read<LONG>(out LONG e_lfanew)
+                .move(e_lfanew, SeekPosition.Initial)
+                .eq('P').eq('E').eq('\0').eq('\0')
+                .check()
+            );
+
+            Assert.False
+            (
+                l.Memory
+                .move(e_lfanew, SeekPosition.Initial)
+                .eq('M').eq('Z')
+                .check()
+            );
+
+            Assert.False
+            (
+                l.Memory
+                .rewind(SeekPosition.Region)
+                .eq('P').eq('Z').eq('\0').eq('\0')
+                .check()
+            );
+        }
+
+        [Fact]
+        public void peEqTest2()
+        {
+            using var l = new ConariL(RXW_X64);
+
+            Assert.False
+            (
+                l.Memory
+                .@goto(l.PE.Addresses.IMAGE_NT_HEADERS)
+                .eq('P').eq('E').eq('\0').eq('\0')
+                .ifFalse(_ => throw new PECorruptDataException())
+                .rewind(SeekPosition.Region)
+                .eq('P')
+                .eq('Z')
+                .eq('\0')
+                .eq('\0')
+                .check()
+            );
+
+            Assert.Throws<PECorruptDataException>
+            (() =>
+                l.Memory
+                .rewind(SeekPosition.Region)
+                .eq('P').eq('Z').eq('\0').eq('\0')
+                .ifFalse(_ => throw new PECorruptDataException())
+            );
+        }
+
+        [Fact]
+        public void peEqTest3()
+        {
+            using var l = new ConariL(RXW_X64);
+
+            Assert.True
+            (
+                l.Memory
+                .move(0x3C, SeekPosition.Initial)
+                .read<LONG>(out LONG e_lfanew)
+                .move(e_lfanew, SeekPosition.Initial)
+                .eq('M').eq('Z')
+                .or()
+                .eq('P').eq('E').eq('\0').eq('\0')
+                .check()
+            );
+
+            Assert.False
+            (
+                l.Memory
+                .move(e_lfanew, SeekPosition.Initial)
+                .eq('M')
+                .eq('Z')
+                .eq('P')
+                .eq('E')
+                .eq('\0')
+                .eq('\0')
+                .check()
+            );
+
+            Assert.True
+            (
+                l.Memory
+                .move(e_lfanew, SeekPosition.Initial)
+                .check()
+            );
+        }
+
+        [Fact]
+        public void peEqTest4()
+        {
+            using var l = new ConariL(RXW_X64);
+
+            l.Memory
+            .@goto(l.PE.Addresses.IMAGE_NT_HEADERS)
+            .eq('M').eq('Z')
+            .ifTrue(_ => throw new NotSupportedException())
+            .or()
+            .eq('P').eq('E').eq('\0').eq('\0')
+            .ifFalse(_ => throw new PECorruptDataException())
+            .or()
+            .eq('P').eq('Z').eq('\0').eq('\0')
+            .ifTrue(_ => throw new PECorruptDataException());
+
+            Assert.Throws<PECorruptDataException>
+            (() =>
+                l.Memory
+                .@goto(l.PE.Addresses.IMAGE_NT_HEADERS)
+                .eq('P').eq('Z').eq('\0').eq('\0')
+                .ifFalse(_ => throw new PECorruptDataException())
+                .or()
+                .eq('M').eq('Z')
+                .ifTrue(_ => throw new NotSupportedException())
+            );
+
+            Assert.Throws<NotImplementedException>
+            (() =>
+                l.Memory
+                .@goto(l.PE.Addresses.IMAGE_NT_HEADERS)
+                .eq('P').eq('Z').eq('\0').eq('\0')
+                .ifTrue(_ => throw new PECorruptDataException())
+                .or()
+                .eq('M').eq('Z')
+                .ifTrue(_ => throw new NotSupportedException())
+                .eq('P').eq('E')
+                .ifFalse(_ => throw new NotImplementedException())
+            );
+
+            Assert.Throws<PECorruptDataException>
+            (() =>
+                l.Memory
+                .rewind(SeekPosition.Region)
+                .eq('M').eq('Z').eq('P').eq('Z').eq('\0').eq('\0')
+                .ifFalse(_ => throw new PECorruptDataException())
+            );
+        }
+
+        [Fact]
+        public void peEqTest5()
+        {
+            using var l = new ConariL(RXW_X64);
+
+            Assert.True
+            (
+                l.Memory
+                .@goto(l.PE.Addresses.IMAGE_NT_HEADERS)
+                .eq('P', 'E', '\0', '\0')
+                .check()
+            );
+
+            Assert.False
+            (
+                l.Memory
+                .@goto(l.PE.Addresses.IMAGE_NT_HEADERS)
+                .eq('P', 'E', '\0', '\0')
+                .ifFalse(_ => throw new PECorruptDataException())
+                .rewind(SeekPosition.Region)
+                .eq('P')
+                .eq('Z')
+                .eq('\0')
+                .eq('\0')
+                .check()
+            );
+
+            Assert.True
+            (
+                l.Memory
+                .rewind()
+                .eq('M').eq('Z')
+                .or()
+                .eq('P', 'E').eq('\0', '\0')
+                .check()
+            );
+
+            Assert.Throws<PECorruptDataException>
+            (() =>
+                l.Memory
+                .rewind()
+                .eq('M', 'Z').eq('P').eq('Z', '\0', '\0')
+                .ifFalse(_ => throw new PECorruptDataException())
+            );
+        }
+
+        [Fact]
+        public void peEqTest6()
+        {
+            using var l = new ConariL(RXW_X64);
+
+            Assert.Throws<NotImplementedException>
+            (() =>
+                l.Memory
+                .@goto(l.PE.Addresses.IMAGE_NT_HEADERS)
+                .eq('M').eq('Z')
+                .ifTrue(_ => throw new NotSupportedException())
+                .or()
+                .eq('E').eq('P').eq('\0')
+                .ifTrue(_ => throw new ArgumentException())
+                .or()
+                .eq('P').eq('E').eq('\0').eq('\0')
+                .ifTrue(_ => throw new NotImplementedException())
+            );
+        }
+
+        [Fact]
+        public void charBitsTest1()
+        {
+            using var alloc = new Allocator(new byte[] { 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39 });
+            Memory memory = new(alloc.ptr);
+
+            memory
+            .eq('0')
+            .eq('1')
+            .set(CharType.TwoByte)
+            .eq('㌲')
+            .set(CharType.OneByte)
+            .eq('4')
+            .set(CharType.Unicode)
+            .eq('㘵')
+            .set(CharType.Unicode)
+            .set(CharType.Ascii)
+            .eq('7')
+            .ifFalse(_ => throw new ArgumentException());
+        }
+
+        [Fact]
+        public void charBitsTest2()
+        {
+            using var alloc = new Allocator(new byte[] { 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39 });
+            Memory memory = new(alloc.ptr);
+
+            Assert.Equal('㄰', memory.readWChar());
+            Assert.Equal('2', memory.readTChar());
+            Assert.Equal('㐳', memory.readTChar(CharType.TwoByte));
+            Assert.Equal('5', memory.readTChar(CharType.OneByte));
+
+            memory.set(CharType.Unicode);
+            Assert.Equal('6', memory.readChar());
+            Assert.Equal('㠷', memory.readTChar());
+
+            memory.set(CharType.Ascii);
+            Assert.Equal('9', memory.readTChar());
         }
     }
 }

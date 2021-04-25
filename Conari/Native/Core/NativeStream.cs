@@ -66,8 +66,6 @@ namespace net.r_eg.Conari.Native.Core
 
         public override byte readByte() => atomic(_ => reader.ReadByte());
 
-        public override char readChar() => atomic(_ => reader.ReadChar());
-
         public override sbyte readSByte() => atomic(_ => reader.ReadSByte());
 
         public NativeStream(Stream stream)

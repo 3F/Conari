@@ -58,7 +58,7 @@ namespace net.r_eg.Conari.Core
         }
 
         /// <summary>
-        /// Alias to `getVar&lt;T&gt;(string lpProcName)`
+        /// Alias to <see cref="getVar{T}(string)"/>
         /// Gets value from exported Variable. Full name is required.
         /// </summary>
         /// <param name="lpProcName">The full name of exported variable.</param>
@@ -81,7 +81,7 @@ namespace net.r_eg.Conari.Core
         }
 
         /// <summary>
-        /// Alias to `get&lt;T&gt;(string variable)`
+        /// Alias to <see cref="get{T}(string)"/>
         /// 
         /// Gets value from exported Variable.
         /// The main prefix will affects on this result.

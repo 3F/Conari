@@ -15,7 +15,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>Conari</PackageId>
     <Copyright>Copyright (c) 2016-2021  Denis Kuzmin &lt;x-3F@outlook.com&gt; github/3F</Copyright>
-    <Title>[ Conari ] 🧬 One touch unmanaged memory, runtime dynamic use of the unmanaged native C/C++ in .NET world, and ...</Title>
+    <Title>[ Conari ] 🧬 One-touch unmanaged memory, runtime dynamic use of the unmanaged native C/C++ in .NET world, and ...</Title>
     <PackageIcon>Conari_v1.png</PackageIcon>
     <IconUrl>https://raw.githubusercontent.com/3F/Conari/master/Conari/Resources/Conari_v1.png</IconUrl>
     <Description>🧬 One-touch unmanaged memory, libraries, executable modules, runtime dynamic use of the unmanaged native C/C++ in .NET world, related P/Invoke features,
@@ -42,7 +42,7 @@
         🔧 The easiest (most ever) access to any data in unmanaged memory
 
         ```
-        dynamic l = ptr.Native().align&lt;int&gt;("x", "y").build();
+        ptr.Native().f&lt;int&gt;("x", "y").build(out dynamic l);
         l.x // 17
         l.y // -23
         ```

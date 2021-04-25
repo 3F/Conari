@@ -74,10 +74,10 @@ if(ifh.SizeOfOptionalHeader == 0xF0) { // IMAGE_OPTIONAL_HEADER64
 
 // Use it !
 
-ifh.NumberOfSections    // 6
-ifh.Characteristics     // IMAGE_FILE_EXECUTABLE_IMAGE | IMAGE_FILE_LARGE_ADDRESS_AWARE | IMAGE_FILE_DLL
-ifh.Machine             // IMAGE_FILE_MACHINE_AMD64
-ifh.Magic               // PE64
+ifh.NumberOfSections // 6
+ifh.Characteristics  // IMAGE_FILE_EXECUTABLE_IMAGE | IMAGE_FILE_LARGE_ADDRESS_AWARE | IMAGE_FILE_DLL
+ifh.Machine          // IMAGE_FILE_MACHINE_AMD64
+ifh.Magic            // PE64
 ```
 
 ```csharp
@@ -167,18 +167,6 @@ var set = l.bind<Action<int, string>>("set");
 set(-1, "Hello from Conari !");
 ```
 
-**Lazy loading:**
-
-```csharp
-using(var l = new ConariL(
-                    new Config("Library.dll") {
-                        LazyLoading = true
-                    }))
-{
-    ...
-}
-```
-
 **Native C/C++ structures without declaration** **[[?](https://github.com/3F/Conari/issues/2)]**:
 
 ```csharp
@@ -206,9 +194,9 @@ DWORD offset = rva2Offset(idd.VirtualAddress);
 ```csharp
 IntPtr ptr ...
 Raw mt = ptr.Native()
-                .align<int>(2, "a", "b")
-                .t<IntPtr>("name")
-                .Raw;
+            .align<int>(2, "a", "b")
+            .t<IntPtr>("name")
+            .Raw;
             
 -     {byte[0x0000000c]} byte[]
         [0]    0x05    byte --
@@ -226,7 +214,7 @@ Raw mt = ptr.Native()
 ...
 ```
 
-**Calling Convention** & **Name-Decoration** **[[?](https://github.com/3F/Conari/issues/3)]**:
+**Calling Convention** & **Name-Decoration** **[[?](https://github.com/3F/Conari/issues/3)]**
 
 ```csharp
 using(var l = new ConariL("Library.dll", CallingConvention.StdCall))
@@ -237,24 +225,22 @@ using(var l = new ConariL("Library.dll", CallingConvention.StdCall))
 }
 ```
 
-**Exported Variables & Raw access [[?](https://github.com/3F/Conari/issues/7#issuecomment-269123650)]:**
+**Exported Variables & Raw access [[?](https://github.com/3F/Conari/issues/7#issuecomment-269123650)]**
 
 ```csharp
 // v1.3+
-l.ExVar.DLR.ADDR_SPEC // 0x00001CE8
-l.ExVar.get<UInt32>("ADDR_SPEC"); // 0x00001CE8
-l.ExVar.getField(typeof(UInt32).NativeSize(), "ADDR_SPEC"); // Native.Core.Field via raw size
-l.Svc.native("lpProcName"); // Raw access via NativeData & Native.Core !
+l._.ADDR_SPEC // DLR, 0x00001CE8
+l.V.get<UInt32>("ADDR_SPEC"); // lambda, 0x00001CE8
 //v1.0+: Use Provider or ConariL frontend via your custom wrapper.
 ```
 
-**Aliases for exported-functions and variables [[?](https://github.com/3F/Conari/issues/9#issuecomment-273855381)]:**
+**Aliases for exported-functions and variables [[?](https://github.com/3F/Conari/issues/9#issuecomment-273855381)]**
 
 ```csharp
 // v1.3+
 l.Aliases["Flag"] = l.Aliases["getFlag"] = l.Aliases["xFunc"]; //Flag() -> getFlag() -> xFunc()->...
 // ...
-l.DLR.getFlag<bool>();
+l._.getFlag<bool>();
 ```
 
 **Additional types:**
@@ -269,27 +255,10 @@ CharPtr name = c.bind<FuncOut3<int, size_t, IntPtr>>("to")(1, out len);
 string myName += name; // (IntPtr)name; .Raw; .Ansi; .Utf8; ...
 ```
 
-**Events**:
-
-```csharp
-l.ConventionChanged += (object sender, DataArgs<CallingConvention> e) =>
-{
-    DLR = newDLR(e.Data);
-    LSender.Send(sender, $"DLR has been updated with new CallingConvention: {e.Data}", Message.Level.Info);
-};
-
-l.BeforeUnload += (object sender, DataArgs<Link> e) =>
-{
-    // Do not forget to do something before unloading a library
-};
-
-...
-```
-
 and more ...
 
 
-### [Examples](https://github.com/3F/Conari/wiki/Examples)
+### [✏ Examples](https://github.com/3F/Conari/wiki/Examples)
 
 How about [regXwild](https://github.com/3F/regXwild) (⏱ Superfast ^Advanced wildcards++? on native unmanaged C++) in your C# code?
 
@@ -314,8 +283,8 @@ REGXWILD_API_L bool match
 ## How to get Conari
 
 * NuGet: [![NuGet package](https://img.shields.io/nuget/v/Conari.svg)](https://www.nuget.org/packages/Conari/)
-* [GetNuTool](https://github.com/3F/GetNuTool): `msbuild gnt.core /p:ngpackages="Conari"` or **[gnt](https://3f.github.io/GetNuTool/releases/latest/gnt/)** /p:ngpackages="Conari"
+* [**`gnt`**](https://3f.github.io/GetNuTool/releases/latest/gnt/)` /p:ngpackages="Conari"` [[?](https://github.com/3F/GetNuTool)]
 * [GitHub Releases](https://github.com/3F/Conari/releases) [ [latest](https://github.com/3F/Conari/releases/latest) ]
-* CI builds: [`CI /artifacts`](https://ci.appveyor.com/project/3Fs/conari-wkygr/history) ( [old CI](https://ci.appveyor.com/project/3Fs/conari/history) ) or find `🎲 CI build` on [GitHub Releases](https://github.com/3F/Conari/releases) page.
+* CI builds at your own risk. Find latest binaries in [`/artifacts`](https://ci.appveyor.com/project/3Fs/conari-wkygr/history) page.
 
 *Enjoy!*

@@ -152,15 +152,11 @@ namespace net.r_eg.Conari.PE.Hole
         protected WORD initialize(LONG e_lfanew)
         {
             /* IMAGE_NT_HEADERS */
+            Addresses.IMAGE_NT_HEADERS = Reader.getAddr(e_lfanew);
 
-            Reader.move(e_lfanew, SeekPosition.Initial);
-            Addresses.IMAGE_NT_HEADERS = Reader.CurrentPtr;
-
-            char[] sig = Reader.bytes<char>(4);
-
-            if(sig[0] != 'P' || sig[1] != 'E' || sig[2] != '\0' || sig[3] != '\0') {
-                throw new PECorruptDataException();
-            }
+            Reader.move(e_lfanew, SeekPosition.Initial)
+                .eq('P', 'E', '\0', '\0')
+                .ifFalse(_ => throw new PECorruptDataException());
 
             /* IMAGE_FILE_HEADER */
             Addresses.IMAGE_FILE_HEADER = Reader.CurrentPtr;

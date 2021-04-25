@@ -322,13 +322,12 @@ namespace ConariTest.Native
 
         private static NativeData _rxw_x64_pe_init(ConariL l)
         {
-            var native = ((IntPtr)l).Native();
-
-            native.Reader
+            l.Memory
                 .move(0x3C, SeekPosition.Initial)
-                .move(native.Reader.read<LONG>(), SeekPosition.Initial);
+                .read<LONG>(out LONG e_lfanew)
+                .move(e_lfanew, SeekPosition.Initial);
 
-            return native;
+            return l.Native;
         }
 
         private static void _rxw_x64_nt_header_asserts(dynamic ifh)
