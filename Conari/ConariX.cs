@@ -61,6 +61,18 @@ namespace net.r_eg.Conari
         public static explicit operator VPtr(ConariX l) => l.Library.handle;
 
         /// <summary>
+        /// Wrapper to use both runtime dynamic and compile type <see cref="ConariX"/>.
+        /// </summary>
+        /// <param name="x">Actual instance.</param>
+        /// <param name="d">Use runtime dynamic type.</param>
+        /// <returns>Use compile type instance.</returns>
+        public static ConariX Make(ConariX x, out dynamic d)
+        {
+            d = x ?? throw new ArgumentNullException(nameof(x));
+            return x;
+        }
+
+        /// <summary>
         /// Initialize Conari with specific calling convention.
         /// </summary>
         /// <param name="cfg">The Conari configuration.</param>

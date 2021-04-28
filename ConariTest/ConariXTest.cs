@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using net.r_eg.Conari;
 using net.r_eg.Conari.Core;
 using net.r_eg.Conari.Exceptions;
+using net.r_eg.Conari.Types;
 using Xunit;
 
 namespace ConariTest
@@ -11,6 +12,21 @@ namespace ConariTest
 
     public class ConariXTest
     {
+        [Fact]
+        public void MakeTest1()
+        {
+            using var l = ConariX.Make(new(RXW_X), out dynamic d);
+
+            Assert.NotEmpty(l.PE.Export.Names);
+            Assert.Contains("versionString", l.PE.Export.Names);
+            string ver = d.versionString<CharPtr>();
+            Assert.NotNull(ver);
+
+            Version v = new(ver);
+            Assert.True(v.Major >= 1);
+            Assert.True(v.Minor >= 4);
+        }
+
         [Fact]
         public void loadTest1()
         {

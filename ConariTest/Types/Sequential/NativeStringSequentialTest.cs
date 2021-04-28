@@ -15,7 +15,7 @@ namespace ConariTest.Types.Sequential
         {
             TCharPtr.__Unicode = false;
 
-            using dynamic l = new ConariX(RXW_X64);
+            using dynamic l = new ConariX(RXW_X);
             using var data = new NativeString<TCharPtr>("Hello {p}!", 2);
 
             using NativeString<TCharPtr> filter = new("{p}");

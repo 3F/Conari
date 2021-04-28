@@ -5,6 +5,21 @@
     <RootObjDir>bin\obj\</RootObjDir>
 
     <PathToUnmanagedEmitCalli>..\UnmanagedEmitCalli\src\</PathToUnmanagedEmitCalli>
+
+    <OsUnixLike>false</OsUnixLike>
+    <OsUnixLike Condition="$([MSBuild]::IsOsUnixLike())">true</OsUnixLike>
+
+    <NetStdTFM>netstandard2.0;netstandard2.1</NetStdTFM> <!-- 2.0 is most minimal and hacked -->
+    <NetStdTFM Condition="$(SuppressNetStdTFM) == 'true'"></NetStdTFM>
+
+    <NetCoreTFM>netcoreapp2.1;net5</NetCoreTFM>
+
+    <ConariTFM>net40;net472;$(NetCoreTFM);$(NetStdTFM)</ConariTFM>
+    <ConariTFM Condition="$(OsUnixLike) == 'true'">$(NetCoreTFM);$(NetStdTFM)</ConariTFM>
+
+    <ConariTestTFM>net472;$(NetCoreTFM)</ConariTestTFM>
+    <ConariTestTFM Condition="$(OsUnixLike)=='true'">$(NetCoreTFM)</ConariTestTFM>
+
   </PropertyGroup>
 
   <PropertyGroup>

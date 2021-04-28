@@ -96,6 +96,19 @@ namespace net.r_eg.Conari
         /// </summary>
         public dynamic __vectorcall => _dlrVector.Value;
 
+        /// <summary>
+        /// Wrapper to use both runtime dynamic (using access to <see cref="DLR"/>) 
+        /// and compile type <see cref="ConariL"/>.
+        /// </summary>
+        /// <param name="l">Actual instance.</param>
+        /// <param name="d">Use runtime dynamic type.</param>
+        /// <returns>Use compile type instance.</returns>
+        public static ConariL Make(ConariL l, out dynamic d)
+        {
+            d = (l ?? throw new ArgumentNullException(nameof(l))).DLR;
+            return l;
+        }
+
         public IntPtr _T(string input, int extend) => Strings._T(input, extend);
 
         public IntPtr _T(string input) => Strings._T(input);

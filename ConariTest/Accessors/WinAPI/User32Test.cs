@@ -4,6 +4,10 @@ using net.r_eg.Conari.Accessors.WinAPI;
 using net.r_eg.Conari.Core;
 using Xunit;
 
+#if !NETCORE
+using ConariTest._svc.Extensions;
+#endif
+
 namespace ConariTest.Accessors.WinAPI
 {
     public class User32Test

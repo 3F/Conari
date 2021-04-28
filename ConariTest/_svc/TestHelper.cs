@@ -9,11 +9,17 @@ namespace ConariTest._svc
 {
     internal static class TestHelper
     {
-        public const string UNLIB_DLL = @".\UnLib.dll";
+        public const string UNLIB_DLL = @"..\UnLib.dll";
         public const string STUB_LIB_NAME = "__ThisIsNotRealUserLib";
 
         public const string RXW_X32 = @".\x32\regXwild.dll";
         public const string RXW_X64 = @".\x64\regXwild.dll";
+
+#if TEST_LIB_ARCH32
+        public const string RXW_X = RXW_X32;
+#else
+        public const string RXW_X = RXW_X64;
+#endif
 
         public const string CLLI_TEST = "CLLI-TEST-2301F37A-5F7D-45B7-9AED-ABC3988D953F";
 

@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFrameworks>net40;net472;netstandard2.0;netcoreapp2.1;netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>$(ConariTFM)</TargetFrameworks>
     <RootNamespace>net.r_eg.Conari</RootNamespace>
     <AssemblyName>Conari</AssemblyName>
     <SignAssembly>true</SignAssembly>
@@ -29,15 +29,20 @@
 
         test of regXwild's algorithms [[340x10000 Unicode](https://github.com/3F/regXwild#speed)]
 
-        🔨 Its amazing DLR features
+        🧰 Powerful types
 
         ```
-        using(dynamic l = new ConariX("..."))
-        {
-            // just everything is yours ~
-            l.curl_easy_setopt(curl, 10002, "https://example.com");
-        }
+        using ConariL l = new("regXwild");
+        l._.replace&lt;bool&gt;
+        (
+            l._T("number = 888;", out CharPtr result), 
+            l._T("+??;"), l._T("2034;")
+        ); // result: number = 2034;
         ```
+
+        🔨 Its amazing DLR features
+
+        Conari will generate and adapt everything at runtime! Specially for you!
 
         🔧 The easiest (most ever) access to any data in unmanaged memory
 
@@ -49,7 +54,6 @@
 
         🏄 Most powerful PInvoke and even most convenient use of WinAPI without preparing something
 
-        Conari will generate and adapt everything at runtime! Specially for you!
         For example, below we don't provide neither *user32.ShowWindow()* nor *user32.MessageBoxA(),* even no *kernel32.GetModuleHandleA/W()*
 
         ```
@@ -57,13 +61,6 @@
 
             user32.ShowWindow(0x000A0A28, 3);
             user32.MessageBoxA(0, "Conari in action", "Hello!", 0);
-        ```
-
-        ```
-        dynamic kernel32 = new Kernel32();
-
-            kernel32.GetModuleHandleA&lt;IntPtr&gt;("libcurl-x64");
-            kernel32.GetModuleHandleW&lt;IntPtr&gt;((WCharPtr)ustr);
         ```
 
         🍰 MIT License! Enjoy.
@@ -99,8 +96,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <IsNetCoreFamilyTarget>false</IsNetCoreFamilyTarget>
-    <IsNetCoreFamilyTarget Condition="$(TargetFramework.StartsWith('nets')) Or $(TargetFramework.StartsWith('netc'))">true</IsNetCoreFamilyTarget>
+    <IsNetCoreFamilyTarget>true</IsNetCoreFamilyTarget>
+    <IsNetCoreFamilyTarget Condition="$(TargetFramework.StartsWith('net4')) == 'true'">false</IsNetCoreFamilyTarget>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">

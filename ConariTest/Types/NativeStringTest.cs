@@ -12,7 +12,7 @@ namespace ConariTest.Types
         [Fact]
         public void allocTest1()
         {
-            using dynamic l = new ConariX(RXW_X64);
+            using dynamic l = new ConariX(RXW_X);
             using var data = new NativeString<CharPtr>("Hello {p}!");
 
             Assert.True(data.Owner);
@@ -27,7 +27,7 @@ namespace ConariTest.Types
         [Fact]
         public void allocTest2()
         {
-            using dynamic l = new ConariX(RXW_X64);
+            using dynamic l = new ConariX(RXW_X);
             using var data = new NativeString<CharPtr>(6);
 
             Assert.True(data.Owner);
