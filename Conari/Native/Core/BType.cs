@@ -47,23 +47,14 @@ namespace net.r_eg.Conari.Native.Core
 
         public Field FirstField => Fields?.FirstOrDefault();
 
-        public byte[] FieldsBinary
+        public byte[] FieldsBinary { get
         {
-            get
-            {
-                var ret = new List<byte>();
+            List<byte> ret = new();
+            Fields.ForEach(f => ret.AddRange(f.toBytes()));
+            return ret.ToArray();
+        }}
 
-                foreach(var f in Fields) {
-                    ret.AddRange(f.toBytes());
-                }
-                return ret.ToArray();
-            }
-        }
-
-        public Field getFieldByName(string name)
-        {
-            return Fields.Where(f => f?.name == name).FirstOrDefault();
-        }
+        public Field getFieldByName(string name) => Fields.Where(f => f?.name == name).FirstOrDefault();
 
         /// <summary>
         /// Magic fields. Get.

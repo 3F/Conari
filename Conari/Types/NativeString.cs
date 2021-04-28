@@ -33,7 +33,7 @@ using net.r_eg.Conari.Resources;
 
 namespace net.r_eg.Conari.Types
 {
-    [DebuggerDisplay("{dbgInfo()}")]
+    [DebuggerDisplay("{DbgInfo}")]
     [Serializable]
     public class NativeString<T>: ISerializable, IDisposable
         where T : struct
@@ -302,7 +302,7 @@ namespace net.r_eg.Conari.Types
 
         #region DebuggerDisplay
 
-        private string dbgInfo()
+        private string DbgInfo
             => pointer == IntPtr.Zero ? "null" 
                 : $"{(string)this}    [ at 0x{pointer:x} ({(Owner ? "owner" : "access")}) ]";
 

@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using net.r_eg.Conari.Core;
@@ -37,7 +38,7 @@ namespace net.r_eg.Conari.Native
 {
     using Fields = List<Field>;
 
-    public class NativeData: IDlrAccessor
+    public class NativeData: IDlrAccessor, IChain
     {
         protected Fields map = new();
         protected readonly INativeReader reader;
@@ -53,6 +54,7 @@ namespace net.r_eg.Conari.Native
         /// <summary>
         /// Reset the whole chain. Alias to <see cref="reset(uint)"/> using default value.
         /// </summary>
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public NativeData Zero => reset(0);
 
         /// <summary>
@@ -65,9 +67,18 @@ namespace net.r_eg.Conari.Native
 
         public dynamic _ => Raw._;
 
+        public int Size => meta.ChainSize;
+
+        /// <summary>
+        /// Build a new <see cref="NativeStruct"/> from the current chain.
+        /// </summary>
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        public NativeStruct Struct => new(this);
+
         /// <summary>
         /// Align by max size of existing types without changing of original types.
         /// </summary>
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public NativeData AlignSizeByMax => alignSizeBy(map.Max(m => m.tsize));
 
         /// <summary>

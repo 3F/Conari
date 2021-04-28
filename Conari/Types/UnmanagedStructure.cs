@@ -26,51 +26,33 @@
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using net.r_eg.Conari.Resources;
 
 namespace net.r_eg.Conari.Types
 {
     [DebuggerDisplay("[ {\"0x\" + Pointer.ToString(\"X\")} ] SizeOf: {SizeOf}")]
+    [Obsolete("Use modern " + nameof(NativeStruct))]
     public sealed class UnmanagedStructure: IDisposable
     {
         /// <summary>
-        /// Pointer to unmanaged memory where will placed structure.
+        /// Pointer to allocated unmanaged structure in memory.
         /// </summary>
-        public IntPtr Pointer
-        {
-            get;
-            private set;
-        }
+        public IntPtr Pointer { get; private set; }
 
         /// <summary>
-        /// Who is the owner for allocated structure.
+        /// Who is the owner. True indicates its own allocating.
         /// </summary>
-        public bool Owner
-        {
-            get;
-            private set;
-        }
+        public bool Owner { get; private set; }
 
         /// <summary>
         /// Managed structure.
         /// </summary>
-        public dynamic Managed
-        {
-            get;
-            private set;
-        }
+        public dynamic Managed { get; private set; }
 
-        public int SizeOf
-        {
-            get {
-                return Marshal.SizeOf(Managed);
-            }
-        }
+        public int SizeOf => Marshal.SizeOf(Managed);
 
         [NativeType]
-        public static implicit operator IntPtr(UnmanagedStructure val)
-        {
-            return val.Pointer;
-        }
+        public static implicit operator IntPtr(UnmanagedStructure v) => v.Pointer;
 
         public static object ConvertToManaged(IntPtr ptr, Type type)
         {
@@ -79,19 +61,14 @@ namespace net.r_eg.Conari.Types
 
         public UnmanagedStructure(dynamic obj)
         {
-            if(obj == null) {
-                throw new ArgumentNullException("UnmanagedStructure: object cannot be null.");
-            }
-            Managed = obj;
+            Managed = obj ?? throw new ArgumentNullException(nameof(obj));
 
             alloc();
         }
 
         public UnmanagedStructure(IntPtr ptr, Type type)
         {
-            if(ptr == IntPtr.Zero) {
-                throw new ArgumentException("UnmanagedStructure: pointer must be non-zero.");
-            }
+            if(ptr == IntPtr.Zero) throw new ArgumentOutOfRangeException(Msg.invalid_pointer);
 
             Managed = alloc(ptr, type);
         }
@@ -101,7 +78,6 @@ namespace net.r_eg.Conari.Types
             Pointer = Marshal.AllocHGlobal(SizeOf);
             Owner   = true;
 
-            // copy to unmanaged memory
             Marshal.StructureToPtr(Managed, Pointer, true);
         }
 

@@ -14,7 +14,7 @@ namespace ConariTest.Core
         [Fact]
         public void lxTest1()
         {
-            using ConariL l = new(RXW_X64);
+            using ConariL l = new(gCfgIsolatedRxW);
             Assert.True
             (
                 l._.replace<bool>
@@ -29,7 +29,7 @@ namespace ConariTest.Core
         [Fact]
         public void lxTest2()
         {
-            using dynamic l = new ConariX(RXW_X64);
+            using dynamic l = new ConariX(gCfgIsolatedRxW);
 
             Assert.True(l.replace<bool>((IntPtr)l._T("Hello {p}", out CharPtr result), (IntPtr)l._T("{p}"), (IntPtr)l._T("world!")));
             Assert.Equal("Hello world!", result);
@@ -38,7 +38,7 @@ namespace ConariTest.Core
         [Fact]
         public void allocTest1()
         {
-            using ConariL l = new(RXW_X64);
+            using ConariL l = new(gCfgIsolatedRxW);
             using NativeStringManager<CharPtr> nsm = new();
 
             Assert.True(l._.replace<bool>(nsm._T("Hello {p}", out CharPtr result), nsm._T("{p}"), nsm._T("world!")));

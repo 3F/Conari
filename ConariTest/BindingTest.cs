@@ -951,7 +951,7 @@ namespace ConariTest
             {
                 TVer v = new TVer(5, 0, 1024);
 
-                using(var uv = new UnmanagedStructure(v))
+                using(var uv = new NativeStruct<TVer>(v))
                 {
                     IntPtr ptr = uv;
 

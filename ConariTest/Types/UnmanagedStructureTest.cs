@@ -4,6 +4,7 @@ using Xunit;
 
 namespace ConariTest.Types
 {
+#pragma warning disable CS0618 // Type or member is obsolete.
     public class UnmanagedStructureTest
     {
         [Fact]
@@ -52,6 +53,6 @@ namespace ConariTest.Types
                 new UnmanagedStructure(null)
             );
         }
-        
     }
+#pragma warning restore CS0618 // Type or member is obsolete
 }

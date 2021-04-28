@@ -14,7 +14,7 @@ Conari engine represents most flexible platform for working with unmanaged memor
 
 [![Build history](https://buildstats.info/appveyor/chart/3Fs/conari-wkygr?buildCount=15&includeBuildsFromPullRequest=true&showStats=true)](https://ci.appveyor.com/project/3Fs/conari-wkygr/history)
 
-> 1:[ ***[Quick start](https://github.com/3F/Conari/wiki/Quick-start)*** ] 2:[ [Basic examples for C++ and C#](https://www.youtube.com/watch?v=9Hyg3_WE9Ks) ] 3:[ [Complex types and Strings](https://www.youtube.com/watch?v=QXMj9-8XJnY) ]
+> [ ***[Quick start](https://github.com/3F/Conari/wiki/Quick-start)*** ] [ [Complex types and strings](https://www.youtube.com/watch?v=QXMj9-8XJnY) ]
 > -> { **[Wiki](https://github.com/3F/Conari/wiki)** }
 
 
@@ -23,7 +23,7 @@ Conari engine represents most flexible platform for working with unmanaged memor
 
 ## Why Conari ?
 
-It was designed to be loyal to your needs on the fly.
+It was designed to be loyal to your needs on the fly!
 
 🔍 Easy to start
 
@@ -36,7 +36,7 @@ using ConariL l = new("...");
 Forget about the type conversions and memory management complexities. Because nothing easier than just use it,
 
 ```csharp
-using ConariL l = new("regXwild");
+using ConariL l = new("regXwild.dll");
 l._.replace<bool>
 (
     l._T("number = 888;", out CharPtr result), 
@@ -62,11 +62,43 @@ regXwild via **Conari** v1.3 (DLR) - `EXT`    | ~214ms       | ~226ms          |
 🔨 Its amazing DLR features
 
 ```csharp
-using(dynamic l = new ConariX("..."))
+using dynamic l = new ConariX("...");
+l.<whatever_you_want>(curl, 10002, "https://");
+```
+
+Still not convinced? Here's full workable code example for [regXwild](https://github.com/3F/regXwild):
+
+```csharp
+using var c = ConariL.Make(new("regXwild"), out dynamic l);
+// ready for everything even without configuring
+
+using var u = NativeStruct.Make.f<UIntPtr>("start", "end").Struct;
+/* Hey! We just created a structure like
+[StructLayout(LayoutKind.Sequential)]
+private struct MatchResult
 {
-    // just everything is yours ~
-    l.curl_easy_setopt(curl, 10002, "https://example.com");
+    public UIntPtr start;
+    public UIntPtr end;
 }
+*/
+
+if(l.match<bool>(c._T("n = '888';"), c._T("'*'"), 2/*MATCH_RESULT*/, (IntPtr)u))
+{
+    /* Now we just invoked this
+    REGXWILD_API_L bool match
+    (
+        const rxwtypes::TCHAR* input,
+        const rxwtypes::TCHAR* pattern,
+        rxwtypes::flagcfg_t options,
+        EssRxW::MatchResult* result
+    )
+    */
+    dynamic v = u.Access; // just access the EssRxW::MatchResult* result
+
+    v.start // 4
+    v.end   // 9
+}
+// Yes, a 4 lines and your task is done; Free memory, Free hands.
 ```
 
 🔧 The easiest (most ever) access to any data in unmanaged memory
@@ -146,7 +178,9 @@ We're waiting for your awesome contributions!
 
 ## Take a look closer
 
-**Dynamic features** (**DLR**, *fully automatic way*) when using of *unmanaged* code:
+Conari generally provides two mode,
+
+*Fully automatic* way through its dynamic features (**DLR**). For example, when using the *unmanaged* code:
 
 ```csharp
 var ptr     = d.test<IntPtr>(); //lambda ~ bind<Func<IntPtr>>("test")();
@@ -155,9 +189,9 @@ var codec   = d.avcodec_find_encoder<IntPtr>(AV_CODEC_ID_MP2); //lambda ~ bind<F
               d.create<int>(ref cid, out data); //lambda ~ bind<MyFunc<Guid, object>>("create")(ref cid, out data);
 ```
 
-It does not require the any configuration from you, because Conari will do it **automatically**. *Works perfectly for most popular libraries like: Lua, 7-zip, FFmpeg, ...*
+This (or like) does not require the any configuration from you, because Conari will do it **automatically**.
 
-Custom **Lambda expressions** (*semi-automatic way*) when using of *unmanaged* code:
+*Semi-automatic* way through its custom **lambda expressions**. For example, when using the *unmanaged* code:
 
 ```csharp
 using(var l = new ConariL("Library.dll"))
@@ -167,26 +201,19 @@ using(var l = new ConariL("Library.dll"))
 }
 ```
 
-This also does not require the creation of any additional delegates. Just use `bind<>` methods with additional types and have fun!
+This also does not require neither the creation of any additional delegates nor the configuring something. Just a more control through `l.bind<...>("...")` methods that still make you happy;
 
 ```csharp
-l.bind<...>("function")
-```
-
-```csharp
-// you already may invoke it immediately as above:
+// invoke it immediately
 l.bind<Action<int, string>>("set")(-1, "Hello from Conari !");
 
-// or later:
-var set = l.bind<Action<int, string>>("set");
-...
+// or later
 set(-1, "Hello from Conari !");
 ```
 
 **Native C/C++ structures without declaration** **[[?](https://github.com/3F/Conari/issues/2)]**:
 
 ```csharp
-
 // IMAGE_FILE_HEADER: https://msdn.microsoft.com/en-us/library/windows/desktop/ms680313.aspx
 dynamic ifh = binaryData.Native()
             .t<WORD, WORD>(null, "NumberOfSections")
@@ -241,16 +268,15 @@ using(var l = new ConariL("Library.dll", CallingConvention.StdCall))
 }
 ```
 
-**Exported Variables & Raw access [[?](https://github.com/3F/Conari/issues/7#issuecomment-269123650)]**
+**Exported Variables** [[?](https://github.com/3F/Conari/issues/7#issuecomment-269123650)] & **raw accessing** [[?](https://github.com/3F/Conari/issues/17#issuecomment-716176288)]
 
 ```csharp
-// v1.3+
 l._.ADDR_SPEC // DLR, 0x00001CE8
 l.V.get<UInt32>("ADDR_SPEC"); // lambda, 0x00001CE8
-//v1.0+: Use Provider or ConariL frontend via your custom wrapper.
+std_cin = l.addr("?cin@std@@3V?$basic_istream@DU?$char_traits@D@std@@@1@A");
 ```
 
-**Aliases for exported-functions and variables [[?](https://github.com/3F/Conari/issues/9#issuecomment-273855381)]**
+**Aliases [[?](https://github.com/3F/Conari/issues/9#issuecomment-273855381)]**
 
 ```csharp
 // v1.3+
@@ -261,8 +287,10 @@ l._.getFlag<bool>();
 
 **Additional types**
 
-* TCharPtr, CharPtr, WCharPtr, float_t, int_t, ptrdiff_t, size_t, uint_t,
-* NativeString (+NativeStringManager), UnmanagedStructure,
+* TCharPtr, CharPtr, WCharPtr, float_t, int_t, ptrdiff_t, size_t, uint_t, ...
+* NativeString\<T\> (+NativeStringManager\<T\>) - Fully supports TCharPtr, CharPtr, WCharPtr;
+* NativeStruct - Fully automatic way of working with structures without declarations using NativeData chains;
+* NativeStruct\<T\> - Semi-automatic way of working with structures using CLR types declarations;
 * ...
 
 ```csharp
@@ -273,6 +301,17 @@ string myName += name; // 8 bit C-string and managed string (UTF-16)
 ```csharp
 using var a = new NativeString<WCharPtr>("Hello");
 using var b = a + " world!"; // unmanaged C-string, a Unicode characters
+```
+
+```csharp
+using var u = new NativeStruct<MatchResult>();
+l.match<bool>(
+    c._T("[system]"), c._T("Sys###"), 
+    EngineOptions.F_ICASE | EngineOptions.F_MATCH_RESULT, 
+    (IntPtr)u
+);
+u.Data.start // 1
+u.Data.end   // 7
 ```
 
 and more ...

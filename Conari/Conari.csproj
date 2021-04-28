@@ -23,16 +23,12 @@
 
         ## Why Conari ?
 
-        It was designed to be loyal to your needs on the fly.
-
-        🚀 Awesome speed
-
-        test of regXwild's algorithms [[340x10000 Unicode](https://github.com/3F/regXwild#speed)]
+        It was designed to be loyal to your needs on the fly!
 
         🧰 Powerful types
 
         ```
-        using ConariL l = new("regXwild");
+        using ConariL l = new("regXwild.dll");
         l._.replace&lt;bool&gt;
         (
             l._T("number = 888;", out CharPtr result), 
@@ -63,9 +59,13 @@
             user32.MessageBoxA(0, "Conari in action", "Hello!", 0);
         ```
 
+        🚀 Awesome speed
+
+        test of regXwild's algorithms [[340x10000 Unicode](https://github.com/3F/regXwild#speed)]
+
         🍰 MIT License! Enjoy.
 
-        . . . And more: https://github.com/3F/Conari
+        . . . Read more: https://github.com/3F/Conari
 
         _ _ _ _ _ _
         

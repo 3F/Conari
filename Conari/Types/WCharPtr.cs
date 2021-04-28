@@ -36,7 +36,7 @@ namespace net.r_eg.Conari.Types
     /// <summary>
     /// C-string (\0-terminated) that was based on 16-bit characters.
     /// </summary>
-    [DebuggerDisplay("{dbgInfo()}")]
+    [DebuggerDisplay("{DbgInfo}")]
     [Serializable]
     public struct WCharPtr: ISerializable
     {
@@ -128,7 +128,7 @@ namespace net.r_eg.Conari.Types
 
         #region DebuggerDisplay
 
-        private string dbgInfo()
+        private string DbgInfo
             => pointer == IntPtr.Zero ? "null" 
                 : $"{(string)this}    [ An {StrLength} of a 16-bit characters at 0x{pointer:x} ]";
 

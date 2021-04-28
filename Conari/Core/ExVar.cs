@@ -195,9 +195,9 @@ namespace net.r_eg.Conari.Core
             return ((ILoader)provider).PE.Export.Names/*.Where(p => p.IndexOfAny(new[] { '@' }) == -1)*/;
         }
 
-        public ExVar(IProvider p)
+        public ExVar(IProvider provider)
         {
-            provider = p ?? throw new ArgumentException("Provider cannot be null.");
+            this.provider = provider ?? throw new ArgumentNullException(nameof(provider));
         }
 
         protected dynamic getFieldDLR(Type type, string variable)
