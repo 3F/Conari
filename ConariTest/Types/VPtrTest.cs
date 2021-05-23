@@ -47,6 +47,44 @@ namespace ConariTest.Types
         }
 
         [Fact]
+        public void cmpTest3()
+        {
+            VPtr n = new(new IntPtr(2));
+
+            Assert.True(n > 0);
+            Assert.True(n >= 2);
+            Assert.False(n > 2);
+
+            Assert.False(n < 0);
+            Assert.True(n <= 2);
+            Assert.False(n < 2);
+
+            Assert.True(n == 2);
+            Assert.False(n != 2);
+            Assert.False(n == 0);
+            Assert.True(n != 0);
+        }
+
+        [Fact]
+        public void cmpTest4()
+        {
+            VPtr n = new(2);
+
+            Assert.True(n > 0);
+            Assert.True(n >= 2);
+            Assert.False(n > 2);
+
+            Assert.False(n < 0);
+            Assert.True(n <= 2);
+            Assert.False(n < 2);
+
+            Assert.True(n == 2);
+            Assert.False(n != 2);
+            Assert.False(n == 0);
+            Assert.True(n != 0);
+        }
+
+        [Fact]
         public void incrementTest1()
         {
             VPtr n1 = 145323552783335428;

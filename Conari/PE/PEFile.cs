@@ -61,7 +61,7 @@ namespace net.r_eg.Conari.PE
         {
             if(!disposed)
             {
-                ((NativeStream)qpe.Reader).Dispose();
+                ((NativeStream)qpe.Accessor).Dispose();
                 FileName = null;
 
                 disposed = true;

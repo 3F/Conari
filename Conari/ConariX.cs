@@ -133,7 +133,7 @@ namespace net.r_eg.Conari
 
         public NativeData Native => __l_impl.Native;
 
-        public INativeReader Memory => __l_impl.Memory;
+        public IAccessor Memory => __l_impl.Memory;
 
         public INativeStringManager Strings => __l_impl.Strings;
 

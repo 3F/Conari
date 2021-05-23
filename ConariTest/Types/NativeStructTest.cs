@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using net.r_eg.Conari;
-using net.r_eg.Conari.Native;
 using net.r_eg.Conari.Types;
 using Xunit;
 using static net.r_eg.Conari.Static.Members;
@@ -14,6 +13,44 @@ namespace ConariTest.Types
     {
         [Fact]
         public void allocTest1()
+        {
+            using var c = ConariL.Make(new(gCfgIsolatedRxW), out dynamic l);
+
+            using var u = NativeStruct.Make.f<UIntPtr>("start", "end").Struct;
+
+            Assert.True(l.match<bool>(c._T("0123456"), c._T("234"), EngineOptions.F_MATCH_RESULT, (IntPtr)u));
+
+            dynamic v = u.Access;
+
+            Assert.Equal((UIntPtr)2, v.start);
+            Assert.Equal((UIntPtr)5, v.end);
+
+            Assert.True(l.match<bool>(c._T("0123456"), c._T("1*5"), EngineOptions.F_MATCH_RESULT, (IntPtr)u));
+
+            v = u.Access;
+
+            Assert.Equal((UIntPtr)1, v.start);
+            Assert.Equal((UIntPtr)6, v.end);
+        }
+
+        [Fact]
+        public void allocTest2()
+        {
+            using var c = ConariL.Make(new(gCfgIsolatedRxW), out dynamic l);
+            using var u = new NativeStruct();
+
+            Assert.True(l.match<bool>(c._T("0123456"), c._T("234"), EngineOptions.F_MATCH_RESULT, (IntPtr)u));
+
+            u.Native
+                .f<UIntPtr>("start", "end")
+                .build(out dynamic mres);
+
+            Assert.Equal((UIntPtr)2, mres.start);
+            Assert.Equal((UIntPtr)5, mres.end);
+        }
+
+        [Fact]
+        public void allocTest3()
         {
             using var c = ConariL.Make(new(gCfgIsolatedRxW), out dynamic l);
 
@@ -39,45 +76,7 @@ namespace ConariTest.Types
 
         }
 
-        [Fact]
-        public void allocTest2()
-        {
-            using var c = ConariL.Make(new(gCfgIsolatedRxW), out dynamic l);
-            using var u = new NativeStruct();
-
-            Assert.True(l.match<bool>(c._T("0123456"), c._T("234"), EngineOptions.F_MATCH_RESULT, (IntPtr)u));
-
-            u.Native
-                .f<UIntPtr>("start", "end")
-                .build(out dynamic mres);
-
-            Assert.Equal((UIntPtr)2, mres.start);
-            Assert.Equal((UIntPtr)5, mres.end);
-        }
-
-        [Fact]
-        public void allocTest3()
-        {
-            using var c = ConariL.Make(new(gCfgIsolatedRxW), out dynamic l);
-
-            using var u = NativeStruct.Make.f<UIntPtr>("start", "end").Struct;
-
-            Assert.True(l.match<bool>(c._T("0123456"), c._T("234"), EngineOptions.F_MATCH_RESULT, (IntPtr)u));
-
-            dynamic v = u.Access;
-
-            Assert.Equal((UIntPtr)2, v.start);
-            Assert.Equal((UIntPtr)5, v.end);
-
-            Assert.True(l.match<bool>(c._T("0123456"), c._T("1*5"), EngineOptions.F_MATCH_RESULT, (IntPtr)u));
-
-            v = u.Access;
-
-            Assert.Equal((UIntPtr)1, v.start);
-            Assert.Equal((UIntPtr)6, v.end);
-        }
-
-        #region decl struct
+        #region decl struct way
 
         private static UIntPtr n(nuint v) => v;
 

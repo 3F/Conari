@@ -46,27 +46,18 @@ namespace ConariTest
         [Fact]
         public void loadTest2()
         {
-            new ConariL(new Config("") { LazyLoading = true }).Dispose();
+            using ConariL l = new(new Config(string.Empty) { LazyLoading = true });
 
-            Assert.Throws<ArgumentNullException>(() =>
-                new ConariL("")
-            );
+            Assert.Throws<ArgumentNullException>(() => new ConariL(string.Empty));
         }
 
         [Fact]
         public void funcNameTest1()
         {
-            var l = new ConariL(new Config("") { LazyLoading = true });
+            using ConariL l = new(new Config(string.Empty) { LazyLoading = true });
 
-            Assert.Throws<ArgumentNullException>(() =>
-                l.procName("")
-            );
-
-            Assert.Throws<ArgumentNullException>(() =>
-                l.procName(null)
-            );
-
-            l.Dispose();
+            Assert.Throws<ArgumentNullException>(() => l.procName(string.Empty));
+            Assert.Throws<ArgumentNullException>(() => l.procName(null));
         }
 
         [Fact]

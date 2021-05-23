@@ -38,6 +38,6 @@ namespace net.r_eg.Conari.Core
         /// <summary>
         /// Raw access to unmanaged memory.
         /// </summary>
-        INativeReader Memory { get; }
+        IAccessor Memory { get; }
     }
 }

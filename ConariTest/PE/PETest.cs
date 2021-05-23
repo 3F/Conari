@@ -44,6 +44,8 @@ namespace ConariTest
         [MemberData(nameof(GetPE64obj))]
         public void pe64Theory1(IPE pe, IDisposable obj)
         {
+            using IDisposable _ = obj;
+
             if(pe is PEFile)
             {
                 Assert.Equal(RXW_X64, pe.FileName);
@@ -55,13 +57,14 @@ namespace ConariTest
                 Characteristics.IMAGE_FILE_EXECUTABLE_IMAGE | Characteristics.IMAGE_FILE_LARGE_ADDRESS_AWARE | Characteristics.IMAGE_FILE_DLL,
                 pe.Characteristics
             );
-            obj?.Dispose();
         }
 
         [Theory]
         [MemberData(nameof(GetPE64obj))]
         public void pe64Theory2(IPE pe, IDisposable obj)
         {
+            using IDisposable _ = obj;
+
             Assert.NotNull(pe.Export);
             Assert.NotEmpty(pe.Export.Names);
             Assert.Equal(pe.Export.NameOrdinals.Count(), pe.Export.Names.Count());
@@ -71,7 +74,6 @@ namespace ConariTest
             Assert.True(pe.DExport.AddressOfFunctions != 0);
             Assert.True(pe.DExport.AddressOfNameOrdinals != 0);
             Assert.True(pe.DExport.AddressOfNames != 0);
-            obj?.Dispose();
         }
 
         public static IEnumerable<object[]> GetPE32obj()
@@ -102,6 +104,8 @@ namespace ConariTest
         [MemberData(nameof(GetPE32obj))]
         public void pe32Theory1(IPE pe, IDisposable obj)
         {
+            using IDisposable _ = obj;
+
             if(pe is PEFile)
             {
                 Assert.Equal(RXW_X32, pe.FileName);
@@ -114,13 +118,14 @@ namespace ConariTest
                 Characteristics.IMAGE_FILE_EXECUTABLE_IMAGE | Characteristics.IMAGE_FILE_32BIT_MACHINE | Characteristics.IMAGE_FILE_DLL,
                 pe.Characteristics
             );
-            obj?.Dispose();
         }
 
         [Theory]
         [MemberData(nameof(GetPE32obj))]
         public void pe32Theory2(IPE pe, IDisposable obj)
         {
+            using IDisposable _ = obj;
+
             Assert.NotNull(pe.Export);
             Assert.NotEmpty(pe.Export.Names);
             Assert.Equal(pe.Export.NameOrdinals.Count(), pe.Export.Names.Count());
@@ -130,7 +135,6 @@ namespace ConariTest
             Assert.True(pe.DExport.AddressOfFunctions != 0);
             Assert.True(pe.DExport.AddressOfNameOrdinals != 0);
             Assert.True(pe.DExport.AddressOfNames != 0);
-            obj?.Dispose();
         }
 
         [Fact]

@@ -23,12 +23,12 @@ namespace ConariTest.Native
             using var l = new ConariL(RXW_X64);
 
             var native = ((IntPtr)l).Native();
-            var memory = native.Reader;
+            var memory = native.Access;
 
-            native.Reader.move(0x3C, SeekPosition.Initial);
+            native.Access.move(0x3C, Zone.Initial);
             var e_lfanew = memory.read<LONG>();
 
-            memory.move(e_lfanew, SeekPosition.Initial);
+            memory.move(e_lfanew, Zone.Initial);
             char[] sig = memory.bytes<char>(4);
 
             Assert.Equal('P', sig[0]);
@@ -84,7 +84,7 @@ namespace ConariTest.Native
             using var l = new ConariL(RXW_X64);
             var native = _rxw_x64_pe_init(l);
 
-            IntPtr init = native.Reader.CurrentPtr;
+            IntPtr init = native.Access.CurrentPtr;
             dynamic ifh =
                 native.renew()
                 .t<DWORD>()
@@ -136,9 +136,9 @@ namespace ConariTest.Native
         {
             using var l = new ConariL(RXW_X64);
 
-            l.Native.Reader
-                .move(0x3C, SeekPosition.Initial)
-                .move(l.Memory.read<LONG>(), SeekPosition.Initial);
+            l.Native.Access
+                .move(0x3C, Zone.D)
+                .move(l.Memory.read<LONG>(), Zone.D);
 
             l.Native.renew()
                 .t<DWORD>()
@@ -158,7 +158,7 @@ namespace ConariTest.Native
             using var l = new ConariL(RXW_X64);
             var native = _rxw_x64_pe_init(l);
 
-            VPtr ofs0 = native.Reader.CurrentPtr;
+            VPtr ofs0 = native.Access.CurrentPtr;
 
             dynamic ifh =
                 native.renew()
@@ -168,16 +168,16 @@ namespace ConariTest.Native
                 .align<WORD>(2)
                 .build();
 
-            Assert.Equal(VPtr.MakePtr(24), native.Reader.CurrentPtr - ofs0);
+            Assert.Equal(VPtr.MakePtr(24), native.Access.CurrentPtr - ofs0);
 
-            native.Reader.move(0x6C);
+            native.Access.move(0x6C);
 
             dynamic idd = native.renew(out VPtr ofs1)
                 .t<DWORD>("VirtualAddress")
                 .t<DWORD>("Size")
                 .build();
 
-            Assert.Equal(VPtr.MakePtr(8), native.Reader.CurrentPtr - ofs1);
+            Assert.Equal(VPtr.MakePtr(8), native.Access.CurrentPtr - ofs1);
         }
 
         [Fact]
@@ -196,9 +196,9 @@ namespace ConariTest.Native
                 .t<WORD>("Magic")
                 .build();
 
-            Assert.Equal(VPtr.MakePtr(24), native.Reader.CurrentPtr - ofs0);
+            Assert.Equal(VPtr.MakePtr(24), native.Access.CurrentPtr - ofs0);
 
-            native.Reader.move(0x6C);
+            native.Access.move(0x6C);
 
             dynamic idd = native.renew(out VPtr ofs1)
                 .t<DWORD>("VirtualAddress")
@@ -208,8 +208,8 @@ namespace ConariTest.Native
                 .t<DWORD>("Size")
                 .build();
 
-            Assert.Equal(VPtr.MakePtr(8), native.Reader.CurrentPtr - ofs1);
-            Assert.Equal(VPtr.MakePtr(8), native.Reader.CurrentPtr - ofs1);
+            Assert.Equal(VPtr.MakePtr(8), native.Access.CurrentPtr - ofs1);
+            Assert.Equal(VPtr.MakePtr(8), native.Access.CurrentPtr - ofs1);
         }
         
         [Fact]
@@ -219,9 +219,9 @@ namespace ConariTest.Native
 
             var native = new NativeData(stream);
 
-            native.Reader
-                .move(0x3C, SeekPosition.Initial)
-                .move(native.Reader.read<LONG>(), SeekPosition.Initial);
+            native.Access
+                .move(0x3C, Zone.D)
+                .move(native.Access.read<LONG>(), Zone.Initial);
 
 
             dynamic ifh =
@@ -323,9 +323,9 @@ namespace ConariTest.Native
         private static NativeData _rxw_x64_pe_init(ConariL l)
         {
             l.Memory
-                .move(0x3C, SeekPosition.Initial)
+                .move(0x3C, Zone.Initial)
                 .read<LONG>(out LONG e_lfanew)
-                .move(e_lfanew, SeekPosition.Initial);
+                .move(e_lfanew, Zone.Initial);
 
             return l.Native;
         }

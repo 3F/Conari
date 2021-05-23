@@ -10,6 +10,10 @@ namespace ConariTest.Core
 
     public class ModuleIsolationRecipeTest
     {
+        /// <summary>
+        /// Test succeeds if user isolation has been performed at least once.
+        /// See also <see cref="MtaTest"/>
+        /// </summary>
         [Fact]
         public async void userTest1()
         {
@@ -21,21 +25,31 @@ namespace ConariTest.Core
             };
 
             bool isolated = false;
-            await mtaRun(() => 
+            await MtaRun(() => 
             {
-                using(var l = new ConariX(cfg))
+                if(isolated) return;
+                using dynamic l = new ConariX(cfg);
+
+                if(!l.Library.cancelled)
                 {
-                    if(rcp.Destination != null)
-                    {
-                        cfg.Cts.Cancel();
-                        isolated = true;
-                    }
+                    l.get_True<bool>();
                 }
-            }, cfg);
+
+                if(rcp.Destination != null)
+                {
+                    cfg.Cts.Cancel();
+                    isolated = true;
+                }
+
+            }, cfg, 10_000);
 
             Assert.True(isolated);
         }
 
+        /// <summary>
+        /// Test succeeds if user isolation has been performed at least once.
+        /// See also <see cref="MtaTest"/>
+        /// </summary>
         [Fact]
         public async void userTest2()
         {
@@ -46,18 +60,22 @@ namespace ConariTest.Core
             };
 
             bool cancelled = false;
-            await mtaRun(() => 
+            await MtaRun(() => 
             {
-                using(var l = new ConariX(cfg))
+                if(cancelled) return;
+                using dynamic l = new ConariX(cfg);
+
+                Assert.False(l.Library.isolated);
+                if(l.Library.cancelled)
                 {
-                    Assert.False(l.Library.isolated);
-                    if(l.Library.cancelled)
-                    {
-                        cancelled = true;
-                    }
+                    cancelled = true;
+                }
+                else
+                {
+                    l.get_True<bool>();
                 }
 
-            }, cfg);
+            }, cfg, 10_000);
             Assert.True(cancelled);
         }
 

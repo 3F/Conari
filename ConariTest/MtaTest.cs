@@ -9,12 +9,15 @@ namespace ConariTest
 
     public class MtaTest
     {
+        /// <summary>
+        /// The test is considered successful if there were no collisions during the entire isolation period.
+        /// </summary>
         [Fact]
         public async void mtaTest1()
         {
             IConfig cfg = new Config(UNLIB_DLL, true);
 
-            await mtaRun(() => 
+            await MtaRun(() => 
             {
                 using(dynamic l = new ConariX(cfg))
                 {

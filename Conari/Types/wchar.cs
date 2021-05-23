@@ -23,19 +23,25 @@
  * THE SOFTWARE.
 */
 
-namespace net.r_eg.Conari.Native.Core
-{
-    public interface ILocalReader: INativeReader
-    {
-        /// <summary>
-        /// The length of the readable data.
-        /// </summary>
-        int Length { get; }
+using System;
 
-        /// <summary>
-        /// Extends local data using additional bytes.
-        /// </summary>
-        /// <param name="bytes"></param>
-        void extend(byte[] bytes);
+namespace net.r_eg.Conari.Types
+{
+    /// <summary>
+    /// Wide character type alias.
+    /// </summary>
+    /// <remarks>Note: <see cref="char"/> may point either to <see cref="achar"/> or <see cref="wchar"/>.</remarks>
+    [Serializable]
+    public struct wchar
+    {
+        private readonly char data;
+
+        public static implicit operator char(wchar v) => v.data;
+        public static implicit operator wchar(char v) => new(v);
+
+        public wchar(char input)
+        {
+            data = input;
+        }
     }
 }

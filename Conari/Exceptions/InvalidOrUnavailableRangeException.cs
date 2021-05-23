@@ -24,33 +24,19 @@
 */
 
 using System;
-using System.Text;
 using net.r_eg.Conari.Extension;
-using net.r_eg.Conari.Native;
+using net.r_eg.Conari.Resources;
+using net.r_eg.Conari.Types;
 
 namespace net.r_eg.Conari.Exceptions
 {
     [Serializable]
-    public class AbandonedPointerException: CommonException
+    public class InvalidOrUnavailableRangeException: CommonException
     {
-        public AbandonedPointerException(IntPtr ptr)
-            : base($"Abandoned pointer at 0x{ptr:x}. Dump (hex): {TryDump(ptr)}")
+        public InvalidOrUnavailableRangeException(VPtr address)
+            : base(Msg.Invalid_or_unavailable_range_at_0.Format(address.ToString()))
         {
 
-        }
-
-        protected static string TryDump(IntPtr ptr)
-        {
-            try
-            {
-                StringBuilder sb = new();
-                ptr.Access().bytes(8).ForEach(b => sb.Append($"{b:x2} "));
-                return sb.Append("...").ToString();
-            }
-            catch(Exception) // can't be addressed anymore
-            {
-                return "?<...>";
-            }
         }
     }
 }

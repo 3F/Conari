@@ -24,33 +24,24 @@
 */
 
 using System;
-using System.Text;
 using net.r_eg.Conari.Extension;
-using net.r_eg.Conari.Native;
+using net.r_eg.Conari.Resources;
 
 namespace net.r_eg.Conari.Exceptions
 {
     [Serializable]
-    public class AbandonedPointerException: CommonException
+    public class FailedCheckException: CommonException
     {
-        public AbandonedPointerException(IntPtr ptr)
-            : base($"Abandoned pointer at 0x{ptr:x}. Dump (hex): {TryDump(ptr)}")
+        public FailedCheckException(bool result)
+            : this(Msg.failed_check_result_0.Format($"{result}"))
         {
 
         }
 
-        protected static string TryDump(IntPtr ptr)
+        public FailedCheckException(string message)
+            : base(message)
         {
-            try
-            {
-                StringBuilder sb = new();
-                ptr.Access().bytes(8).ForEach(b => sb.Append($"{b:x2} "));
-                return sb.Append("...").ToString();
-            }
-            catch(Exception) // can't be addressed anymore
-            {
-                return "?<...>";
-            }
+
         }
     }
 }

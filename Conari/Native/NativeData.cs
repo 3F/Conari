@@ -41,7 +41,7 @@ namespace net.r_eg.Conari.Native
     public class NativeData: IDlrAccessor, IChain
     {
         protected Fields map = new();
-        protected readonly INativeReader reader;
+        protected readonly IAccessor accessor;
         protected ChainMode chainMode = ChainMode.Fast;
 
         internal readonly ChainMeta meta = new();
@@ -49,7 +49,7 @@ namespace net.r_eg.Conari.Native
         /// <summary>
         /// Access raw-data from the current chain to final build and other use.
         /// </summary>
-        public Raw Raw => new(reader, map, meta);
+        public Raw Raw => new(accessor, map, meta);
 
         /// <summary>
         /// Reset the whole chain. Alias to <see cref="reset(uint)"/> using default value.
@@ -58,10 +58,10 @@ namespace net.r_eg.Conari.Native
         public NativeData Zero => reset(0);
 
         /// <summary>
-        /// Access to the data via <see cref="INativeReader"/> implementations.
+        /// Access to the data via <see cref="IAccessor"/> implementations.
         /// Requires active pointer. Otherwise see <see cref="extend"/> method to continue the chain with bytes.
         /// </summary>
-        public INativeReader Reader => reader;
+        public IAccessor Access => accessor;
 
         public dynamic DLR => Raw.DLR;
 
@@ -221,7 +221,7 @@ namespace net.r_eg.Conari.Native
             if(meta.FlaggedChainSize > totalChainSize) {
                 meta.resetFlaggedChainSize();
             }
-            reader.resetRegionPtr();
+            accessor.resetRegionPtr();
 
             meta.updateSize(totalChainSize, ignoreFlagged: true);
             return this;
@@ -232,12 +232,12 @@ namespace net.r_eg.Conari.Native
         /// </summary>
         /// <param name="bytes"></param>
         /// <returns></returns>
-        public NativeData extend(byte[] bytes)
+        public NativeData extend(params byte[] bytes)
         {
             if(bytes == null) throw new ArgumentNullException(nameof(bytes));
-            if(reader is not LocalReader) throw new NotSupportedException($"Current chain was initialized as a `{reader}` but this requires {nameof(LocalReader)} based reader");
+            if(accessor is not LocalContent) throw new NotSupportedException($"Current chain was initialized as a `{accessor}` but this requires {nameof(LocalContent)} based accessor");
 
-            ((ILocalReader)reader).extend(bytes);
+            ((ILocalContent)accessor).extend(bytes);
             return this;
         }
 
@@ -253,28 +253,28 @@ namespace net.r_eg.Conari.Native
         }
 
         /// <summary>
-        /// An additional way to start the chain with specific <see cref="SeekPosition"/>.
+        /// An additional way to start the chain with specific <see cref="Zone"/>.
         /// </summary>
         /// <param name="seek"></param>
-        public NativeData renew(SeekPosition seek = SeekPosition.Current)
+        public NativeData renew(Zone seek = Zone.Current)
         {
             switch(seek)
             {
-                case SeekPosition.Current:  { reader.shiftRegionPtr(); break; }
-                case SeekPosition.Region:   { reader.resetRegionPtr(); break; }
-                case SeekPosition.Initial:  { reader.resetPtr(); break; }
+                case Zone.Current:  { accessor.shiftRegionPtr(); break; }
+                case Zone.Region:   { accessor.resetRegionPtr(); break; }
+                case Zone.Initial:  { accessor.resetPtr(); break; }
                 default: throw new NotImplementedException();
             }
             return reset();
         }
 
-        /// <inheritdoc cref="renew(SeekPosition)"/>
+        /// <inheritdoc cref="renew(Zone)"/>
         /// <param name="position">Returns current position after renew chain.</param>
         /// <param name="seek"></param>
-        public NativeData renew(out VPtr position, SeekPosition seek = SeekPosition.Current)
+        public NativeData renew(out VPtr position, Zone seek = Zone.Current)
         {
-            renew();
-            position = Reader.CurrentPtr;
+            renew(seek);
+            position = Access.CurrentPtr;
             return this;
         }
 
@@ -312,7 +312,7 @@ namespace net.r_eg.Conari.Native
         /// <param name="addr">Intended address in memory to the current data in the chain.</param>
         public NativeData region(out VPtr addr)
         {
-            addr = reader.getPtrFrom(meta.ChainSize);
+            addr = accessor.getPtrFrom(meta.ChainSize);
             return region();
         }
 
@@ -364,10 +364,10 @@ namespace net.r_eg.Conari.Native
         public NativeData t<T, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31>(params string[] names) { return _a(track(names, typeof(T), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13), typeof(T14), typeof(T15), typeof(T16), typeof(T17), typeof(T18), typeof(T19), typeof(T20), typeof(T21), typeof(T22), typeof(T23), typeof(T24), typeof(T25), typeof(T26), typeof(T27), typeof(T28), typeof(T29), typeof(T30), typeof(T31))); }
         public NativeData t<T, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32>(params string[] names) { return _a(track(names, typeof(T), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13), typeof(T14), typeof(T15), typeof(T16), typeof(T17), typeof(T18), typeof(T19), typeof(T20), typeof(T21), typeof(T22), typeof(T23), typeof(T24), typeof(T25), typeof(T26), typeof(T27), typeof(T28), typeof(T29), typeof(T30), typeof(T31), typeof(T32))); }
 
-        public static explicit operator Memory(NativeData v) => (Memory)v.reader;
-        public static explicit operator LocalReader(NativeData v) => (LocalReader)v.reader;
-        public static explicit operator NativeStream(NativeData v) => (NativeStream)v.reader;
-        public static implicit operator VPtr(NativeData v) => v.reader.CurrentPtr;
+        public static explicit operator Memory(NativeData v) => (Memory)v.accessor;
+        public static explicit operator LocalContent(NativeData v) => (LocalContent)v.accessor;
+        public static explicit operator NativeStream(NativeData v) => (NativeStream)v.accessor;
+        public static implicit operator VPtr(NativeData v) => v.accessor.CurrentPtr;
 
         /// <param name="ptr">pointer to data structure.</param>
         public NativeData(IntPtr ptr)
@@ -376,15 +376,15 @@ namespace net.r_eg.Conari.Native
 
         }
 
-        public NativeData(INativeReader reader)
+        public NativeData(IAccessor accessor)
         {
-            this.reader = reader ?? throw new ArgumentNullException(nameof(reader));
-            reader.shiftRegionPtr();
+            this.accessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
+            accessor.shiftRegionPtr();
         }
 
         /// <param name="bytes">local raw data.</param>
         public NativeData(byte[] bytes)
-            : this(new LocalReader(bytes))
+            : this(new LocalContent(bytes))
         {
 
         }
@@ -467,7 +467,7 @@ namespace net.r_eg.Conari.Native
             return;
         }
 
-        private NativeData _a(int len)
+        private NativeData _a(int _)
         {
             // ...
             return this;

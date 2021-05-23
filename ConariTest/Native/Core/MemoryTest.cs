@@ -4,26 +4,69 @@ using net.r_eg.Conari;
 using net.r_eg.Conari.Exceptions;
 using net.r_eg.Conari.Native;
 using net.r_eg.Conari.Native.Core;
+using net.r_eg.Conari.PE.WinNT;
 using net.r_eg.Conari.Types;
 using Xunit;
 
 namespace ConariTest.Native.Core
 {
+    using DWORD = UInt32;
+    using LONG  = Int32;
+    using WORD  = UInt16;
     using static _svc.TestHelper;
-    using LONG = Int32;
 
     public class MemoryTest
     {
+        [Fact]
+        public void peMemNativeChainTest1()
+        {
+            using ConariL l = new(RXW_X64);
+
+            l.Memory
+            .move(0x3C, Zone.D)
+            .read(out LONG e_lfanew)
+            .move(e_lfanew, Zone.D)
+            .eq('P', 'E', '\0', '\0')
+            .ifFalse(_ => throw new PECorruptDataException())
+            .Native()
+            .f<WORD>("Machine", "NumberOfSections")
+            .align<DWORD>(3)
+            .t<WORD, WORD>("SizeOfOptionalHeader", "Characteristics")
+            .region()
+            .t<WORD>("Magic") // start IMAGE_OPTIONAL_HEADER offset 0 (0x108)
+            .build(out dynamic ifh)
+            .Access
+            .move(ifh.SizeOfOptionalHeader == 0xF0 ? 0x6C : 0x5C)
+            .read(out DWORD NumberOfRvaAndSizes)
+            .Native() // DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT]
+            .t<DWORD>("VirtualAddress")
+            .t<DWORD>("Size")
+            .build(out dynamic idd)
+            .Access.move(8 * (NumberOfRvaAndSizes - 1));
+
+            Assert.Equal(6, ifh.NumberOfSections);
+            Assert.Equal
+            (
+                Characteristics.IMAGE_FILE_LARGE_ADDRESS_AWARE
+                    | Characteristics.IMAGE_FILE_DLL
+                    | Characteristics.IMAGE_FILE_EXECUTABLE_IMAGE,
+                (Characteristics)ifh.Characteristics
+            );
+            Assert.Equal(MachineTypes.IMAGE_FILE_MACHINE_AMD64, (MachineTypes)ifh.Machine);
+            Assert.Equal(Magic.PE64, (Magic)ifh.Magic);
+            Assert.Equal(0xF0, ifh.SizeOfOptionalHeader);
+        }
+
         [Fact]
         public void peMemTest1()
         {
             using var l = new ConariL(RXW_X64);
             Memory memory = new((IntPtr)l);
 
-            memory.move(0x3C, SeekPosition.Initial);
+            memory.move(0x3C, Zone.Initial);
             var e_lfanew = memory.read<LONG>();
 
-            memory.move(e_lfanew, SeekPosition.Initial);
+            memory.move(e_lfanew, Zone.Initial);
             char[] sig = memory.bytes<char>(4);
 
             Assert.Equal('P', sig[0]);
@@ -42,9 +85,9 @@ namespace ConariTest.Native.Core
 
             Assert.Equal((VPtr)l, memory.CurrentPtr);
 
-            Assert.Equal(native.Reader.CurrentPtr, memory.CurrentPtr);
-            Assert.Equal(native.Reader.InitialPtr, memory.InitialPtr);
-            Assert.Equal(native.Reader.RegionPtr, memory.RegionPtr);
+            Assert.Equal(native.Access.CurrentPtr, memory.CurrentPtr);
+            Assert.Equal(native.Access.InitialPtr, memory.InitialPtr);
+            Assert.Equal(native.Access.RegionPtr, memory.RegionPtr);
         }
 
         [Fact]
@@ -100,7 +143,7 @@ namespace ConariTest.Native.Core
             Memory memory = new(alloc.ptr);
 
             Assert.Equal(0x30, memory.readByte());
-            Assert.Equal('1', memory.readChar());
+            Assert.Equal('1', memory.readAChar());
 
             VPtr ptr = memory.CurrentPtr;
             Assert.Equal(ptr, memory.shiftRegionPtr());
@@ -126,7 +169,7 @@ namespace ConariTest.Native.Core
 
             memory.upPtr(-4);
             memory.upPtr(6);
-            memory.move(2, SeekPosition.Current);
+            memory.move(2, Zone.V);
             Assert.Equal(-109, memory.readSByte());
 
             memory.resetRegionPtr();
@@ -232,9 +275,9 @@ namespace ConariTest.Native.Core
             Assert.True
             (
                 l.Memory
-                .move(0x3C, SeekPosition.Initial)
+                .move(0x3C, Zone.D)
                 .read<LONG>(out LONG e_lfanew)
-                .move(e_lfanew, SeekPosition.Initial)
+                .move(e_lfanew, Zone.D)
                 .eq('P').eq('E').eq('\0').eq('\0')
                 .check()
             );
@@ -242,7 +285,7 @@ namespace ConariTest.Native.Core
             Assert.False
             (
                 l.Memory
-                .move(e_lfanew, SeekPosition.Initial)
+                .move(e_lfanew, Zone.Initial)
                 .eq('M').eq('Z')
                 .check()
             );
@@ -250,7 +293,7 @@ namespace ConariTest.Native.Core
             Assert.False
             (
                 l.Memory
-                .rewind(SeekPosition.Region)
+                .rewind(Zone.Region)
                 .eq('P').eq('Z').eq('\0').eq('\0')
                 .check()
             );
@@ -267,7 +310,7 @@ namespace ConariTest.Native.Core
                 .@goto(l.PE.Addresses.IMAGE_NT_HEADERS)
                 .eq('P').eq('E').eq('\0').eq('\0')
                 .ifFalse(_ => throw new PECorruptDataException())
-                .rewind(SeekPosition.Region)
+                .rewind(Zone.U)
                 .eq('P')
                 .eq('Z')
                 .eq('\0')
@@ -278,7 +321,7 @@ namespace ConariTest.Native.Core
             Assert.Throws<PECorruptDataException>
             (() =>
                 l.Memory
-                .rewind(SeekPosition.Region)
+                .rewind(Zone.Region)
                 .eq('P').eq('Z').eq('\0').eq('\0')
                 .ifFalse(_ => throw new PECorruptDataException())
             );
@@ -292,9 +335,9 @@ namespace ConariTest.Native.Core
             Assert.True
             (
                 l.Memory
-                .move(0x3C, SeekPosition.Initial)
+                .move(0x3C, Zone.Initial)
                 .read<LONG>(out LONG e_lfanew)
-                .move(e_lfanew, SeekPosition.Initial)
+                .move(e_lfanew, Zone.D)
                 .eq('M').eq('Z')
                 .or()
                 .eq('P').eq('E').eq('\0').eq('\0')
@@ -304,7 +347,7 @@ namespace ConariTest.Native.Core
             Assert.False
             (
                 l.Memory
-                .move(e_lfanew, SeekPosition.Initial)
+                .move(e_lfanew, Zone.D)
                 .eq('M')
                 .eq('Z')
                 .eq('P')
@@ -317,7 +360,7 @@ namespace ConariTest.Native.Core
             Assert.True
             (
                 l.Memory
-                .move(e_lfanew, SeekPosition.Initial)
+                .move(e_lfanew, Zone.Initial)
                 .check()
             );
         }
@@ -365,7 +408,7 @@ namespace ConariTest.Native.Core
             Assert.Throws<PECorruptDataException>
             (() =>
                 l.Memory
-                .rewind(SeekPosition.Region)
+                .rewind(Zone.Region)
                 .eq('M').eq('Z').eq('P').eq('Z').eq('\0').eq('\0')
                 .ifFalse(_ => throw new PECorruptDataException())
             );
@@ -390,7 +433,7 @@ namespace ConariTest.Native.Core
                 .@goto(l.PE.Addresses.IMAGE_NT_HEADERS)
                 .eq('P', 'E', '\0', '\0')
                 .ifFalse(_ => throw new PECorruptDataException())
-                .rewind(SeekPosition.Region)
+                .rewind(Zone.U)
                 .eq('P')
                 .eq('Z')
                 .eq('\0')
@@ -438,6 +481,28 @@ namespace ConariTest.Native.Core
         }
 
         [Fact]
+        public void peEqFailedTest1()
+        {
+            using var l = new ConariL(RXW_X64);
+
+            Assert.Throws<FailedCheckException>
+            (() =>
+                l.Memory
+                .@goto(l.PE.Addresses.IMAGE_NT_HEADERS)
+                .eq('P').eq('E').eq('\0').eq('\0')
+                .failed(when: true)
+            );
+
+            Assert.Throws<FailedCheckException>
+            (() =>
+                l.Memory
+                .@goto(l.PE.Addresses.IMAGE_NT_HEADERS)
+                .eq('E').eq('P').eq('\0').eq('\0')
+                .failed(when: false)
+            );
+        }
+
+        [Fact]
         public void charBitsTest1()
         {
             using var alloc = new Allocator(new byte[] { 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39 });
@@ -465,16 +530,16 @@ namespace ConariTest.Native.Core
             Memory memory = new(alloc.ptr);
 
             Assert.Equal('㄰', memory.readWChar());
-            Assert.Equal('2', memory.readTChar());
-            Assert.Equal('㐳', memory.readTChar(CharType.TwoByte));
-            Assert.Equal('5', memory.readTChar(CharType.OneByte));
+            Assert.Equal('2', memory.readChar());
+            Assert.Equal('㐳', memory.readChar(CharType.TwoByte));
+            Assert.Equal('5', memory.readChar(CharType.OneByte));
 
             memory.set(CharType.Unicode);
-            Assert.Equal('6', memory.readChar());
-            Assert.Equal('㠷', memory.readTChar());
+            Assert.Equal('6', memory.readAChar());
+            Assert.Equal('㠷', memory.readChar());
 
             memory.set(CharType.Ascii);
-            Assert.Equal('9', memory.readTChar());
+            Assert.Equal('9', memory.readChar());
         }
     }
 }

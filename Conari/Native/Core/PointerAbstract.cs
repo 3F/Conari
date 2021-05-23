@@ -23,11 +23,14 @@
  * THE SOFTWARE.
 */
 
+using System;
+using System.Runtime.Serialization;
 using net.r_eg.Conari.Types;
 
 namespace net.r_eg.Conari.Native.Core
 {
-    public abstract class PointerAbstract: IPointer
+    [Serializable]
+    public abstract class PointerAbstract: IPointer, ISerializable
     {
         private readonly VPtr initial;
         private VPtr region;
@@ -37,6 +40,8 @@ namespace net.r_eg.Conari.Native.Core
         public VPtr InitialPtr => initial;
 
         public VPtr RegionPtr => region;
+
+        public static implicit operator VPtr(PointerAbstract v) => v.CurrentPtr;
 
         public VPtr resetPtr() => region = CurrentPtr = InitialPtr;
 
@@ -57,7 +62,13 @@ namespace net.r_eg.Conari.Native.Core
 
         public VPtr upPtr(long offset = 1) => CurrentPtr += offset;
 
-        public static implicit operator VPtr(PointerAbstract v) => v.CurrentPtr;
+        public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            if(info == null) throw new ArgumentNullException(nameof(info));
+
+            info.AddValue(nameof(initial), initial);
+            info.AddValue(nameof(region), region);
+        }
 
         protected PointerAbstract(VPtr ptr)
         {

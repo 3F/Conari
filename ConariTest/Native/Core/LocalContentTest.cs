@@ -1,17 +1,18 @@
 ﻿using System;
+using net.r_eg.Conari.Exceptions;
 using net.r_eg.Conari.Native;
 using net.r_eg.Conari.Native.Core;
 using Xunit;
 
 namespace ConariTest.Native.Core
 {
-    public class LocalReaderTest
+    public class LocalContentTest
     {
         [Fact]
         public void charBitsTest1()
         {
             new byte[] { 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39 }
-            .Native().Reader
+            .Access()
             .eq('0')
             .eq('1')
             .set(CharType.TwoByte)
@@ -30,19 +31,19 @@ namespace ConariTest.Native.Core
         public void charBitsTest2()
         {
             byte[] data = { 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39 };
-            INativeReader reader = data.Native().Reader;
+            IAccessor acs = data.Native().Access;
 
-            Assert.Equal('㄰', reader.readWChar());
-            Assert.Equal('2', reader.readTChar());
-            Assert.Equal('㐳', reader.readTChar(CharType.TwoByte));
-            Assert.Equal('5', reader.readTChar(CharType.OneByte));
+            Assert.Equal('㄰', acs.readWChar());
+            Assert.Equal('2', acs.readChar());
+            Assert.Equal('㐳', acs.readChar(CharType.TwoByte));
+            Assert.Equal('5', acs.readChar(CharType.OneByte));
 
-            reader.set(CharType.Unicode);
-            Assert.Equal('6', reader.readChar());
-            Assert.Equal('㠷', reader.readTChar());
+            acs.set(CharType.Unicode);
+            Assert.Equal('6', acs.readAChar());
+            Assert.Equal('㠷', acs.readChar());
 
-            reader.set(CharType.Ascii);
-            Assert.Equal('9', reader.readTChar());
+            acs.set(CharType.Ascii);
+            Assert.Equal('9', acs.readChar());
         }
 
         [Fact]
@@ -52,12 +53,23 @@ namespace ConariTest.Native.Core
 
             Assert.True
             (
-                seq.Native().Reader
+                seq.Access()
                 .eq("MZ\0".ToCharArray())
                 .ifFalse(_ => throw new ArgumentException())
                 .eq("PE\0\0".ToCharArray())
                 .check()
             );
+        }
+
+        [Fact]
+        public void ctorTest1()
+        {
+            Assert.Throws<ArgumentNullException>(() => new LocalContent(null));
+
+            Assert.Throws<InvalidOrUnavailableRangeException>(() => new LocalContent().readInt32());
+            Assert.Throws<InvalidOrUnavailableRangeException>(() => new LocalContent(4).readInt16());
+
+            Assert.Equal(1026, new LocalContent(2, 4).readInt16());
         }
     }
 }

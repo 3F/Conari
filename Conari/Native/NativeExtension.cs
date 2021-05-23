@@ -31,18 +31,32 @@ namespace net.r_eg.Conari.Native
     public static class NativeExtension
     {
         /// <summary>
-        /// Initialize <see cref="NativeData"/> via pointer.
+        /// Accessing data via <see cref="Memory"/>.
         /// </summary>
-        /// <param name="ptr">Some region.</param>
+        /// <param name="pointer">Some region.</param>
         /// <returns></returns>
-        public static NativeData Native(this IntPtr ptr) => new(ptr);
+        public static IAccessor Access(this IntPtr pointer) => new Memory(pointer);
 
         /// <summary>
-        /// Initialize <see cref="NativeData"/> via <see cref="INativeReader"/> implementation.
+        /// Accessing data via <see cref="LocalContent"/>.
         /// </summary>
-        /// <param name="reader"></param>
+        /// <param name="bytes">Some local raw data.</param>
         /// <returns></returns>
-        public static NativeData Native(this INativeReader reader) => new(reader);
+        public static IAccessor Access(this byte[] bytes) => new LocalContent(bytes);
+
+        /// <summary>
+        /// Initialize <see cref="NativeData"/> via pointer.
+        /// </summary>
+        /// <param name="pointer">Some region.</param>
+        /// <returns></returns>
+        public static NativeData Native(this IntPtr pointer) => new(pointer);
+
+        /// <summary>
+        /// Initialize <see cref="NativeData"/> via <see cref="IAccessor"/> implementation.
+        /// </summary>
+        /// <param name="accessor"></param>
+        /// <returns></returns>
+        public static NativeData Native(this IAccessor accessor) => new(accessor);
 
         /// <summary>
         /// Initialize <see cref="NativeData"/> via local bytes sequence.
@@ -52,11 +66,30 @@ namespace net.r_eg.Conari.Native
         public static NativeData Native(this byte[] bytes) => new(bytes);
 
         /// <summary>
-        /// Alias to `NativeData.SizeOf ...`
-        /// Gets size of selected type in bytes that must be considered as unmanaged type.
+        /// Get the size in bytes of the selected managed type to be treated as an unmanaged.
         /// </summary>
+        /// <remarks>Alias to <see cref="NativeData.SizeOf(Type)"/>.</remarks>
         /// <param name="type"></param>
-        /// <returns></returns>
+        /// <param name="length">Length of elements.</param>
+        public static int NativeSize(this Type type, int length) => NativeSize(type) * Math.Max(0, length);
+
+        /// <inheritdoc cref="NativeSize(Type, int)"/>
         public static int NativeSize(this Type type) => NativeData.SizeOf(type);
+
+        /// <summary>
+        /// Get the size in bytes of the selected managed object to be stored as an unmanaged.
+        /// </summary>
+        /// <param name="input">Input managed data. Can be array.</param>
+        public static int NativeSize(this object input)
+        {
+            if(input == null) return 0;
+
+            Type t = input.GetType();
+            if(t.IsArray)
+            {
+                return t.GetElementType().NativeSize() * ((Array)input).Length;
+            }
+            return t.NativeSize();
+        }
     }
 }

@@ -56,17 +56,10 @@ namespace ConariTest
         [Fact]
         public void funcNameTest1()
         {
-            dynamic l = new ConariX(new Config("") { LazyLoading = true });
+            using dynamic l = new ConariX(new Config(string.Empty) { LazyLoading = true });
 
-            Assert.Throws<ArgumentNullException>(() =>
-                l.procName("")
-            );
-
-            Assert.Throws<ArgumentNullException>(() =>
-                l.procName(null)
-            );
-
-            ((IDisposable)l).Dispose();
+            Assert.Throws<ArgumentNullException>(() => l.procName(string.Empty));
+            Assert.Throws<ArgumentNullException>(() => l.procName(null));
         }
 
         [Fact]

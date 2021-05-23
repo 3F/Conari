@@ -35,8 +35,11 @@ namespace net.r_eg.Conari.Static
         /// </summary>
         public static bool Is64bit => IntPtr.Size == sizeof(Int64);
 
-        /// <inheritdoc cref="NativeData.SizeOf(Type)"/>
-        public static int SizeOf<T>() => NativeData.SizeOf(typeof(T));
+        /// <inheritdoc cref="NativeExtension.NativeSize(Type)"/>
+        public static int SizeOf<T>() => typeof(T).NativeSize();
+
+        /// <inheritdoc cref="NativeExtension.NativeSize(Type, int)"/>
+        public static int SizeOf<T>(int length) => typeof(T).NativeSize(length);
 
 #if NET40
 

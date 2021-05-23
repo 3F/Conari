@@ -24,54 +24,44 @@
 */
 
 using System;
-using System.IO;
-using net.r_eg.Conari.Resources;
+using System.Linq;
+using net.r_eg.Conari.Exceptions;
 using net.r_eg.Conari.Types;
 
 namespace net.r_eg.Conari.Native.Core
 {
     using static Static.Members;
 
-    public class NativeStream: AccessorAbstract, IPointer, IAccessor, IDisposable
+    public class LocalContent: AccessorAbstract, IPointer, IAccessor, ILocalContent
     {
-        protected readonly BinaryReader stream;
-        private VPtr currentPtr;
+        protected byte[] data;
 
-        public override VPtr CurrentPtr
-        {
-            get => currentPtr;
-            set
-            {
-                currentPtr = value;
+        public int Length => data.Length;
 
-                if(stream == null) return; // base .ctor will initialize property before user stream
-                if(stream.BaseStream == null) throw new EndOfStreamException(Msg.stream_disposed);
-
-                stream.BaseStream.Position = value;
-            }
-        }
+        public override VPtr CurrentPtr { get; set; }
 
         public override UIntPtr readUIntPtr() => new(Is64bit ? readUInt64() : readUInt32());
 
         public override IntPtr readIntPtr() => new(Is64bit ? readInt64() : readInt32());
 
-        public override UInt64 readUInt64() => atomicR(_ => stream.ReadUInt64());
+        public override UInt64 readUInt64() => BitConverter.ToUInt64(bytes(8), 0);
 
-        public override Int64 readInt64() => atomicR(_ => stream.ReadInt64());
+        public override Int64 readInt64() => BitConverter.ToInt64(bytes(8), 0);
 
-        public override UInt32 readUInt32() => atomicR(_ => stream.ReadUInt32());
+        public override UInt32 readUInt32() => BitConverter.ToUInt32(bytes(4), 0);
 
-        public override Int32 readInt32() => atomicR(_ => stream.ReadInt32());
+        public override Int32 readInt32() => BitConverter.ToInt32(bytes(4), 0);
 
-        public override UInt16 readUInt16() => atomicR(_ => stream.ReadUInt16());
+        public override UInt16 readUInt16() => BitConverter.ToUInt16(bytes(2), 0);
 
-        public override Int16 readInt16() => atomicR(_ => stream.ReadInt16());
+        public override Int16 readInt16() => BitConverter.ToInt16(bytes(2), 0);
 
-        public override byte readByte() => atomicR(_ => stream.ReadByte());
+        public override byte readByte() => checkRange().atomicR(_ => data[CurrentPtr]);
 
-        public override sbyte readSByte() => atomicR(_ => stream.ReadSByte());
+        public override sbyte readSByte() => unchecked((sbyte)readByte());
 
-        public override IAccessor writeByte(byte input) => atomicW<byte>(_ => writeToStream(input));
+        public override IAccessor writeByte(byte input)
+            => checkRange().atomicW<byte>(_ => { data[CurrentPtr] = input; });
 
         public override IAccessor writeSByte(sbyte input) => writeByte(unchecked((byte)input));
 
@@ -93,42 +83,21 @@ namespace net.r_eg.Conari.Native.Core
         public override IAccessor writeUIntPtr(UIntPtr input)
             => write(BitConverter.GetBytes(Is64bit ? input.ToUInt64() : input.ToUInt32()));
 
-        public NativeStream(Stream stream)
+        public void extend(params byte[] bytes)
+        {
+            if(bytes != null) data = data.Concat(bytes).ToArray();
+        }
+
+        public LocalContent(params byte[] data)
             : base(VPtr.ZeroLong)
         {
-            if(stream == null) throw new ArgumentNullException(nameof(stream));
-            if(!stream.CanSeek || !stream.CanRead) throw new ArgumentException($"{nameof(stream)} must support seeking and reading");
-
-            this.stream = new BinaryReader(stream);
-            this.stream.BaseStream.Position = CurrentPtr; // because the first call from the base class is out of sync due to abstract impl
+            this.data = data ?? throw new ArgumentNullException(nameof(data));
         }
 
-        protected virtual IAccessor writeToStream(byte data)
+        protected virtual LocalContent checkRange()
         {
-            if(!stream.BaseStream.CanWrite) throw new NotSupportedException(Msg.stream_cant_write);
-            stream.BaseStream.WriteByte(data);
+            if(CurrentPtr < 0 || CurrentPtr >= data.Length) throw new InvalidOrUnavailableRangeException(CurrentPtr);
             return this;
         }
-
-        #region IDisposable
-
-        private bool disposed;
-
-        protected virtual void Dispose(bool _)
-        {
-            if(!disposed)
-            {
-                stream.Dispose();
-                disposed = true;
-            }
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        #endregion
     }
 }

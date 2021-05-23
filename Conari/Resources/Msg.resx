@@ -129,8 +129,14 @@
   <data name="data_0_beyond_allocated_1" xml:space="preserve">
     <value>The new data ({0}) extend beyond the allocated space ({1})</value>
   </data>
+  <data name="failed_check_result_0" xml:space="preserve">
+    <value>Failed check. The result is `{0}`.</value>
+  </data>
   <data name="field_0_defined_mode_1" xml:space="preserve">
     <value>Field `{0}` is already defined in the chain. Reset/renew/or use other mode instead of `{1}`.</value>
+  </data>
+  <data name="Invalid_or_unavailable_range_at_0" xml:space="preserve">
+    <value>Invalid or unavailable range at {0}.</value>
   </data>
   <data name="invalid_pointer" xml:space="preserve">
     <value>Invalid pointer</value>
@@ -143,6 +149,12 @@
   </data>
   <data name="only_0_supported_yet" xml:space="preserve">
     <value>Only {0} are supported yet.</value>
+  </data>
+  <data name="stream_cant_write" xml:space="preserve">
+    <value>Stream does not support writing.</value>
+  </data>
+  <data name="stream_disposed" xml:space="preserve">
+    <value>The used stream was unexpectedly disposed and can no longer be used.</value>
   </data>
   <data name="SyncLimit_0" xml:space="preserve">
     <value>Sync wait limit reached: {0}</value>

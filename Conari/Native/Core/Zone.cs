@@ -24,33 +24,34 @@
 */
 
 using System;
-using System.Text;
-using net.r_eg.Conari.Extension;
-using net.r_eg.Conari.Native;
 
-namespace net.r_eg.Conari.Exceptions
+namespace net.r_eg.Conari.Native.Core
 {
     [Serializable]
-    public class AbandonedPointerException: CommonException
+    public enum Zone
     {
-        public AbandonedPointerException(IntPtr ptr)
-            : base($"Abandoned pointer at 0x{ptr:x}. Dump (hex): {TryDump(ptr)}")
-        {
+        /// <summary>
+        /// Initial state of the used position in a specified container.
+        /// </summary>
+        Initial,
 
-        }
+        /// <summary>
+        /// The beginning of active area in container.
+        /// </summary>
+        Region,
 
-        protected static string TryDump(IntPtr ptr)
-        {
-            try
-            {
-                StringBuilder sb = new();
-                ptr.Access().bytes(8).ForEach(b => sb.Append($"{b:x2} "));
-                return sb.Append("...").ToString();
-            }
-            catch(Exception) // can't be addressed anymore
-            {
-                return "?<...>";
-            }
-        }
+        /// <summary>
+        /// Current position in a specific region.
+        /// </summary>
+        Current,
+
+        /// <inheritdoc cref="Initial"/>
+        D = Initial,
+
+        /// <inheritdoc cref="Region"/>
+        U = Region,
+
+        /// <inheritdoc cref="Current"/>
+        V = Current,
     }
 }

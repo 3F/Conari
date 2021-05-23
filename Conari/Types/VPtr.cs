@@ -87,6 +87,14 @@ namespace net.r_eg.Conari.Types
 
         public static VPtr operator --(VPtr input) => input -= 1;
 
+        public static bool operator >(VPtr a, long b) => a.IsLong ? a.vLong > b : a.vIntPtr.ToInt64() > b;
+
+        public static bool operator <(VPtr a, long b) => a.IsLong ? a.vLong < b : a.vIntPtr.ToInt64() < b;
+
+        public static bool operator >=(VPtr a, long b) => a.IsLong ? a.vLong >= b : a.vIntPtr.ToInt64() >= b;
+
+        public static bool operator <=(VPtr a, long b) => a.IsLong ? a.vLong <= b : a.vIntPtr.ToInt64() <= b;
+
         public static VPtr Add(VPtr input, VPtr offset) => input + offset;
 
         public static VPtr Add(VPtr input, IntPtr offset) => input + offset;
@@ -111,7 +119,15 @@ namespace net.r_eg.Conari.Types
 
         public static VPtr MakeLong(IntPtr value) => new(value.ToInt64());
 
-        public static bool operator ==(VPtr a, VPtr b) => a.Equals(b);
+        public static bool operator ==(VPtr a, VPtr b)
+        {
+            if(a.IsLong && b.IsLong) return a.vLong == b.vLong;
+
+            if(a.IsLong) return a.vLong == b.vIntPtr.ToInt64();
+            if(b.IsLong) return b.vLong == a.vIntPtr.ToInt64();
+
+            return a.Equals(b);
+        }
 
         public static bool operator !=(VPtr a, VPtr b) => !(a == b);
 
@@ -138,7 +154,7 @@ namespace net.r_eg.Conari.Types
             );
         }
 
-        public override string ToString() => IsLong ? vLong.ToString() : "0x" + vIntPtr.ToString("X");
+        public override string ToString() => IsLong ? vLong.ToString() : "0x" + vIntPtr.ToString("x");
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {

@@ -24,33 +24,24 @@
 */
 
 using System;
-using System.Text;
-using net.r_eg.Conari.Extension;
-using net.r_eg.Conari.Native;
 
-namespace net.r_eg.Conari.Exceptions
+namespace net.r_eg.Conari.Types
 {
+    /// <summary>
+    /// ASCII character type alias.
+    /// </summary>
+    /// <remarks>Note: <see cref="char"/> may point either to <see cref="achar"/> or <see cref="wchar"/>.</remarks>
     [Serializable]
-    public class AbandonedPointerException: CommonException
+    public struct achar
     {
-        public AbandonedPointerException(IntPtr ptr)
-            : base($"Abandoned pointer at 0x{ptr:x}. Dump (hex): {TryDump(ptr)}")
-        {
+        private readonly char data;
 
-        }
+        public static implicit operator char(achar v) => v.data;
+        public static implicit operator achar(char v) => new(v);
 
-        protected static string TryDump(IntPtr ptr)
+        public achar(char input)
         {
-            try
-            {
-                StringBuilder sb = new();
-                ptr.Access().bytes(8).ForEach(b => sb.Append($"{b:x2} "));
-                return sb.Append("...").ToString();
-            }
-            catch(Exception) // can't be addressed anymore
-            {
-                return "?<...>";
-            }
+            data = input;
         }
     }
 }

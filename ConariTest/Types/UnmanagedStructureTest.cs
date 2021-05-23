@@ -32,15 +32,13 @@ namespace ConariTest.Types
             {
                 IntPtr ptr = uv;
 
-                var uv2 = new UnmanagedStructure(ptr, typeof(TVer));
-                
+                using UnmanagedStructure uv2 = new(ptr, typeof(TVer));
+
                 TVer managed2 = (TVer)uv2.Managed;
 
                 Assert.Equal(((TVer)uv.Managed).major, managed2.major);
                 Assert.Equal(((TVer)uv.Managed).minor, managed2.minor);
                 Assert.Equal(((TVer)uv.Managed).patch, managed2.patch);
-
-                uv2.Dispose();
             }
 
             Assert.Equal(IntPtr.Zero, (IntPtr)uv);

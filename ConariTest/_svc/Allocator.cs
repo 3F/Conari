@@ -12,7 +12,7 @@ namespace ConariTest._svc
     {
         public readonly IntPtr ptr;
 
-        public Allocator(byte[] data)
+        public Allocator(params byte[] data)
         {
             if(data == null) throw new ArgumentNullException(nameof(data));
 

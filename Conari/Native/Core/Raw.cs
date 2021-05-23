@@ -40,7 +40,7 @@ namespace net.r_eg.Conari.Native.Core
         private readonly long offset;
         private readonly long length;
 
-        private readonly INativeReader reader;
+        private readonly IAccessor accessor;
         private readonly ChainMeta meta;
 
         public IEnumerator<byte> GetEnumerator() => Iter.GetEnumerator();
@@ -57,11 +57,11 @@ namespace net.r_eg.Conari.Native.Core
         /// </summary>
         public IEnumerable<byte> Iter { get
         {
-            reader.move(offset, SeekPosition.Region);
+            accessor.move(offset, Zone.Region);
 
             for(long i = offset; i < length; ++i)
             {
-                yield return reader.readByte();
+                yield return accessor.readByte();
             }
         }}
 
@@ -91,7 +91,7 @@ namespace net.r_eg.Conari.Native.Core
             }
             finally
             {
-                reader.upPtr(-FlaggedChainSize);
+                accessor.upPtr(-FlaggedChainSize);
             }
         }
 
@@ -100,25 +100,25 @@ namespace net.r_eg.Conari.Native.Core
         public NativeData build(out dynamic result)
         {
             result = build();
-            return reader.Native();
+            return accessor.Native();
         }
 
-        public Raw(INativeReader reader, long length, long offset = 0)
+        public Raw(IAccessor accessor, long length, long offset = 0)
         {
-            this.reader = reader ?? throw new ArgumentNullException(nameof(reader));
-            this.length = length;
-            this.offset = offset;
+            this.accessor   = accessor ?? throw new ArgumentNullException(nameof(accessor));
+            this.length     = length;
+            this.offset     = offset;
         }
 
         public Raw(byte[] bytes, Fields fields)
         {
-            reader      =  new LocalReader(bytes ?? throw new ArgumentNullException(nameof(bytes)));
+            accessor    =  new LocalContent(bytes ?? throw new ArgumentNullException(nameof(bytes)));
             this.fields = fields;
             length      = bytes.Length;
         }
 
-        public Raw(INativeReader reader, Fields fields)
-            : this(reader, fields.Sum(f => f.tsize), 0)
+        public Raw(IAccessor accessor, Fields fields)
+            : this(accessor, fields.Sum(f => f.tsize), 0)
         {
             this.fields = fields;
         }
@@ -129,14 +129,14 @@ namespace net.r_eg.Conari.Native.Core
 
         }
 
-        internal Raw(INativeReader reader, Fields fields, ChainMeta meta)
-            : this(reader, fields)
+        internal Raw(IAccessor accessor, Fields fields, ChainMeta meta)
+            : this(accessor, fields)
         {
             this.meta = meta;
 
-            if(length < 1 && reader is LocalReader)
+            if(length < 1 && accessor is LocalContent)
             {
-                length = ((ILocalReader)reader).Length;
+                length = ((ILocalContent)accessor).Length;
             }
         }
     }

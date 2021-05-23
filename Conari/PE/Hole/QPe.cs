@@ -39,14 +39,17 @@ namespace net.r_eg.Conari.PE.Hole
     using WORD  = UInt16;
     using static Static.Members;
 
+    // FIXME: QPe was based on old logic and its enumerations are not thread safe
+
     /// <summary>
     /// PE32/PE32+ Memory + Streams implementation.
     /// </summary>
+    /// <remarks>Enumerations are not thread safe.</remarks>
     internal class QPe
     {
         protected DWORD vaExportDir;
 
-        public INativeReader Reader { get; protected set; }
+        public IAccessor Accessor { get; protected set; }
 
         /// <summary>
         /// Attributes of the image.
@@ -74,35 +77,22 @@ namespace net.r_eg.Conari.PE.Hole
 
         public IEnumerable<string> Names { get
         {
-            if(Export.NumberOfNames < 1 || Export.AddressOfNames < 1)
-            {
-                LSender.Send
-                (
-                    this, 
-                    "The export functions was not found. The NumberOfNames or AddressOfNames < 1", 
-                    Message.Level.Info
-                );
-                yield break;
-            }
-
             seek(Export.AddressOfNames);
 
-            // addresses of function names
-
             DWORD[] names = new DWORD[Export.NumberOfNames];
+
             for(DWORD i = 0; i < Export.NumberOfNames; ++i) {
-                names[i] = rva2Offset(Reader.read<DWORD>());
+                names[i] = rva2Offset(Accessor.read<DWORD>());
             }
 
             // null-terminated names
-
             foreach(DWORD addr in names)
             {
-                Reader.move(addr, SeekPosition.Initial);
+                Accessor.move(addr, Zone.D);
 
                 char c;
                 string str = string.Empty;
-                while((c = Reader.readChar()) != '\0') {
+                while((c = Accessor.readChar()) != '\0') {
                     str += c;
                 }
 
@@ -115,7 +105,7 @@ namespace net.r_eg.Conari.PE.Hole
             seek(Export.AddressOfFunctions);
 
             for(DWORD i = 0; i < Export.NumberOfFunctions; ++i) {
-                yield return Reader.read<DWORD>();
+                yield return Accessor.read<DWORD>();
             }
         }}
 
@@ -124,14 +114,14 @@ namespace net.r_eg.Conari.PE.Hole
             seek(Export.AddressOfNameOrdinals);
 
             for(DWORD i = 0; i < Export.NumberOfNames; ++i) {
-                yield return Reader.read<WORD>();
+                yield return Accessor.read<WORD>();
             }
         }}
 
-        public QPe(INativeReader reader)
+        public QPe(IAccessor accessor)
         {
-            Reader      = reader ?? throw new ArgumentNullException(nameof(reader));
-            Addresses   = new AddrTables(Reader.InitialPtr);
+            Accessor    = accessor ?? throw new ArgumentNullException(nameof(accessor));
+            Addresses   = new AddrTables(Accessor.InitialPtr);
 
             var numberOfSections = initialize(lfanew());
 
@@ -142,26 +132,25 @@ namespace net.r_eg.Conari.PE.Hole
         protected LONG lfanew()
         {
             /* IMAGE_DOS_HEADER - winnt.h */
-
-            Reader.move(0x3C/*e_lfanew*/, SeekPosition.Initial);
+            Accessor.move(0x3C/*e_lfanew*/, Zone.D);
 
             // File address of the new pe header
-            return Reader.read<LONG>();
+            return Accessor.read<LONG>();
         }
 
         protected WORD initialize(LONG e_lfanew)
         {
             /* IMAGE_NT_HEADERS */
-            Addresses.IMAGE_NT_HEADERS = Reader.getAddr(e_lfanew);
+            Addresses.IMAGE_NT_HEADERS = Accessor.getAddr(e_lfanew);
 
-            Reader.move(e_lfanew, SeekPosition.Initial)
+            Accessor.move(e_lfanew, Zone.D)
                 .eq('P', 'E', '\0', '\0')
                 .ifFalse(_ => throw new PECorruptDataException());
 
             /* IMAGE_FILE_HEADER */
-            Addresses.IMAGE_FILE_HEADER = Reader.CurrentPtr;
+            Addresses.IMAGE_FILE_HEADER = Accessor.CurrentPtr;
 
-            Reader.Native()
+            Accessor.Native()
                 .f<WORD>("Machine", "NumberOfSections")
                 .align<DWORD>(3)
                 .t<WORD>("SizeOfOptionalHeader")
@@ -171,30 +160,30 @@ namespace net.r_eg.Conari.PE.Hole
                 .build(out dynamic ifh);
 
             /* IMAGE_OPTIONAL_HEADER - move to NumberOfRvaAndSizes */
-            Addresses.IMAGE_OPTIONAL_HEADER = Reader.CurrentPtr;
+            Addresses.IMAGE_OPTIONAL_HEADER = Accessor.CurrentPtr;
 
             if(ifh.SizeOfOptionalHeader == 0xE0) { // IMAGE_OPTIONAL_HEADER32
-                Reader.move(0x5C);
+                Accessor.move(0x5C);
             }
             else if(ifh.SizeOfOptionalHeader == 0xF0) { // IMAGE_OPTIONAL_HEADER64
-                Reader.move(0x6C);
+                Accessor.move(0x6C);
             }
             else {
                 // also known 0 for object files
                 throw new PECorruptDataException($"SizeOfOptionalHeader: {ifh.SizeOfOptionalHeader}");
             }
 
-            DWORD NumberOfRvaAndSizes = Reader.read<DWORD>(); // The number of directory entries.
+            DWORD NumberOfRvaAndSizes = Accessor.read<DWORD>(); // The number of directory entries.
 
             /* IMAGE_DATA_DIRECTORY DataDirectory[IMAGE_NUMBEROF_DIRECTORY_ENTRIES] */
 
-            Reader.Native() // DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT]
+            Accessor.Native() // DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT]
                 .t<DWORD>("VirtualAddress")
                 .t<DWORD>("Size")
                 .build(out dynamic idd);
 
             // to the end of directory entries
-            Reader.move(8 * (NumberOfRvaAndSizes - 1));
+            Accessor.move(8 * (NumberOfRvaAndSizes - 1));
 
             {
                 vaExportDir         = idd.VirtualAddress;
@@ -213,7 +202,7 @@ namespace net.r_eg.Conari.PE.Hole
             var sections = new IMAGE_SECTION_HEADER[count];
             for(int i = 0; i < count; ++i)
             {
-                Reader
+                Accessor
                 .bytes<BYTE>
                 (
                     IMAGE_SECTION_HEADER.IMAGE_SIZEOF_SHORT_NAME, 
@@ -238,29 +227,29 @@ namespace net.r_eg.Conari.PE.Hole
             if(virtualAddress < 1) return new IMAGE_EXPORT_DIRECTORY();
 
             DWORD offset = rva2Offset(virtualAddress);
-            Reader.move(offset, SeekPosition.Initial);
+            Accessor.move(offset, Zone.D);
 
-            Addresses.IMAGE_EXPORT_DIRECTORY = Reader.CurrentPtr;
+            Addresses.IMAGE_EXPORT_DIRECTORY = Accessor.CurrentPtr;
 
             return new IMAGE_EXPORT_DIRECTORY()
             {
-                Characteristics         = Reader.read<DWORD>(),
-                TimeDateStamp           = Reader.read<DWORD>(),
-                MajorVersion            = Reader.read<WORD>(),
-                MinorVersion            = Reader.read<WORD>(),
-                Name                    = Reader.read<DWORD>(),
-                Base                    = Reader.read<DWORD>(),
-                NumberOfFunctions       = Reader.read<DWORD>(),
-                NumberOfNames           = Reader.read<DWORD>(),
-                AddressOfFunctions      = Reader.read<DWORD>(),
-                AddressOfNames          = Reader.read<DWORD>(),
-                AddressOfNameOrdinals   = Reader.read<DWORD>(),
+                Characteristics         = Accessor.read<DWORD>(),
+                TimeDateStamp           = Accessor.read<DWORD>(),
+                MajorVersion            = Accessor.read<WORD>(),
+                MinorVersion            = Accessor.read<WORD>(),
+                Name                    = Accessor.read<DWORD>(),
+                Base                    = Accessor.read<DWORD>(),
+                NumberOfFunctions       = Accessor.read<DWORD>(),
+                NumberOfNames           = Accessor.read<DWORD>(),
+                AddressOfFunctions      = Accessor.read<DWORD>(),
+                AddressOfNames          = Accessor.read<DWORD>(),
+                AddressOfNameOrdinals   = Accessor.read<DWORD>(),
             };
         }
 
         protected DWORD rva2Offset(DWORD rva)
         {
-            if(!Reader.CurrentPtr.IsLong) return rva;
+            if(!Accessor.CurrentPtr.IsLong) return rva;
 
             foreach(var s in Sections) {
 #if TRACE
@@ -277,7 +266,7 @@ namespace net.r_eg.Conari.PE.Hole
         private void seek(DWORD rva)
         {
             DWORD offset = rva2Offset(rva);
-            Reader.move(offset, SeekPosition.Initial);
+            Accessor.move(offset, Zone.D);
         }
     }
 }

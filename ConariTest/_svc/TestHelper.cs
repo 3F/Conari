@@ -21,11 +21,13 @@ namespace ConariTest._svc
         public const string RXW_X = RXW_X64;
 #endif
 
-        public static readonly IConfig gCfgIsolatedRxW = new Config(RXW_X, true);
+        public static readonly IConfig gCfgIsolatedRxW = new Config(RXW_X, isolate: true);
 
         public const string CLLI_TEST = "CLLI-TEST-2301F37A-5F7D-45B7-9AED-ABC3988D953F";
 
-        internal static async Task mtaRun(Action act, IConfig cfg, int limit
+        internal static string TempDstPath => Path.Combine(Path.GetTempPath(), CLLI_TEST);
+
+        internal static async Task MtaRun(Action act, IConfig cfg, int limit
 #if DEBUG
             = 400
 #else
@@ -51,7 +53,5 @@ namespace ConariTest._svc
 
             await Task.WhenAll(tasks.ToArray());
         }
-
-        internal static string TempDstPath => Path.Combine(Path.GetTempPath(), CLLI_TEST);
     }
 }

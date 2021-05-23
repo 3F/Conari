@@ -62,7 +62,7 @@ namespace net.r_eg.Conari
         /// <summary>
         /// Raw access to unmanaged memory.
         /// </summary>
-        public INativeReader Memory { get; protected set; }
+        public IAccessor Memory { get; protected set; }
 
         /// <remarks>Alias to <see cref="ExVar"/></remarks>
         /// <inheritdoc cref="ExVar"/>

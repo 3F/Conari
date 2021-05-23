@@ -23,26 +23,19 @@
  * THE SOFTWARE.
 */
 
-using System;
-
 namespace net.r_eg.Conari.Native.Core
 {
-    [Serializable]
-    public enum SeekPosition
+    public interface ILocalContent: IAccessor
     {
         /// <summary>
-        /// Initial state of the used position in a specified container.
+        /// The length of the readable data.
         /// </summary>
-        Initial,
+        int Length { get; }
 
         /// <summary>
-        /// The beginning of active area in container.
+        /// Extends local data using additional bytes.
         /// </summary>
-        Region,
-
-        /// <summary>
-        /// Current position in a specific region.
-        /// </summary>
-        Current,
+        /// <param name="bytes"></param>
+        void extend(byte[] bytes);
     }
 }

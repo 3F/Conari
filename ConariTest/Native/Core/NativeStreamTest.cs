@@ -36,16 +36,16 @@ namespace ConariTest.Native.Core
             using var stream = new NativeStream(new FileStream(RXW_X, FileMode.Open, FileAccess.Read, FileShare.Read));
 
             Assert.Equal('婍', stream.readWChar());
-            Assert.Equal('M', stream.rewind().readTChar());
-            Assert.Equal('遚', stream.readTChar(CharType.TwoByte));
-            Assert.Equal('M', stream.rewind().readTChar(CharType.OneByte));
+            Assert.Equal('M', stream.rewind().readChar());
+            Assert.Equal('遚', stream.readChar(CharType.TwoByte));
+            Assert.Equal('M', stream.rewind().readChar(CharType.OneByte));
 
             stream.set(CharType.Unicode);
-            Assert.Equal('Z', stream.readChar());
-            Assert.Equal('婍', stream.rewind().readTChar());
+            Assert.Equal('Z', stream.readAChar());
+            Assert.Equal('婍', stream.rewind().readChar());
 
             stream.set(CharType.Ascii);
-            Assert.Equal('M', stream.rewind().readTChar());
+            Assert.Equal('M', stream.rewind().readChar());
         }
     }
 }

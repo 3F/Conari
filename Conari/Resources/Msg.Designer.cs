@@ -97,11 +97,29 @@ namespace net.r_eg.Conari.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed check. The result is `{0}`..
+        /// </summary>
+        internal static string failed_check_result_0 {
+            get {
+                return ResourceManager.GetString("failed_check_result_0", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Field `{0}` is already defined in the chain. Reset/renew/or use other mode instead of `{1}`..
         /// </summary>
         internal static string field_0_defined_mode_1 {
             get {
                 return ResourceManager.GetString("field_0_defined_mode_1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid or unavailable range at {0}..
+        /// </summary>
+        internal static string Invalid_or_unavailable_range_at_0 {
+            get {
+                return ResourceManager.GetString("Invalid_or_unavailable_range_at_0", resourceCulture);
             }
         }
         
@@ -138,6 +156,24 @@ namespace net.r_eg.Conari.Resources {
         internal static string only_0_supported_yet {
             get {
                 return ResourceManager.GetString("only_0_supported_yet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stream does not support writing..
+        /// </summary>
+        internal static string stream_cant_write {
+            get {
+                return ResourceManager.GetString("stream_cant_write", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The used stream was unexpectedly disposed and can no longer be used..
+        /// </summary>
+        internal static string stream_disposed {
+            get {
+                return ResourceManager.GetString("stream_disposed", resourceCulture);
             }
         }
         

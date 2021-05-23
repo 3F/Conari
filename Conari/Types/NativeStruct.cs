@@ -71,10 +71,10 @@ namespace net.r_eg.Conari.Types
         internal NativeStruct(NativeData def)
             : this(def?.Size ?? throw new ArgumentNullException(nameof(def)))
         {
-            if(def.Reader.CurrentPtr == VPtr.Zero)
+            if(def.Access.CurrentPtr == VPtr.Zero)
             {
-                def.Reader.CurrentPtr = pointer;
-                def.Reader.shiftRegionPtr();
+                def.Access.CurrentPtr = pointer;
+                def.Access.shiftRegionPtr();
             }
             chain = def;
         }
@@ -182,7 +182,10 @@ namespace net.r_eg.Conari.Types
         /// Only if structure was NOT based on <see cref="NeutralStruct"/>.
         /// </summary>
         /// <param name="data"></param>
-        /// <remarks>Use <see cref="Data"/> to access data. Use <see cref="NativeStruct.Access"/> for more automation.</remarks>
+        /// <remarks>
+        /// Alternatively use <see cref="Data"/> to access data. 
+        /// Use <see cref="NativeStruct.Access"/> for more automation.
+        /// </remarks>
         public NativeStruct<T> Read(out T data)
         {
             Read();
