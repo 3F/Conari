@@ -37,9 +37,16 @@ using net.r_eg.Conari.Types;
 
 namespace net.r_eg.Conari.Core
 {
-    public sealed class ProviderDLR: DynamicObject, IProviderDLR
+    public sealed class ProviderDLR<TCharIn>: DynamicObject, IProviderDLR
+        where TCharIn : struct
     {
+        private static readonly Type TypeVoid       = typeof(void);
+        private static readonly Type TypeDefault    = typeof(object);
+        private static readonly Type TypeCharIn     = typeof(TCharIn);
+        private static readonly Type TypeString     = typeof(string);
+
         private readonly IProvider provider;
+        private readonly Lazy<NativeStringManager<TCharIn>> strings;
 
         public IDynamic DynCfg => new Dynamic();
 
@@ -57,26 +64,31 @@ namespace net.r_eg.Conari.Core
 
         public object[] TrailingArgs { get; set; } = new object[] { (long)0, (long)0 };
 
-        /// <summary>
-        /// Magic method. Invoking.
-        /// </summary>
-        /// <remarks>`[result =] name&lt;return_type&gt;([{argument_types}])`</remarks>
+        public float RefModifiableStringBuffer { get; set; } = BufferedString<TCharIn>.BUF;
+
+        private INativeStringManager<TCharIn> Strings => strings.Value;
+
         public override bool TryInvokeMember(InvokeMemberBinder binder, object[] input, out object result)
         {
-            object[] args = addTail(input);
-            Type[] tArgs;
+            collectNativeStrings(input);
 
+            object[] args = addTail(input);
+
+            Type[] tArgs;
+            _RefInfo[] refi;
             try
             {
-                tArgs = getArgTypes(binder, args);
+                refi    = getRefInfo(binder).ToArray();
+                tArgs   = getArgTypes(binder, args, refi);
             }
             catch(ArgumentException ex)
             {
                 LSender.Send(this, Msg.dlr_args_unknown_problems_0_1.Format($"{binder.Name}'", $"{ex.Message}"), Message.Level.Warn);
-                tArgs = args.Select(a => a?.GetType() ?? typeof(object)).ToArray();
+                tArgs   = args.Select(a => a?.GetType() ?? TypeDefault).ToArray();
+                refi    = null;
             }
 
-            Type[] tGeneric = binder.GetGenericArgTypes().ToArray();
+            Type[] tGeneric = AdaptRetTypes(binder.GetGenericArgTypes()).ToArray();
 
             TDyn dyn = provider.bind
             (
@@ -87,11 +99,11 @@ namespace net.r_eg.Conari.Core
 
             // Boxing types, for example: NullType -> null -> NullType
 
-            object[] unboxed = Unboxing(args);
+            object[] unboxed = unboxing(args, refi);
 
             object odv = dyn.dynamic.Invoke(null, unboxed);
 
-            if(dyn.returnType == typeof(void)) // points to generic type in func<returnType>()
+            if(dyn.returnType == TypeVoid) // points to generic type in func<returnType>()
             {
                 result = odv; // return 'as is' due to unspecified behaviour from user space^
             }
@@ -100,42 +112,31 @@ namespace net.r_eg.Conari.Core
                 result = Dynamic.DCast(dyn.returnType, odv);
             }
 
-            Boxing(unboxed, input);
+            boxing(unboxed, input);
             return true;
         }
 
-        public ProviderDLR(IProvider provider, CallingConvention conv)
+        public ProviderDLR(IProvider provider, CallingConvention conv, Lazy<NativeStringManager<TCharIn>> strings)
         {
             this.provider   = provider ?? throw new ArgumentNullException(nameof(provider));
+            this.strings    = strings ?? throw new ArgumentNullException(nameof(strings));
             Convention      = conv;
         }
 
-        private static object[] Unboxing(object[] args)
-            => args
-                .Select(a => a is IBoxed boxed ? boxed.Data : a)
-                .Select(a => a is IMarshalableGeneric mr ? Dynamic.DCast(mr.MarshalableType, a) : a)
-                .ToArray();
+        private static IEnumerable<Type> AdaptRetTypes(IEnumerable<Type> input) 
+            => input.Select(t => t == TypeString ? TypeCharIn : t);
 
-        private static void Boxing(object[] from, object[] to)
-        {
-            if(from.Length < to.Length) {
-                throw new ArgumentException(Msg.incorrect_args_length_0_1.Format($"{from.Length}", $"{to.Length}"));
-            }
-
-            for(int i = 0; i < to.Length; ++i)
-            {
-                // update everything since ByRef& updated value is possible
-
-                if(to[i] is IBoxed boxed)
-                {
-                    boxed.Data = from[i];
-                }
-                else
-                {
-                    to[i] = from[i];
-                }
-            }
-        }
+        private static IEnumerable<Type> AdaptArgTypes(object[] args)
+            => args.Select(a =>
+                (a == null)
+                    ? TypeDefault
+                    : a is string
+                        ? TypeCharIn
+                        : a is IMarshalableGeneric mr
+                            ? mr.MarshalableType
+                            : a is INullType nt
+                                ? nt.GenericType
+                                : a.GetType());
 
         private static IEnumerable<Type> GetTypesFromCallingContext(InvokeMemberBinder binder)
             => binder
@@ -164,6 +165,58 @@ namespace net.r_eg.Conari.Core
             );
         }
 
+        private void collectNativeStrings(object[] args)
+        {
+            foreach(object a in args ?? throw new ArgumentNullException(nameof(args)))
+            {
+                if(a is INativeString ns && ns.UseManager)
+                {
+                    if(ns.Disposed || TypeCharIn != ns.MarshalableType) throw new NotSupportedException();
+                    Strings.add((NativeString<TCharIn>)a);
+                }
+            }
+        }
+
+        private object[] unboxing(object[] args, _RefInfo[] refi)
+            => args
+                .Select(a => a is IBoxed boxed ? boxed.Data : a)
+                .Select((a, i) => a is string str ? makeCstr(str, refi, i) : a)
+                .Select(a => a is IMarshalableGeneric mr ? Dynamic.DCast(mr.MarshalableType, a) : a)
+                .ToArray();
+
+        private NativeString<TCharIn> makeCstr(string str, _RefInfo[] refi, int idx)
+        {
+            if(refi == null || refi.Length <= idx || !refi[idx].isRef) {
+                return Strings.cstr(str, 0);
+            }
+            return Strings.cstr(str, str.RelativeLength(RefModifiableStringBuffer));
+        }
+
+        private void boxing(object[] from, object[] to)
+        {
+            if(from.Length < to.Length) {
+                throw new ArgumentException(Msg.incorrect_args_length_0_1.Format($"{from.Length}", $"{to.Length}"));
+            }
+
+            for(int i = 0; i < to.Length; ++i)
+            {
+                if(to[i] is IBoxed boxed)
+                {
+                    boxed.Data = from[i];
+                }
+                else if(to[i] is string)
+                {
+                    to[i] = from[i].ToString();
+                    Strings.release(((IPtr)from[i]).AddressPtr);
+                }
+                else
+                {
+                    // update everything since ByRef& updated value is possible
+                    to[i] = from[i];
+                }
+            }
+        }
+
         private object[] addTail(object[] args)
         {
             if(args == null) throw new ArgumentNullException(nameof(args));
@@ -172,49 +225,50 @@ namespace net.r_eg.Conari.Core
             return args.Concat(TrailingArgs).ToArray();
         }
 
-        private Type[] getArgTypes(InvokeMemberBinder binder, object[] args)
+        private Type[] getArgTypes(InvokeMemberBinder binder, object[] args, _RefInfo[] refi)
         {
-            var tArgs = args.Select(a =>
-                (a == null)
-                    ? typeof(object)
-                    : a is IMarshalableGeneric mr 
-                        ? mr.MarshalableType 
-                        : a is INullType nt 
-                            ? nt.GenericType // null-value via NullType<IData> -> IData
-                            : a.GetType()
-            );
+            // we're trying to resolve context because initial args may not provide info about reference-types (ByRef&)
 
-            if(UseByRef) return tArgs.Select(a => a.MakeByRefType()).ToArray();
+            Type[] ret = AdaptArgTypes(args).ToArray();
 
-            // we're trying to resolve context because args may not provide info about reference-types (ByRef&)
-
-            Type[] ret = tArgs.ToArray();
-
-            if(UseCallingContext)
-            {
-                Type[] tContext = GetTypesFromCallingContext(binder).ToArray();
-                if(ret.Length < tContext.Length) {
-                    throw new ArgumentException(Msg.incorrect_args_length_0_1.Format($"{ret.Length}", $"{tContext.Length}"));
-                }
-
-                tContext.ForEach((c, i) => { if(c.IsByRef) { ret[i] = c; } });
-                return ret;
+            if(ret.Length < refi.Length) {
+                throw new ArgumentException(Msg.incorrect_args_length_0_1.Format($"{ret.Length}", $"{refi.Length}"));
             }
 
-            CSharpArgumentInfoFlags[] aflags = GetArgFlags(binder).ToArray();
-            if(ret.Length < aflags.Length) {
-                throw new ArgumentException(Msg.incorrect_args_length_0_1.Format($"{ret.Length}", $"{aflags.Length}"));
-            }
-
-            CSharpArgumentInfoFlags fByRef = CSharpArgumentInfoFlags.IsRef | CSharpArgumentInfoFlags.IsOut;
-            aflags.ForEach((f, i) =>
+            refi.ForEach((c, i) =>
             {
-                if((f & fByRef) != 0) {
-                    ret[i] = ret[i].MakeByRefType();
+                if((c.isRef || UseByRef) && ret[i] != TypeCharIn)
+                {
+                    ret[i] = c.type ?? ret[i].MakeByRefType();
+                    refi[i].isRef = true;
                 }
             });
 
             return ret;
+        }
+
+        private IEnumerable<_RefInfo> getRefInfo(InvokeMemberBinder binder)
+        {
+            if(UseCallingContext) {
+                return GetTypesFromCallingContext(binder).Select(c => new _RefInfo(c, c.IsByRef));
+            }
+
+            CSharpArgumentInfoFlags fByRef = CSharpArgumentInfoFlags.IsRef | CSharpArgumentInfoFlags.IsOut;
+            return GetArgFlags(binder).Select(f => new _RefInfo((f & fByRef) != 0));
+        }
+
+        private sealed class _RefInfo
+        {
+            public readonly Type type;
+            public bool isRef;
+
+            public _RefInfo(bool isRef) => this.isRef = isRef;
+
+            public _RefInfo(Type type, bool isRef)
+                : this(isRef)
+            {
+                this.type = type;
+            }
         }
     }
 }

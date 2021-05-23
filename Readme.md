@@ -36,28 +36,12 @@ using ConariL l = new("...");
 Forget about the type conversions and memory management complexities. Because nothing easier than just use it,
 
 ```csharp
-using ConariL l = new("regXwild.dll");
-l._.replace<bool>
-(
-    l._T("number = 888;", out CharPtr result), 
-    l._T("+??;"), l._T("2034;")
-);
-// result: number = 2034;
+using dynamic l = new ConariX("regXwild.dll");
+
+string data = "number = 888;";
+bool found = l.replace<bool>(ref data, "+??;", "2034;");
+// found: true; data: number = 2034;
 ```
-
-🚀 Awesome speed
-
-Optional caching of 0x29 opcodes (Calli) and more.
-
-test of regXwild's algorithms [[340x10000 Unicode](https://github.com/3F/regXwild#speed)]   | +icase [x32]| +icase [x64]         | `
-----------------------------------------------|--------------|-----------------|---
-regXwild **native C++** `EXT` algorithm       | **~50ms**    | **~26ms**       | `<<`
-regexp-c++11(regex_search)                    | ~59309ms     | ~53334ms        |
-regexp-c++11(regex_match with endings .*)     | ~59503ms     | ~53817ms        |
-.NET Regex engine [Compiled]                  | ~38310ms     | ~37242ms        |
-.NET Regex engine                             | ~31565ms     | ~30975ms        |
-regXwild via **Conari** v1.3 (Lambda) - `EXT` | **~54ms**    | **~35ms**       | `<<`
-regXwild via **Conari** v1.3 (DLR) - `EXT`    | ~214ms       | ~226ms          |
 
 🔨 Its amazing DLR features
 
@@ -81,7 +65,7 @@ private struct MatchResult
     public UIntPtr end;
 }*/
 
-if(l.match<bool>(c._T("n = '888';"), c._T("'*'"), 2/*MATCH_RESULT*/, (IntPtr)u))
+if(l.match<bool>("n = '888';", "'*'", 2/*MATCH_RESULT*/, u))
 {
     /* Now we just generated and invoked this
     REGXWILD_API_L bool match
@@ -97,6 +81,20 @@ if(l.match<bool>(c._T("n = '888';"), c._T("'*'"), 2/*MATCH_RESULT*/, (IntPtr)u))
 }
 // Yes, a 4 lines and your task is done; Free memory, Free hands.
 ```
+
+🚀 Awesome speed
+
+Optional caching of 0x29 opcodes (Calli) and more.
+
+test of regXwild's algorithms [[340x10000 Unicode](https://github.com/3F/regXwild#speed)]   | +icase [x32]| +icase [x64]         | `
+----------------------------------------------|--------------|-----------------|---
+regXwild **native C++** `EXT` algorithm       | **~50ms**    | **~26ms**       | `<<`
+regexp-c++11(regex_search)                    | ~59309ms     | ~53334ms        |
+regexp-c++11(regex_match with endings .*)     | ~59503ms     | ~53817ms        |
+.NET Regex engine [Compiled]                  | ~38310ms     | ~37242ms        |
+.NET Regex engine                             | ~31565ms     | ~30975ms        |
+regXwild via **Conari** v1.3 (Lambda) - `EXT` | **~54ms**    | **~35ms**       | `<<`
+regXwild via **Conari** v1.3 (DLR) - `EXT`    | ~214ms       | ~226ms          |
 
 🔧 The easiest (most ever) access to any data in unmanaged memory
 
@@ -357,6 +355,27 @@ l.match<bool>(
 );
 u.Data.start // 1
 u.Data.end   // 7
+```
+
+```csharp
+using ConariL l = new("regXwild.dll");
+l._.replace<bool>
+(
+    l._T("number = 888;", out CharPtr result), 
+    l._T("+??;"), l._T("2034;")
+);
+// result: number = 2034;
+```
+
+```csharp
+using dynamic l = new ConariX(RXW_X);
+
+bool found = l.replace<bool>
+(
+    "Hello {p}".Do(out TCharPtr result),
+    "{p}",
+    "world!"
+); // found: true; result: Hello world!
 ```
 
 and more ...

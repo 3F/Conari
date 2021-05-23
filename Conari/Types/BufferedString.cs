@@ -33,7 +33,7 @@ namespace net.r_eg.Conari.Types
     public sealed class BufferedString<T>: NativeString<T>, ISerializable, IDisposable
         where T : struct
     {
-        private const float BUF = 2.5f;
+        internal const float BUF = 2.5f;
 
         public BufferedString(string str)
             : base(str, str.RelativeLength(BUF))

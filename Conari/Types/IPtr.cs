@@ -25,38 +25,10 @@
 
 using System;
 
-namespace net.r_eg.Conari.Exceptions
+namespace net.r_eg.Conari.Types
 {
-    [Serializable]
-    public class CommonException: Exception
+    public interface IPtr
     {
-        public CommonException(string message, Exception innerException, params object[] args)
-            : base(string.Format(message, args), innerException)
-        {
-
-        }
-
-        public CommonException(string message, params object[] args)
-            : base(string.Format(message, args))
-        {
-
-        }
-
-        public CommonException(string message, Exception innerException)
-            : base(message, innerException)
-        {
-
-        }
-
-        public CommonException(string message)
-            : base(message)
-        {
-
-        }
-
-        public CommonException()
-        {
-
-        }
+        IntPtr AddressPtr { get; }
     }
 }

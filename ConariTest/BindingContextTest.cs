@@ -1,5 +1,6 @@
 ﻿using System;
 using net.r_eg.Conari;
+using net.r_eg.Conari.Extension;
 using net.r_eg.Conari.Types;
 using net.r_eg.Conari.Types.Action.Out;
 using net.r_eg.Conari.Types.Action.Ref;
@@ -13,6 +14,167 @@ namespace ConariTest
 
     public class BindingContextTest
     {
+        [Fact]
+        public void exTest1()
+        {
+            using dynamic l = new ConariX(RXW_X);
+
+            string data = "number = 888;";
+            Assert.True(l.replace<bool>(ref data, "+??;", "2034;"));
+            Assert.Equal("number = 2034;", data);
+        }
+
+        [Fact]
+        public void dlrStringTest1()
+        {
+            using dynamic l = new ConariX(RXW_X);
+
+            bool found = l.replace<bool>
+            (
+                "Hello {p}".Do(out TCharPtr result),
+                "{p}",
+                "world!"
+            );
+
+            Assert.True(found);
+            Assert.Equal("Hello world!", result);
+        }
+
+        [Fact]
+        public void dlrStringTest2()
+        {
+            using dynamic l = new ConariX<CharPtr>(RXW_X);
+
+            bool found = l.replace<bool>
+            (
+                "Hello {p}".Do(out CharPtr result),
+                "{p}",
+                "world!"
+            );
+
+            Assert.True(found);
+            Assert.Equal("Hello world!", result);
+        }
+
+        [Fact]
+        public void dlrStringTest3()
+        {
+            using dynamic l = new ConariX(UNLIB_DLL);
+
+            string result = l.get_CharPtrVal<string>("Hi!");
+
+            Assert.Equal("Hi!", result);
+        }
+
+        [Fact]
+        public void dlrStringTest4()
+        {
+            using(dynamic l = new ConariX<WCharPtr>(RXW_X))
+            {
+                Assert.Throws<NotSupportedException>(() => l.replace<bool>("".Do(out CharPtr r), "", ""));
+                Assert.Throws<NotSupportedException>(() => l.replace<bool>("".Do(out TCharPtr r), "", ""));
+            }
+
+            using(dynamic l = new ConariX<CharPtr>(RXW_X))
+            {
+                Assert.Throws<NotSupportedException>(() => l.replace<bool>("".Do(out WCharPtr r), "", ""));
+                Assert.Throws<NotSupportedException>(() => l.replace<bool>("".Do(out TCharPtr r), "", ""));
+            }
+
+            using(dynamic l = new ConariX<TCharPtr>(RXW_X))
+            {
+                Assert.Throws<NotSupportedException>(() => l.replace<bool>("".Do(out CharPtr r), "", ""));
+                Assert.Throws<NotSupportedException>(() => l.replace<bool>("".Do(out WCharPtr r), "", ""));
+            }
+        }
+
+        [Fact]
+        public void dlrRefStringTest1()
+        {
+            using dynamic l = new ConariX(RXW_X);
+
+            string str = "Hello {p}";
+            bool found = l.replace<bool>
+            (
+                ref str,
+                "{p}",
+                "world!"
+            );
+
+            Assert.True(found);
+            Assert.Equal("Hello world!", str);
+        }
+
+        [Fact]
+        public void lambdaStringTest1()
+        {
+            using ConariL l = new(RXW_X);
+
+            Assert.True(l.bind<Func<TCharPtr, string, string, bool>>("replace")
+            (
+                l._T("Hello {p}", out TCharPtr result),
+                "{p}",
+                "world!"
+            ));
+            Assert.Equal("Hello world!", result);
+
+            Assert.True(l.bind<Func<IntPtr, string, string, bool>>("replace")
+            (
+                l._T("Hello {p}", out TCharPtr result2),
+                "{p}",
+                "there!"
+            ));
+            Assert.Equal("Hello there!", result2);
+        }
+
+        [Fact]
+        public void lambdaStringTest2()
+        {
+            using ConariL<CharPtr> l = new(RXW_X);
+
+            bool found = l.bind<Func<IntPtr, string, string, bool>>("replace")
+            (
+                "Hello {p}".Do(out CharPtr result),
+                "{p}",
+                "world!"
+            );
+
+            Assert.True(found);
+            Assert.Equal("Hello world!", result);
+        }
+
+        [Fact]
+        public void lambdaStringTest3()
+        {
+            using(ConariL l = new(UNLIB_DLL))
+            {
+                TCharPtr result = l.bind<Func<TCharPtr, TCharPtr>>("get_CharPtrVal")(l._T("Hi!"));
+                Assert.Equal("Hi!", result);
+            }
+
+            using(ConariL<CharPtr> l = new(UNLIB_DLL))
+            {
+                CharPtr result = l.bind<Func<CharPtr, CharPtr>>("get_CharPtrVal")(l._T("Hi!"));
+                Assert.Equal("Hi!", result);
+            }
+        }
+
+        [Fact]
+        public void lambdaStringTest4()
+        {
+            using(ConariL l = new(UNLIB_DLL))
+            {
+                string result = l.bind<Func<TCharPtr, TCharPtr>>("get_CharPtrVal")(l._T("Hello!"));
+                Assert.Equal("Hello!", result);
+            }
+
+            using(ConariL<CharPtr> l = new(UNLIB_DLL))
+            {
+                string result = l.bind<Func<CharPtr, CharPtr>>("get_CharPtrVal")(l._T("Hello!"));
+                Assert.Equal("Hello!", result);
+            }
+        }
+
         [Fact]
         public void contextTest1()
         {

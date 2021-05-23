@@ -25,6 +25,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using net.r_eg.Conari.Extension;
 using net.r_eg.Conari.Resources;
@@ -36,14 +37,18 @@ namespace net.r_eg.Conari.Types
     /// </summary>
     [DebuggerDisplay("{dbgInfo()}")]
     [Serializable]
-    public struct TCharPtr: ISerializable
+    [StructLayout(LayoutKind.Explicit)]
+    public struct TCharPtr: IPtr, ISerializable
     {
-        private static bool? _unicode;
-
+        [FieldOffset(0)]
         private readonly WCharPtr wdata;
+
+        [FieldOffset(0)]
         private readonly CharPtr data;
 
         public static readonly TCharPtr Null;
+
+        private static bool? _unicode;
 
         public static bool Unicode
         {
@@ -59,33 +64,46 @@ namespace net.r_eg.Conari.Types
             }
         }
 
-        /// <inheritdoc cref="CharPtr.Raw"/>
-        public byte[] Raw => IsWideChar ? wdata.Raw : data.Raw;
+        public IntPtr AddressPtr => this;
 
         /// <inheritdoc cref="CharPtr.Length"/>
-        public int Length => IsWideChar ? wdata.Length : data.Length;
+        public int Length => Unicode ? wdata.Length : data.Length;
 
         /// <inheritdoc cref="CharPtr.StrLength"/>
-        public int StrLength => IsWideChar ? wdata.StrLength : data.StrLength;
+        public int StrLength => Unicode ? wdata.StrLength : data.StrLength;
 
-        public bool IsWideChar => wdata != WCharPtr.Null;
+        /// <inheritdoc cref="CharPtr.Raw"/>
+        public byte[] Raw => Unicode ? wdata.Raw : data.Raw;
 
         [NativeType]
-        public static implicit operator IntPtr(TCharPtr v) => v.IsWideChar ? v.wdata : v.data;
-        public static implicit operator string(TCharPtr v) => v.IsWideChar ? v.wdata : v.data;
+        public static implicit operator IntPtr(TCharPtr v) => v.data;
+        public static implicit operator string(TCharPtr v) => Unicode ? v.wdata : v.data;
 
-        public static implicit operator TCharPtr(WCharPtr ptr) => new(ptr);
-        public static implicit operator TCharPtr(CharPtr ptr) => new(ptr);
+        public static implicit operator TCharPtr(IntPtr ptr) => new(ptr);
+        public static explicit operator TCharPtr(Int64 v) => new((IntPtr)v);
+        public static explicit operator TCharPtr(Int32 v) => new((IntPtr)v);
+
+        public static implicit operator TCharPtr(WCharPtr ptr)
+        {
+            FailIfAnsi();
+            return new(ptr);
+        }
+
+        public static implicit operator TCharPtr(CharPtr ptr)
+        {
+            FailIfUnicode();
+            return new(ptr);
+        }
 
         public static implicit operator WCharPtr(TCharPtr v)
         {
-            if(!v.IsWideChar) throw new NotSupportedException();
+            FailIfAnsi();
             return v.wdata;
         }
 
         public static implicit operator CharPtr(TCharPtr v)
         {
-            if(v.IsWideChar) throw new NotSupportedException();
+            FailIfUnicode();
             return v.data;
         }
 
@@ -103,14 +121,7 @@ namespace net.r_eg.Conari.Types
                     && data == b.data;
         }
 
-        public override int GetHashCode()
-        {
-            return 0.CalculateHashCode
-            (
-                wdata,
-                data
-            );
-        }
+        public override int GetHashCode() => 0.CalculateHashCode(wdata, data);
 
         public override string ToString() => this;
 
@@ -134,6 +145,22 @@ namespace net.r_eg.Conari.Types
             this.data = data;
         }
 
+        public TCharPtr(IntPtr pointer)
+            : this()
+        {
+            data = pointer; //+wdata at the same 0 position
+        }
+
+        private static void FailIfUnicode()
+        {
+            if(Unicode) throw new NotSupportedException();
+        }
+
+        private static void FailIfAnsi()
+        {
+            if(!Unicode) throw new NotSupportedException();
+        }
+
         #region unit-tests
 
         /// <remarks>Synchronize context before any use!</remarks>
@@ -145,21 +172,10 @@ namespace net.r_eg.Conari.Types
 
         private string dbgInfo()
         {
-            string cbit;
-            IntPtr ptr;
-
-            if(IsWideChar)
-            {
-                cbit    = "16-bit";
-                ptr     = wdata;
-            }
-            else
-            {
-                cbit    = "8-bit";
-                ptr     = data;
-            }
-
-            return $"{(string)this}    [ An {StrLength} of a {cbit} characters at 0x{ptr.ToString("x")} ]";
+            IntPtr ptr = data;
+            return ptr == IntPtr.Zero 
+                    ? "<nullptr>"
+                    : $"{(string)this}    [ An {StrLength} of a {(Unicode ? "16" : "8")}-bit characters at 0x{ptr.ToString("x")} ]";
         }
 
         #endregion

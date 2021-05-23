@@ -113,6 +113,7 @@ namespace net.r_eg.Conari.Native.Core
 
             if(type == typeof(string) 
                 || type == typeof(CharPtr)
+                || type == typeof(TCharPtr)
 #pragma warning disable CS0618 // Type or member is obsolete
                 || type == typeof(BSTR)
 #pragma warning restore CS0618 // Type or member is obsolete

@@ -287,8 +287,10 @@ namespace net.r_eg.Conari.Types
 
         #region DebuggerDisplay
 
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private string DbgInfo
-            => pointer == IntPtr.Zero ? "None"
+            => pointer == IntPtr.Zero 
+                ? "<nullptr>"
                 : $"[ {Size} bytes at 0x{pointer.ToString("x")} ]";
 
         #endregion

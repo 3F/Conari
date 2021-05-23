@@ -38,8 +38,10 @@ namespace net.r_eg.Conari.Types
     /// </summary>
     [DebuggerDisplay("{DbgInfo}")]
     [Serializable]
-    public struct CharPtr: ISerializable
+    [StructLayout(LayoutKind.Explicit)]
+    public struct CharPtr: IPtr, ISerializable
     {
+        [FieldOffset(0)]
         private readonly IntPtr pointer;
 
         public static readonly CharPtr Null;
@@ -68,6 +70,8 @@ namespace net.r_eg.Conari.Types
             return Encoding.UTF8.GetString(Raw, 0, Length);
         }}
 
+        public IntPtr AddressPtr => this;
+
         [Obsolete]
         public static int PtrSize => IntPtr.Size;
 
@@ -78,9 +82,9 @@ namespace net.r_eg.Conari.Types
 
         public static implicit operator CharPtr(IntPtr ptr) => new(ptr);
 
-        public static implicit operator CharPtr(Int64 v) => new((IntPtr)v);
+        public static explicit operator CharPtr(Int64 v) => new((IntPtr)v);
 
-        public static implicit operator CharPtr(Int32 v) => new((IntPtr)v);
+        public static explicit operator CharPtr(Int32 v) => new((IntPtr)v);
 
         public static bool operator ==(CharPtr a, WCharPtr b) => a.Equals(b);
 
@@ -135,8 +139,10 @@ namespace net.r_eg.Conari.Types
 
         #region DebuggerDisplay
 
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private string DbgInfo
-            => pointer == IntPtr.Zero ? "null" 
+            => pointer == IntPtr.Zero 
+                ? "<nullptr>"
                 : $"{(string)this}    [ An {StrLength} of a 8-bit characters at 0x{pointer.ToString("x")} ]";
 
         #endregion

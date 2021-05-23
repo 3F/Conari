@@ -24,6 +24,7 @@
 */
 
 using System;
+using net.r_eg.Conari.Exceptions;
 using net.r_eg.Conari.Types;
 
 namespace net.r_eg.Conari.Core
@@ -36,6 +37,16 @@ namespace net.r_eg.Conari.Core
     public interface INativeStringManager<T>: IStringMaker<T>, IDisposable
         where T: struct
     {
+        /// <inheritdoc cref="add{Tin}(NativeString{Tin})"/>
+        void add(NativeString<T> input);
+
+        /// <summary>
+        /// Manage a <see cref="NativeString{Tin}"/> instance.
+        /// </summary>
+        /// <typeparam name="Tin">Supported type for <see cref="NativeString{T}"/>.</typeparam>
+        /// <exception cref="AbandonedPointerException"/>
+        void add<Tin>(NativeString<Tin> input) where Tin : struct;
+
         /// <inheritdoc cref="cstr{Tin}(string, int, out Tin)"/>
         NativeString<T> cstr(string input, int extend);
 

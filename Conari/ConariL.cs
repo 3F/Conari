@@ -275,7 +275,7 @@ namespace net.r_eg.Conari
 
         private dynamic newDLR(CallingConvention conv)
         {
-            return new ProviderDLR(this, conv) {
+            return new ProviderDLR<TCharIn>(this, conv, strings) {
                 Cache = config.CacheDLR
             };
         }

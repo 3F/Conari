@@ -28,12 +28,11 @@
         🧰 Powerful types
 
         ```
-        using ConariL l = new("regXwild.dll");
-        l._.replace&lt;bool&gt;
-        (
-            l._T("number = 888;", out CharPtr result), 
-            l._T("+??;"), l._T("2034;")
-        ); // result: number = 2034;
+        using dynamic l = new ConariX("regXwild.dll");
+
+        string data = "number = 888;";
+        bool found = l.replace&lt;bool&gt;(ref data, "+??;", "2034;");
+        // found: true; data: number = 2034;
         ```
 
         🔨 Its amazing DLR features

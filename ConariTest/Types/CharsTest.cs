@@ -119,12 +119,6 @@ namespace ConariTest.Types
 
             Assert.True(TCharPtr.Null == new TCharPtr());
             Assert.False(TCharPtr.Null != new TCharPtr());
-
-            Assert.True(TCharPtr.Null == (TCharPtr)CharPtr.Null);
-            Assert.True(TCharPtr.Null == (TCharPtr)WCharPtr.Null);
-
-            Assert.False(TCharPtr.Null != (TCharPtr)CharPtr.Null);
-            Assert.False(TCharPtr.Null != (TCharPtr)WCharPtr.Null);
         }
     }
 }

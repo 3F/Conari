@@ -64,5 +64,12 @@ namespace net.r_eg.Conari.Core
         /// </summary>
         /// <remarks>Useful in avoiding any optional values. Eg. (1, 2, 3, [0, 0])</remarks>
         object[] TrailingArgs { get; set; }
+
+        /// <summary>
+        /// An additional buffer to process ref strings (ByRef&amp;).
+        /// Factor is how many times to increase.
+        /// </summary>
+        /// <remarks>Eg. 0 - do not use buffer; 0.5 - half of input; 1 - same to input; 2 - twice...</remarks>
+        float RefModifiableStringBuffer { get; set; }
     }
 }

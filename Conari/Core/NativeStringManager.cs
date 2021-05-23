@@ -48,6 +48,11 @@ namespace net.r_eg.Conari.Core
 
         protected virtual float DefaultBuffer => 0.8f;
 
+        public void add(NativeString<T> input) => addString(input);
+
+        public void add<Tin>(NativeString<Tin> input) where Tin : struct
+            => addString(input);
+
         public IntPtr _T(string input, int extend) => cstr<T>(input, extend);
 
         public IntPtr _T(string input) => cstr<T>(input);

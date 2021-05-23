@@ -23,40 +23,23 @@
  * THE SOFTWARE.
 */
 
-using System;
-
-namespace net.r_eg.Conari.Exceptions
+namespace net.r_eg.Conari.Types
 {
-    [Serializable]
-    public class CommonException: Exception
+    public interface INativeString: IMarshalableGeneric
     {
-        public CommonException(string message, Exception innerException, params object[] args)
-            : base(string.Format(message, args), innerException)
-        {
+        /// <summary>
+        /// For supported places use a manager to release resources.
+        /// </summary>
+        bool UseManager { get; set; }
 
-        }
+        /// <summary>
+        /// Who is the owner. True indicates its own allocating.
+        /// </summary>
+        bool Owner { get; }
 
-        public CommonException(string message, params object[] args)
-            : base(string.Format(message, args))
-        {
-
-        }
-
-        public CommonException(string message, Exception innerException)
-            : base(message, innerException)
-        {
-
-        }
-
-        public CommonException(string message)
-            : base(message)
-        {
-
-        }
-
-        public CommonException()
-        {
-
-        }
+        /// <summary>
+        /// Indicates disposed state.
+        /// </summary>
+        bool Disposed { get; }
     }
 }

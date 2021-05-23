@@ -38,8 +38,10 @@ namespace net.r_eg.Conari.Types
     /// </summary>
     [DebuggerDisplay("{DbgInfo}")]
     [Serializable]
-    public struct WCharPtr: ISerializable
+    [StructLayout(LayoutKind.Explicit)]
+    public struct WCharPtr: IPtr, ISerializable
     {
+        [FieldOffset(0)]
         private readonly IntPtr pointer;
 
         public static readonly WCharPtr Null;
@@ -67,6 +69,8 @@ namespace net.r_eg.Conari.Types
             return Encoding.BigEndianUnicode.GetString(Raw, 0, Length);
         }}
 
+        public IntPtr AddressPtr => this;
+
         [Obsolete]
         public static int PtrSize => IntPtr.Size;
 
@@ -77,9 +81,9 @@ namespace net.r_eg.Conari.Types
 
         public static implicit operator WCharPtr(IntPtr ptr) => new(ptr);
 
-        public static implicit operator WCharPtr(Int64 v) => new((IntPtr)v);
+        public static explicit operator WCharPtr(Int64 v) => new((IntPtr)v);
 
-        public static implicit operator WCharPtr(Int32 v) => new((IntPtr)v);
+        public static explicit operator WCharPtr(Int32 v) => new((IntPtr)v);
 
         public static bool operator ==(WCharPtr a, CharPtr b) => a.Equals(b);
 
@@ -134,8 +138,10 @@ namespace net.r_eg.Conari.Types
 
         #region DebuggerDisplay
 
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private string DbgInfo
-            => pointer == IntPtr.Zero ? "null" 
+            => pointer == IntPtr.Zero 
+                ? "<nullptr>"
                 : $"{(string)this}    [ An {StrLength} of a 16-bit characters at 0x{pointer.ToString("x")} ]";
 
         #endregion

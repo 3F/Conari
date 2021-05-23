@@ -265,8 +265,10 @@ namespace net.r_eg.Conari.Types
 
         #region DebuggerDisplay
 
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private string DbgInfo
-            => (memory == null || memory.InitialPtr == VPtr.Zero) ? "None"
+            => (memory == null || memory.InitialPtr == VPtr.Zero) 
+                ? "<nullptr>"
                 : $"[ {Size} bytes at 0x{((IntPtr)memory.InitialPtr).ToString("x")} ]";
 
         #endregion

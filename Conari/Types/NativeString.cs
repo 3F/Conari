@@ -35,7 +35,7 @@ namespace net.r_eg.Conari.Types
 {
     [DebuggerDisplay("{DbgInfo}")]
     [Serializable]
-    public class NativeString<T>: IMarshalableGeneric, ISerializable, IDisposable
+    public class NativeString<T>: IMarshalableGeneric, INativeString, ISerializable, IDisposable
         where T : struct
     {
         protected IntPtr pointer;
@@ -48,12 +48,11 @@ namespace net.r_eg.Conari.Types
 
         public Type MarshalableType { get; } = typeof(T);
 
-        /// <summary>
-        /// Who is the owner. True indicates its own allocating.
-        /// </summary>
+        public bool UseManager { get; set; }
+
         public bool Owner { get; private set; }
 
-        internal bool Disposed => disposed;
+        public bool Disposed => disposed;
 
         protected static bool IsWCharOrTCharWide
             => (typeof(T) == typeof(WCharPtr)) 
@@ -91,8 +90,8 @@ namespace net.r_eg.Conari.Types
         {
             NativeString<T> ret = new(input, newstr.Length);
 
-            byte[] data = GetBytes(ref newstr);
-            WriteTo(((IntPtr)ret) + GetLengthFromPtr(input), ref data, ret.allocated);
+            byte[] data = GetBytes(newstr);
+            WriteTo(((IntPtr)ret) + GetLengthFromPtr(input), data, ret.allocated);
             return ret;
         }
 
@@ -164,7 +163,7 @@ namespace net.r_eg.Conari.Types
         {
             if(pointer == IntPtr.Zero) throw new NotSupportedException(Msg.invalid_pointer);
 
-            alloc(ref newstr, 0, pointer);
+            alloc(newstr, 0, pointer);
             return this;
         }
 
@@ -176,11 +175,11 @@ namespace net.r_eg.Conari.Types
         /// <returns>Returns a NEW object which MUST be disposed later.</returns>
         public NativeString<T> add(string newstr) => this + newstr;
 
-        public NativeString(string str) => pointer = alloc(ref str, 0);
+        public NativeString(string str) => pointer = alloc(str, 0);
 
         public NativeString(int buffer = 0x7F) : this(string.Empty, buffer) { }
 
-        public NativeString(string str, int extend) => pointer = alloc(ref str, extend);
+        public NativeString(string str, int extend) => pointer = alloc(str, extend);
 
         public NativeString(IntPtr pointer)
         {
@@ -207,7 +206,7 @@ namespace net.r_eg.Conari.Types
         /// <param name="newstr">New string data. Do not include a null terminator it will be processed automatically depending on the T.</param>
         /// <param name="allocated">Allocated region size.</param>
         /// <returns>Initial not modified address.</returns>
-        protected static IntPtr WriteTo(IntPtr addr, ref byte[] newstr, int? allocated)
+        protected static IntPtr WriteTo(IntPtr addr, byte[] newstr, int? allocated)
         {
             byte[] _c0 = NullTerm;
 
@@ -225,7 +224,7 @@ namespace net.r_eg.Conari.Types
             return addr;
         }
 
-        protected static byte[] GetBytes(ref string str)
+        protected static byte[] GetBytes(string str)
         {
             if(str == null) throw new NotSupportedException(Msg.no_support_null_cstr);
 
@@ -242,17 +241,17 @@ namespace net.r_eg.Conari.Types
             throw new NotImplementedException(Msg.only_0_supported_yet.Format($"{nameof(TCharPtr)}, {nameof(WCharPtr)}, {nameof(CharPtr)}"));
         }
 
-        protected IntPtr alloc(ref string str, int buffer = 0)
-            => alloc(ref str, buffer, IntPtr.Zero);
+        protected IntPtr alloc(string str, int buffer = 0)
+            => alloc(str, buffer, IntPtr.Zero);
 
-        protected IntPtr alloc(ref string str, int buffer, IntPtr active)
+        protected IntPtr alloc(string str, int buffer, IntPtr active)
         {
-            byte[] data = GetBytes(ref str);
+            byte[] data = GetBytes(str);
 
             return WriteTo
             (
                 ((active != IntPtr.Zero) ? active : alloc(data.Length + Math.Max(0, buffer))),
-                ref data,
+                data,
                 allocated
             );
         }
@@ -306,13 +305,15 @@ namespace net.r_eg.Conari.Types
         }
 
         ~NativeString() => Dispose(false);
-        
+
         #endregion
 
         #region DebuggerDisplay
 
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private string DbgInfo
-            => pointer == IntPtr.Zero ? "null" 
+            => pointer == IntPtr.Zero 
+                ? "<nullptr>"
                 : $"{(string)this}    [ at 0x{pointer.ToString("x")} ({(Owner ? "owner" : "access")}) ]";
 
         #endregion

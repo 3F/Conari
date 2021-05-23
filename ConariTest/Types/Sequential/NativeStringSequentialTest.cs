@@ -28,5 +28,61 @@ namespace ConariTest.Types.Sequential
             Assert.True(filter.Owner);
             Assert.True(replacement.Owner);
         }
+
+        [Fact]
+        public void strTest2()
+        {
+            TCharPtr.__Unicode = false;
+
+            using dynamic l = new ConariX(RXW_X);
+            using var data = new NativeString<TCharPtr>("Hello {p}!", 2);
+
+            using NativeString<TCharPtr> filter = new("{p}");
+            using NativeString<TCharPtr> replacement = new("world");
+
+            Assert.True(l.replace<bool>(data, filter, replacement));
+            Assert.Equal("Hello world!", (TCharPtr)data);
+        }
+
+        [Fact]
+        public void strTest3()
+        {
+            TCharPtr.__Unicode = false;
+
+            using var l = new ConariL(RXW_X);
+            using var data = new NativeString<TCharPtr>("Hello {p}!", 2);
+
+            using NativeString<TCharPtr> filter = new("{p}");
+            using NativeString<TCharPtr> replacement = new("world");
+
+            Assert.True(l.bind<Func<TCharPtr, TCharPtr, TCharPtr, bool>>("replace")(data, filter, replacement));
+            Assert.Equal("Hello world!", (TCharPtr)data);
+        }
+
+        [Fact]
+        public void strTest4()
+        {
+            using dynamic l = new ConariX(RXW_X);
+            using var data = new NativeString<CharPtr>("Hello {p}!", 2);
+
+            using NativeString<CharPtr> filter = new("{p}");
+            using NativeString<CharPtr> replacement = new("world");
+
+            Assert.True(l.replace<bool>(data, filter, replacement));
+            Assert.Equal("Hello world!", (CharPtr)data);
+        }
+
+        [Fact]
+        public void strTest5()
+        {
+            using var l = new ConariL(RXW_X);
+            using var data = new NativeString<CharPtr>("Hello {p}!", 2);
+
+            using NativeString<CharPtr> filter = new("{p}");
+            using NativeString<CharPtr> replacement = new("world");
+
+            Assert.True(l.bind<Func<CharPtr, CharPtr, CharPtr, bool>>("replace")(data, filter, replacement));
+            Assert.Equal("Hello world!", (CharPtr)data);
+        }
     }
 }
