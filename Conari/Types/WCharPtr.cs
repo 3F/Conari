@@ -95,8 +95,14 @@ namespace net.r_eg.Conari.Types
                 return false;
             }
 
+#if F_NATIVE_STRING_CMP_STRICT
+
             return pointer == b.pointer
                     || ToString() == b.ToString();
+
+#else
+            return ToString() == b.ToString();
+#endif
         }
 
         public override int GetHashCode()
@@ -130,7 +136,7 @@ namespace net.r_eg.Conari.Types
 
         private string DbgInfo
             => pointer == IntPtr.Zero ? "null" 
-                : $"{(string)this}    [ An {StrLength} of a 16-bit characters at 0x{pointer:x} ]";
+                : $"{(string)this}    [ An {StrLength} of a 16-bit characters at 0x{pointer.ToString("x")} ]";
 
         #endregion
     }

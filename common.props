@@ -32,7 +32,8 @@
 
   <!-- Additional compilation features -->
   <PropertyGroup>
-
+    <!-- Compare c-strings using fully allocated space -->
+    <!-- <DefineConstants>F_NATIVE_STRING_CMP_STRICT;$(DefineConstants)</DefineConstants> -->
   </PropertyGroup>
 
 </Project>

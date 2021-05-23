@@ -113,10 +113,17 @@ namespace net.r_eg.Conari.Types
 
             if(obj is not NativeString<T> b) return false;
 
-            return pointer == b.pointer
-                && allocated == b.allocated
-                && Owner == b.Owner
+            // NOTE: actual values can be different for pointer == b.pointer due to updating without allocation
+
+#if F_NATIVE_STRING_CMP_STRICT
+
+            return allocated == b.allocated
                 && ToString() == b.ToString();
+
+#else
+
+            return ToString() == b.ToString();
+#endif
         }
 
         public override int GetHashCode()
@@ -304,7 +311,7 @@ namespace net.r_eg.Conari.Types
 
         private string DbgInfo
             => pointer == IntPtr.Zero ? "null" 
-                : $"{(string)this}    [ at 0x{pointer:x} ({(Owner ? "owner" : "access")}) ]";
+                : $"{(string)this}    [ at 0x{pointer.ToString("x")} ({(Owner ? "owner" : "access")}) ]";
 
         #endregion
     }

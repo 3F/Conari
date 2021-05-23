@@ -24,12 +24,45 @@
 */
 
 using System;
+using System.Runtime.Serialization;
+using net.r_eg.Conari.Extension;
 
-namespace net.r_eg.Conari.Extension
+namespace net.r_eg.Conari.Types
 {
-    public static class StringExtension
+    [Serializable]
+    public sealed class BufferedString<T>: NativeString<T>, ISerializable, IDisposable
+        where T : struct
     {
-        internal static int RelativeLength(this string input, float percent)
-            => (int)Math.Ceiling((input?.Length ?? 0) * percent);
+        private const float BUF = 2.5f;
+
+        public BufferedString(string str)
+            : base(str, str.RelativeLength(BUF))
+        {
+
+        }
+
+        public BufferedString(int buffer = 0xFF)
+            : base(buffer)
+        {
+
+        }
+
+        public BufferedString(string str, int extend)
+            : base(str, extend)
+        {
+
+        }
+
+        public BufferedString(IntPtr pointer)
+            : base(pointer, (int)Math.Ceiling((pointer == IntPtr.Zero ? 0 : GetLengthFromPtr(pointer)) * BUF))
+        {
+
+        }
+
+        public BufferedString(IntPtr pointer, int extend)
+            : base(pointer, extend)
+        {
+
+        }
     }
 }

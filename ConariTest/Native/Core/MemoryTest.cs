@@ -1,5 +1,4 @@
 ﻿using System;
-using ConariTest._svc;
 using net.r_eg.Conari;
 using net.r_eg.Conari.Exceptions;
 using net.r_eg.Conari.Native;
@@ -10,10 +9,10 @@ using Xunit;
 
 namespace ConariTest.Native.Core
 {
-    using DWORD = UInt32;
-    using LONG  = Int32;
-    using WORD  = UInt16;
     using static _svc.TestHelper;
+    using DWORD = UInt32;
+    using LONG = Int32;
+    using WORD = UInt16;
 
     public class MemoryTest
     {
@@ -139,8 +138,8 @@ namespace ConariTest.Native.Core
         [Fact]
         public void memTest5()
         {
-            using var alloc = new Allocator(new byte[]{ 0x30, 0x31, 2, 3, 4, 5, 6, 7, 8, 9 });
-            Memory memory = new(alloc.ptr);
+            using Allocator alloc = new(0x30, 0x31, 2, 3, 4, 5, 6, 7, 8, 9);
+            Memory memory = alloc.Memory;
 
             Assert.Equal(0x30, memory.readByte());
             Assert.Equal('1', memory.readAChar());
@@ -157,8 +156,8 @@ namespace ConariTest.Native.Core
         [Fact]
         public void memTest6()
         {
-            using var alloc = new Allocator(new byte[]{ 0x70, 0xDE, 0x01, 0xAC, 0x04, 0xCB, 0x70, 0xDE, 0x93, 0x12, 0x74, 0x94 });
-            Memory memory = new(alloc.ptr);
+            using Allocator alloc = new(0x70, 0xDE, 0x01, 0xAC, 0x04, 0xCB, 0x70, 0xDE, 0x93, 0x12, 0x74, 0x94);
+            Memory memory = alloc.Memory;
 
             Assert.Equal(-2418209778971845008, memory.readInt64());
 
@@ -194,13 +193,13 @@ namespace ConariTest.Native.Core
         [Fact]
         public void memTest7()
         {
-            using var alloc = new Allocator(new byte[]{ 0x4D, 0x00, 0x4B, 0x04, 0xFC, 0x25, 0x41, 0x00, 
-                                                        0x4B, 0x04, 0xFE, 0x25, 0x43, 0x00, 0x4B, 0x04, 
-                                                        0x00, 0x26, 0x55, 0x00, 0x4B, 0x04, 0x02, 0x26, 
-                                                        0x47, 0x00, 0x4B, 0x04, 0x04, 0x26, 0x49, 0x00, 
-                                                        0x4B, 0x04, 0x06, 0x26, 0x57, 0x00, 0x4B, 0x04, 
-                                                        0x08, 0x26, 0x4D, 0x00, 0x4F, 0x04, 0x0C });
-            Memory memory = new(alloc.ptr);
+            using Allocator alloc = new(0x4D, 0x00, 0x4B, 0x04, 0xFC, 0x25, 0x41, 0x00, 
+                                        0x4B, 0x04, 0xFE, 0x25, 0x43, 0x00, 0x4B, 0x04, 
+                                        0x00, 0x26, 0x55, 0x00, 0x4B, 0x04, 0x02, 0x26, 
+                                        0x47, 0x00, 0x4B, 0x04, 0x04, 0x26, 0x49, 0x00, 
+                                        0x4B, 0x04, 0x06, 0x26, 0x57, 0x00, 0x4B, 0x04, 
+                                        0x08, 0x26, 0x4D, 0x00, 0x4F, 0x04, 0x0C);
+            Memory memory = alloc.Memory;
 
             Assert.Equal('M', memory.read<char>());
             Assert.Equal(0, memory.read<byte>());
@@ -228,8 +227,8 @@ namespace ConariTest.Native.Core
         [Fact]
         public void memTest8()
         {
-            using var alloc = new Allocator(new byte[]{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 1 });
-            Memory memory = new(alloc.ptr);
+            using Allocator alloc = new(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 1);
+            Memory memory = alloc.Memory;
 
             sbyte v1    = -9;
             byte[] v2   = Array.Empty<byte>();
@@ -505,8 +504,8 @@ namespace ConariTest.Native.Core
         [Fact]
         public void charBitsTest1()
         {
-            using var alloc = new Allocator(new byte[] { 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39 });
-            Memory memory = new(alloc.ptr);
+            using Allocator alloc = new(0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39);
+            Memory memory = alloc.Memory;
 
             memory
             .eq('0')
@@ -526,8 +525,8 @@ namespace ConariTest.Native.Core
         [Fact]
         public void charBitsTest2()
         {
-            using var alloc = new Allocator(new byte[] { 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39 });
-            Memory memory = new(alloc.ptr);
+            using Allocator alloc = new(0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39);
+            Memory memory = alloc.Memory;
 
             Assert.Equal('㄰', memory.readWChar());
             Assert.Equal('2', memory.readChar());

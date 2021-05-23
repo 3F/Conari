@@ -73,18 +73,17 @@ using var c = ConariL.Make(new("regXwild"), out dynamic l);
 // ready for everything even without configuring
 
 using var u = NativeStruct.Make.f<UIntPtr>("start", "end").Struct;
-/* Hey! We just created a structure like
+/* Hey! We just generated a structure like
 [StructLayout(LayoutKind.Sequential)]
 private struct MatchResult
 {
     public UIntPtr start;
     public UIntPtr end;
-}
-*/
+}*/
 
 if(l.match<bool>(c._T("n = '888';"), c._T("'*'"), 2/*MATCH_RESULT*/, (IntPtr)u))
 {
-    /* Now we just invoked this
+    /* Now we just generated and invoked this
     REGXWILD_API_L bool match
     (
         const rxwtypes::TCHAR* input,
@@ -94,9 +93,7 @@ if(l.match<bool>(c._T("n = '888';"), c._T("'*'"), 2/*MATCH_RESULT*/, (IntPtr)u))
     )
     */
     dynamic v = u.Access; // just access the EssRxW::MatchResult* result
-
-    v.start // 4
-    v.end   // 9
+    // v.start == 4; v.end == 9;
 }
 // Yes, a 4 lines and your task is done; Free memory, Free hands.
 ```
@@ -257,6 +254,43 @@ Raw mt = ptr.Native()
 ...
 ```
 
+A modern *NativeData* chains for everything (Memory, Streams, Local collections, ...)
+
+```csharp
+.move(0x3C, Zone.D)
+.read(out LONG e_lfanew)
+.move(e_lfanew, Zone.D)
+.eq('P', 'E', '\0', '\0')
+.ifFalse(_ => throw new PECorruptDataException())
+.Native()
+.f<WORD>("Machine", "NumberOfSections")
+.align<DWORD>(3)
+.t<WORD, WORD>("SizeOfOptionalHeader", "Characteristics")
+.region()
+.t<WORD>("Magic") // start IMAGE_OPTIONAL_HEADER offset 0 (0x108)
+.build(out dynamic ifh)
+.Access
+.move(ifh.SizeOfOptionalHeader == 0xF0 ? 0x6C : 0x5C)
+.read(out DWORD NumberOfRvaAndSizes)
+.Native() // DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT]
+.t<DWORD>("VirtualAddress")
+.t<DWORD>("Size")
+.build(out dynamic idd)
+.Access.move(8 * (NumberOfRvaAndSizes - 1))
+...
+
+// ifh.Machine;          - IMAGE_FILE_MACHINE_AMD64
+// e_lfanew              - 0x110
+// NumberOfRvaAndSizes   - 16
+// idd.VirtualAddress    - VA 0x7070
+// ifh.Characteristics;  - IMAGE_FILE_EXECUTABLE_IMAGE 
+//                          | IMAGE_FILE_LARGE_ADDRESS_AWARE 
+//                          | IMAGE_FILE_DLL
+// ifh.Magic;            - PE64
+// ifh.NumberOfSections; - 6
+// ...
+```
+
 **Calling Convention** & **Name-Decoration** **[[?](https://github.com/3F/Conari/issues/3)]**
 
 ```csharp
@@ -291,16 +325,27 @@ l._.getFlag<bool>();
 * NativeString\<T\> (+NativeStringManager\<T\>) - Fully supports TCharPtr, CharPtr, WCharPtr;
 * NativeStruct - Fully automatic way of working with structures without declarations using NativeData chains;
 * NativeStruct\<T\> - Semi-automatic way of working with structures using CLR types declarations;
+* NativeArray\<T\>
 * ...
-
-```csharp
-CharPtr name = c.bind<FuncOut3<int, size_t, IntPtr>>("to")(1, out size_t len);
-string myName += name; // 8 bit C-string and managed string (UTF-16)
-```
 
 ```csharp
 using var a = new NativeString<WCharPtr>("Hello");
 using var b = a + " world!"; // unmanaged C-string, a Unicode characters
+```
+
+```csharp
+CharPtr name = c.to<CharPtr>(1, out size_t len);
+//CharPtr name = c.bind<FuncOut3<int, size_t, IntPtr>>("to")(1, out size_t len);
+string myName += name; // 8 bit C-string and managed string (UTF-16)
+```
+
+```csharp
+using NativeArray<int> nr = new(1, 2, 3);
+nr[0] = -1;
+nr[1] = 0;
+nr[2] = 1;
+
+Assert.True(nr == new int[] { -1, 0, 1 });
 ```
 
 ```csharp

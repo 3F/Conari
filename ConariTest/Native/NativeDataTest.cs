@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using ConariTest._svc;
 using net.r_eg.Conari;
 using net.r_eg.Conari.Native;
 using net.r_eg.Conari.Native.Core;
@@ -10,10 +9,10 @@ using Xunit;
 
 namespace ConariTest.Native
 {
-    using DWORD = UInt32;
-    using LONG  = Int32;
-    using WORD  = UInt16;
     using static _svc.TestHelper;
+    using DWORD = UInt32;
+    using LONG = Int32;
+    using WORD = UInt16;
 
     public class NativeDataTest
     {
@@ -241,8 +240,8 @@ namespace ConariTest.Native
         [Fact]
         public void chainShiftsTest1()
         {
-            using var alloc = new Allocator(new byte[]{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0xA, 0xB, 0xC, 0xD, 0xE, 0xF });
-            IntPtr ptr = alloc.ptr;
+            using Allocator alloc = new(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0xA, 0xB, 0xC, 0xD, 0xE, 0xF);
+            IntPtr ptr = (IntPtr)alloc.Memory;
 
             Assert.Equal((byte)2, ptr.Native().align<byte>(3, "", "", "z").Raw.Type.DLR.z);
 
@@ -266,8 +265,8 @@ namespace ConariTest.Native
         [InlineData(true, ChainMode.Fast)]
         public void chainModeTest1(bool setmode, ChainMode mode = ChainMode.Fast)
         {
-            using var alloc = new Allocator(new byte[]{ 0, 1, 2, 3, 4 });
-            var native = setmode ? alloc.ptr.Native().mode(mode) : alloc.ptr.Native();
+            using Allocator alloc = new(0, 1, 2, 3, 4);
+            var native = setmode ? alloc.Native.mode(mode) : alloc.Native;
 
             Assert.Equal((byte)2, native.t<byte, byte, byte>(null, null, "z").DLR.z);
             Assert.Equal((byte)2, native.t<byte>("z").DLR.z);
@@ -277,8 +276,8 @@ namespace ConariTest.Native
         [Fact]
         public void chainModeTest2()
         {
-            using var alloc = new Allocator(new byte[]{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 });
-            var native = alloc.ptr.Native().mode(ChainMode.Updating);
+            using Allocator alloc = new(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+            var native = alloc.Native.mode(ChainMode.Updating);
 
             Assert.Equal((byte)2, native.t<byte, byte, byte>(null, null, "z").DLR.z);
             Assert.Equal((byte)3, native.t<byte>("z").DLR.z);
@@ -288,8 +287,8 @@ namespace ConariTest.Native
         [Fact]
         public void chainModeTest3()
         {
-            using var alloc = new Allocator(new byte[]{ 0, 1, 2, 3, 4, 5, 6 });
-            var native = alloc.ptr.Native().mode(ChainMode.Exception);
+            using Allocator alloc = new(0, 1, 2, 3, 4, 5, 6);
+            var native = alloc.Native.mode(ChainMode.Exception);
 
             Assert.Equal((byte)2, native.t<byte, byte, byte>(null, null, "z").DLR.z);
 

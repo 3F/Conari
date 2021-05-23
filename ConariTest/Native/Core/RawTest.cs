@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using ConariTest._svc;
+using net.r_eg.Conari.Native;
 using net.r_eg.Conari.Native.Core;
 using Xunit;
 
@@ -12,8 +12,8 @@ namespace ConariTest.Native.Core
         public void ctorTest1()
         {
             var seq = new byte[] { 1, 2, 4, 5 };
-            using var exp = new Allocator(seq);
-            Memory mem = exp.ptr;
+            using Allocator exp = new(seq);
+            Memory mem = exp.Memory;
 
             var raw = new Raw(mem, seq.Length, 1);
             byte[] final = raw.Values;

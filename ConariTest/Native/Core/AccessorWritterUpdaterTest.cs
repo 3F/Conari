@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using ConariTest._svc;
+using net.r_eg.Conari.Native;
 using net.r_eg.Conari.Native.Core;
 using net.r_eg.Conari.Types;
 using Xunit;
@@ -36,7 +36,7 @@ namespace ConariTest.Native.Core
             yield return new object[] { new LocalContent(data), null };
 
             Allocator alloc = new(data);
-            yield return new object[] { new Memory(alloc.ptr), alloc };
+            yield return new object[] { alloc.Memory, alloc };
 
             NativeStream stream = new(new MemoryStream(data));
             yield return new object[] { stream, stream };
@@ -75,7 +75,7 @@ namespace ConariTest.Native.Core
             yield return new object[] { new LocalContent(data), null };
 
             Allocator alloc = new(data);
-            yield return new object[] { new Memory(alloc.ptr), alloc };
+            yield return new object[] { alloc.Memory, alloc };
 
             NativeStream stream = new(new MemoryStream(data));
             yield return new object[] { stream, stream };
@@ -110,7 +110,7 @@ namespace ConariTest.Native.Core
             yield return new object[] { new LocalContent(data), null };
 
             Allocator alloc = new(data);
-            yield return new object[] { new Memory(alloc.ptr), alloc };
+            yield return new object[] { alloc.Memory, alloc };
 
             NativeStream stream = new(new MemoryStream(data));
             yield return new object[] { stream, stream };
@@ -145,7 +145,7 @@ namespace ConariTest.Native.Core
             yield return new object[] { new LocalContent(data), null };
 
             Allocator alloc = new(data);
-            yield return new object[] { new Memory(alloc.ptr), alloc };
+            yield return new object[] { alloc.Memory, alloc };
 
             NativeStream stream = new(new MemoryStream(data));
             yield return new object[] { stream, stream };
@@ -180,7 +180,7 @@ namespace ConariTest.Native.Core
             yield return new object[] { new LocalContent(data), null };
 
             Allocator alloc = new(data);
-            yield return new object[] { new Memory(alloc.ptr), alloc };
+            yield return new object[] { alloc.Memory, alloc };
 
             NativeStream stream = new(new MemoryStream(data));
             yield return new object[] { stream, stream };
@@ -215,7 +215,7 @@ namespace ConariTest.Native.Core
             yield return new object[] { new LocalContent(data), null };
 
             Allocator alloc = new(data);
-            yield return new object[] { new Memory(alloc.ptr), alloc };
+            yield return new object[] { alloc.Memory, alloc };
 
             NativeStream stream = new(new MemoryStream(data));
             yield return new object[] { stream, stream };
@@ -252,7 +252,7 @@ namespace ConariTest.Native.Core
             yield return new object[] { new LocalContent(data), null };
 
             Allocator alloc = new(data);
-            yield return new object[] { new Memory(alloc.ptr), alloc };
+            yield return new object[] { alloc.Memory, alloc };
 
             NativeStream stream = new(new MemoryStream(data));
             yield return new object[] { stream, stream };
@@ -287,7 +287,7 @@ namespace ConariTest.Native.Core
             yield return new object[] { new LocalContent(data), null };
 
             Allocator alloc = new(data);
-            yield return new object[] { new Memory(alloc.ptr), alloc };
+            yield return new object[] { alloc.Memory, alloc };
 
             NativeStream stream = new(new MemoryStream(data));
             yield return new object[] { stream, stream };
@@ -325,7 +325,7 @@ namespace ConariTest.Native.Core
             yield return new object[] { new LocalContent(data), null };
 
             Allocator alloc = new(data);
-            yield return new object[] { new Memory(alloc.ptr), alloc };
+            yield return new object[] { alloc.Memory, alloc };
 
             NativeStream stream = new(new MemoryStream(data));
             yield return new object[] { stream, stream };
@@ -363,7 +363,7 @@ namespace ConariTest.Native.Core
             yield return new object[] { new LocalContent(data), null };
 
             Allocator alloc = new(data);
-            yield return new object[] { new Memory(alloc.ptr), alloc };
+            yield return new object[] { alloc.Memory, alloc };
 
             NativeStream stream = new(new MemoryStream(data));
             yield return new object[] { stream, stream };
@@ -400,7 +400,7 @@ namespace ConariTest.Native.Core
             yield return new object[] { new LocalContent(data), null };
 
             Allocator alloc = new(data);
-            yield return new object[] { new Memory(alloc.ptr), alloc };
+            yield return new object[] { alloc.Memory, alloc };
 
             NativeStream stream = new(new MemoryStream(data));
             yield return new object[] { stream, stream };
@@ -437,7 +437,7 @@ namespace ConariTest.Native.Core
             yield return new object[] { new LocalContent(data), null };
 
             Allocator alloc = new(data);
-            yield return new object[] { new Memory(alloc.ptr), alloc };
+            yield return new object[] { alloc.Memory, alloc };
 
             NativeStream stream = new(new MemoryStream(data));
             yield return new object[] { stream, stream };

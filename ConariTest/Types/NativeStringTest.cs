@@ -13,7 +13,7 @@ namespace ConariTest.Types
         public void allocTest1()
         {
             using dynamic l = new ConariX(RXW_X);
-            using var data = new NativeString<CharPtr>("Hello {p}!");
+            using var data = new BufferedString<CharPtr>("Hello {p}!");
 
             Assert.True(data.Owner);
 
@@ -106,7 +106,14 @@ namespace ConariTest.Types
             Assert.NotEqual(data, msg);
 
             using NativeString<CharPtr> msg2 = msg + string.Empty;
-            Assert.NotEqual(msg2, msg);
+            Assert.Equal(msg2, msg);
+            Assert.True(msg2 == msg);
+            Assert.False(msg2 != msg);
+
+            using NativeString<CharPtr> msg3 = msg + " ";
+            Assert.NotEqual(msg3, msg);
+            Assert.False(msg3 == msg);
+            Assert.True(msg3 != msg);
         }
 
         [Fact]

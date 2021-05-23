@@ -105,8 +105,8 @@ namespace net.r_eg.Conari.Types
         /// Accessing data. <br/>
         /// Only if structure was NOT based on <see cref="NeutralStruct"/>.
         /// </summary>
-        /// <remarks>Use <see cref="Read()"/> to update local values. Use <see cref="NativeStruct.Access"/> for more automation.</remarks>
-        public T Data => (readed ?? Read().readed).Value;
+        /// <remarks>Use <see cref="read()"/> to update local values. Use <see cref="NativeStruct.Access"/> for more automation.</remarks>
+        public T Data => (readed ?? read().readed).Value;
 
         /// <summary>
         /// Produced native data size in bytes.
@@ -125,18 +125,28 @@ namespace net.r_eg.Conari.Types
 
         public static implicit operator T(NativeStruct<T> v) => v.Data;
 
+        public static bool operator ==(NativeStruct<T> a, T b) => a.Equals(b);
+
+        public static bool operator !=(NativeStruct<T> a, T b) => !(a == b);
+
+        public static bool operator ==(T a, NativeStruct<T> b) => b.Equals(a);
+
+        public static bool operator !=(T a, NativeStruct<T> b) => !(b == a);
+
         public static bool operator ==(NativeStruct<T> a, NativeStruct<T> b) => a.Equals(b);
 
         public static bool operator !=(NativeStruct<T> a, NativeStruct<T> b) => !(a == b);
 
         public override bool Equals(object obj)
         {
-            if(obj is null || obj is not NativeStruct<T> b) {
-                return false;
-            }
+            if(obj is null) return false;
+            if(!IsNeutralStruct && obj is T s) return Data.Equals(s);
 
-            return pointer == b.pointer
-                    || (!IsNeutralStruct && Data.Equals(b.Data));
+            if(obj is not NativeStruct<T> b) return false;
+
+            // NOTE: actual values can be different for pointer == b.pointer
+
+            return !IsNeutralStruct && Data.Equals(b.Data);
         }
 
         public override int GetHashCode()
@@ -165,8 +175,8 @@ namespace net.r_eg.Conari.Types
             info.AddValue(nameof(Owner), Owner);
         }
 
-        /// <inheritdoc cref="Read(out T)"/>
-        public NativeStruct<T> Read()
+        /// <inheritdoc cref="read(out T)"/>
+        public NativeStruct<T> read()
         {
             if(!IsNeutralStruct)
             {
@@ -186,9 +196,9 @@ namespace net.r_eg.Conari.Types
         /// Alternatively use <see cref="Data"/> to access data. 
         /// Use <see cref="NativeStruct.Access"/> for more automation.
         /// </remarks>
-        public NativeStruct<T> Read(out T data)
+        public NativeStruct<T> read(out T data)
         {
-            Read();
+            read();
             data = readed.Value;
             return this;
         }
@@ -277,7 +287,7 @@ namespace net.r_eg.Conari.Types
 
         private string DbgInfo
             => pointer == IntPtr.Zero ? "None"
-                : $"[ {Size} bytes at 0x{pointer:x} ]";
+                : $"[ {Size} bytes at 0x{pointer.ToString("x")} ]";
 
         #endregion
     }

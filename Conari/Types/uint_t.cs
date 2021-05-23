@@ -44,7 +44,7 @@ namespace net.r_eg.Conari.Types
         public const UInt64 MAX = UInt64.MaxValue;
         public const UInt64 MIN = UInt64.MinValue;
 
-        private UInt64 val;
+        private readonly UInt64 val;
 
         public int ActualSize
         {

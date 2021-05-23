@@ -61,18 +61,18 @@ namespace ConariTest.Types
             Assert.Equal(n(6), u.Data.end);
 
             Assert.False(l.match<bool>(c._T("system"), c._T("1"), EngineOptions.F_NONE, (IntPtr)u));
-            Assert.Equal(MatchResult.npos, u.Read().Data.start);
+            Assert.Equal(MatchResult.npos, u.read().Data.start);
 
             Assert.True(l.matchOfs<bool>(c._T("number_str = '+12'"), c._T("str"), n(5), EngineOptions.F_NONE, (IntPtr)u));
-            Assert.Equal(MatchResult.npos, u.Read().Data.start);
+            Assert.Equal(MatchResult.npos, u.read().Data.start);
 
             Assert.True(l.matchOfs<bool>(c._T("number_str = '+12'"), c._T("str"), n(5), EngineOptions.F_MATCH_RESULT, (IntPtr)u));
-            u.Read();
+            u.read();
             Assert.Equal(n(7), u.Data.start);
             Assert.Equal(n(10), u.Data.end);
 
             Assert.False(l.matchOfs<bool>(c._T("number_str = '+12'"), c._T("str"), n(8), EngineOptions.F_NONE, (IntPtr)u));
-            Assert.Equal(MatchResult.npos, u.Read().Data.start);
+            Assert.Equal(MatchResult.npos, u.read().Data.start);
 
         }
 

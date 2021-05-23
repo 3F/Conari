@@ -62,13 +62,13 @@ namespace net.r_eg.Conari.Core
             => cstr<T>(input, extend, out access);
 
         public IntPtr _T(string input, out T access) 
-            => cstr<T>(input, input.PercentageLength(DefaultBuffer), out access);
+            => cstr<T>(input, input.RelativeLength(DefaultBuffer), out access);
 
         public IntPtr _T<Tin>(string input, int extend, out Tin access) where Tin : struct
             => cstr<Tin>(input, extend, out access);
 
         public IntPtr _T<Tin>(string input, out Tin access) where Tin : struct
-            => cstr<Tin>(input, input.PercentageLength(DefaultBuffer), out access);
+            => cstr<Tin>(input, input.RelativeLength(DefaultBuffer), out access);
 
         public NativeString<T> cstr(string input, int extend) => cstr<T>(input, extend);
 
@@ -92,7 +92,7 @@ namespace net.r_eg.Conari.Core
             => cstr<T>(input, extend, out access);
 
         public NativeString<T> cstr(string input, out T access) 
-            => cstr<T>(input, input.PercentageLength(DefaultBuffer), out access);
+            => cstr<T>(input, input.RelativeLength(DefaultBuffer), out access);
 
         public NativeString<Tin> cstr<Tin>(string input, int extend, out Tin access) where Tin : struct
         {
@@ -103,7 +103,7 @@ namespace net.r_eg.Conari.Core
         }
 
         public NativeString<Tin> cstr<Tin>(string input, out Tin access) where Tin : struct
-            => cstr<Tin>(input, input.PercentageLength(DefaultBuffer), out access);
+            => cstr<Tin>(input, input.RelativeLength(DefaultBuffer), out access);
 
         public INativeStringManager<T> release()
         {
