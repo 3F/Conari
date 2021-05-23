@@ -56,5 +56,13 @@ namespace net.r_eg.Conari.Core
         /// Forced use ByRef&amp; (reference-types) for all sent types.
         /// </summary>
         bool UseByRef { get; set; }
+
+        /// <summary>
+        /// Additional arguments at the end of calling.
+        /// Can be applied only if varargs.
+        /// null value will disable this.
+        /// </summary>
+        /// <remarks>Useful in avoiding any optional values. Eg. (1, 2, 3, [0, 0])</remarks>
+        object[] TrailingArgs { get; set; }
     }
 }

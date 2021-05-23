@@ -11,6 +11,11 @@ namespace NS_UNLIB_API_
     LIBAPI void addRefVal(int a, int b, int* result);
     LIBAPI int retAddRefVal(int a, int b, int* result);
 
+    /* cdecl varargs */
+
+    LIBAPI void vararg2(int* a, int* b, int c = 0, int d = 0);
+    LIBAPI int vararg2ret(int* a, int* b, int c = 0, int d = 0);
+
     /* basic */
 
     LIBAPI bool get_True();

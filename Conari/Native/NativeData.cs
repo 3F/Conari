@@ -324,7 +324,7 @@ namespace net.r_eg.Conari.Native
         /// <returns></returns>
         public NativeData h(string file, string typedef)
         {
-            throw new NotImplementedException(Msg.NotYetImpl);
+            throw new NotImplementedException(Msg.not_yet_impl);
         }
 
         public NativeData t(Type type, string name = null) { return _a(track(name, type)); }
@@ -371,7 +371,7 @@ namespace net.r_eg.Conari.Native
 
         /// <param name="ptr">pointer to data structure.</param>
         public NativeData(IntPtr ptr)
-            : this(ptr != IntPtr.Zero ? new Memory(ptr) : throw new ArgumentException(Msg.ArgPointerZero))
+            : this(ptr != IntPtr.Zero ? new Memory(ptr) : throw new ArgumentException(Msg.arg_pointer_zero))
         {
 
         }

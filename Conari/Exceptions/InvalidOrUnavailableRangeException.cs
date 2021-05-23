@@ -34,7 +34,7 @@ namespace net.r_eg.Conari.Exceptions
     public class InvalidOrUnavailableRangeException: CommonException
     {
         public InvalidOrUnavailableRangeException(VPtr address)
-            : base(Msg.Invalid_or_unavailable_range_at_0.Format(address.ToString()))
+            : base(Msg.invalid_or_unavailable_range_at_0.Format(address.ToString()))
         {
 
         }

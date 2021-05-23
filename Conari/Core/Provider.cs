@@ -41,39 +41,29 @@ using net.r_eg.DotNet.System.Reflection.Emit;
 
 namespace net.r_eg.Conari.Core
 {
-    using CMangling = Mangling.C;
     using Method = Method<object, object>;
 
     public abstract class Provider: Loader, ILoader, IProvider
     {
-        /// <summary>
-        /// When Prefix has been changed.
-        /// </summary>
         public event EventHandler<DataArgs<string>> PrefixChanged = delegate(object sender, DataArgs<string> e) { };
 
-        /// <summary>
-        /// When Convention has been changed.
-        /// </summary>
         public event EventHandler<DataArgs<CallingConvention>> ConventionChanged = delegate(object sender, DataArgs<CallingConvention> e) { };
 
-        /// <summary>
-        /// When handling new non-zero ProcAddress.
-        /// </summary>
         public event EventHandler<ProcAddressArgs> NewProcAddress = delegate(object sender, ProcAddressArgs e) { };
 
-        protected PAddrCache<Delegate> xDelegates = new PAddrCache<Delegate>();
-        protected PAddrCache<TDyn> xTDyn = new PAddrCache<TDyn>();
+        protected PAddrCache<Delegate> xDelegates = new();
+        protected PAddrCache<TDyn> xTDyn = new();
+
+        protected bool _cache = true;
+        protected IExVar exvar;
+        private string _prefix;
+        private CallingConvention _convention = CallingConvention.Cdecl;
 
         private readonly AliasDict aliasDict;
 
-        /// <summary>
-        /// To cache delegates, generated methods, etc.
-        /// </summary>
         public bool Cache
         {
-            get {
-                return _cache;
-            }
+            get => _cache;
             set
             {
                 if(!value) {
@@ -83,75 +73,42 @@ namespace net.r_eg.Conari.Core
                 _cache = value;
             }
         }
-        protected bool _cache = true;
 
-        /// <summary>
-        /// Prefix for exported functions.
-        /// </summary>
         public string Prefix
         {
-            get {
-                return _prefix;
-            }
-            set {
+            get => _prefix;
+            set
+            {
                 _prefix = value;
                 PrefixChanged(this, new DataArgs<string>(value));
             }
         }
-        private string _prefix;
 
-        /// <summary>
-        /// How should call methods implemented in unmanaged code.
-        /// </summary>
         public CallingConvention Convention
         {
-            get {
-                return _convention;
-            }
-            set {
+            get => _convention;
+            set
+            {
                 _convention = value;
                 ConventionChanged(this, new DataArgs<CallingConvention>(value));
             }
         }
-        private CallingConvention _convention;
 
-        /// <summary>
-        /// Auto name-decoration to find entry points of exported functions.
-        /// </summary>
-        public bool Mangling
-        {
-            get;
-            set;
-        }
+        public bool Mangling { get; set; }
 
-        /// <summary>
-        /// The aliases for exported-functions and variables.
-        /// </summary>
-        public Dictionary<string, ProcAlias> Aliases
+        public Dictionary<string, ProcAlias> Aliases => aliasDict?.Aliases;
+
+        public IExVar ExVar { get
         {
-            get {
-                return aliasDict?.Aliases;
+            if(exvar == null) {
+                exvar = new ExVar(this);
             }
-        }
+            return exvar;
+        }}
 
-        /// <summary>
-        /// Access to exported variables.
-        /// </summary>
-        public IExVar ExVar
-        {
-            get {
-                if(exvar == null) {
-                    exvar = new ExVar(this);
-                }
-                return exvar;
-            }
-        }
-        protected IExVar exvar;
-
-        /// <summary>
-        /// Additional services.
-        /// </summary>
         public IProviderSvc Svc { get; }
+
+        #region IProviderSvc
 
         protected sealed class ProviderSvc: IProviderSvc
         {
@@ -170,131 +127,49 @@ namespace net.r_eg.Conari.Core
             public ProviderSvc(Provider p) => provider = p;
         }
 
-        /// <summary>
-        /// Binds the exported Function. Full name is required.
-        /// </summary>
-        /// <typeparam name="T">Type of delegate.</typeparam>
-        /// <param name="lpProcName">The full name of exported function.</param>
-        /// <returns>Delegate of exported function.</returns>
+        #endregion
+
         public T bindFunc<T>(string lpProcName) where T : class
         {
             return getDelegate<T>(procName(lpProcName, false));
         }
 
-        /// <summary>
-        /// Alias `bindFunc&lt;Action&gt;(string lpProcName)`
-        /// Binds the exported Function. Full name is required.
-        /// </summary>
-        /// <param name="lpProcName">The full name of exported function.</param>
-        /// <returns>Delegate of exported function.</returns>
-        public Action bindFunc(string lpProcName)
-        {
-            return bindFunc<Action>(lpProcName);
-        }
+        public Action bindFunc(string lpProcName) => bindFunc<Action>(lpProcName);
 
-        /// <summary>
-        /// Binds the exported Function.
-        /// The main prefix will affects on this result.
-        /// </summary>
-        /// <typeparam name="T">Type of delegate.</typeparam>
-        /// <param name="func">The name of exported function.</param>
-        /// <returns>Delegate of exported function.</returns>
         public T bind<T>(string func) where T : class
         {
             return getDelegate<T>(procName(func, true));
         }
 
-        /// <summary>
-        /// Alias `bind&lt;Action&gt;(string func)`
-        /// Binds the exported Function.
-        /// The main prefix will affects on this result.
-        /// </summary>
-        /// <param name="func">The name of exported function.</param>
-        /// <returns>Delegate of exported function.</returns>
-        public Action bind(string func)
-        {
-            return bind<Action>(func);
-        }
+        public Action bind(string func) => bind<Action>(func);
 
-        /// <summary>
-        /// Binds the exported Function via MethodInfo and an specific name.
-        /// </summary>
-        /// <param name="mi">Prepared signature.</param>
-        /// <param name="name">Valid function name.</param>
-        /// <returns>Complete information to create delegates or to invoke methods.</returns>
-        public TDyn bind(MethodInfo mi, string name)
-        {
-            return wire(mi, procName(name, false));
-        }
+        public TDyn bind(MethodInfo mi, string name) => wire(mi, procName(name, false));
 
-        /// <summary>
-        /// Binds the exported Function via MethodInfo, an specific name and CallingConvention.
-        /// </summary>
-        /// <param name="mi">Prepared signature.</param>
-        /// <param name="name">Valid function name. Full name is required.</param>
-        /// <param name="conv">How it should be called. It overrides only for current method.</param>
-        /// <returns>Complete information to create delegates or to invoke methods.</returns>
         public TDyn bind(MethodInfo mi, string name, CallingConvention conv)
         {
             return wire(mi, procName(name, false), conv);
         }
 
-        /// <summary>
-        /// Alias `bindFunc&lt;object&gt;(string lpProcName, Type ret, params Type[] args)`
-        /// Binds the exported function.
-        /// </summary>
-        /// <param name="lpProcName">The full name of exported function.</param>
-        /// <param name="ret">The type of return value.</param>
-        /// <param name="args">The type of arguments.</param>
-        /// <returns>Delegate of exported function.</returns>
         public Method bindFunc(string lpProcName, Type ret, params Type[] args)
         {
             return bindFunc<object>(lpProcName, ret, args);
         }
 
-        /// <summary>
-        /// Binds the exported function.
-        /// </summary>
-        /// <typeparam name="T">The return type for new Delegate should be as T type.</typeparam>
-        /// <param name="lpProcName">The full name of exported function.</param>
-        /// <param name="ret">The type of return value.</param>
-        /// <param name="args">The type of arguments.</param>
-        /// <returns>Delegate of exported function.</returns>
         public Method<T, object> bindFunc<T>(string lpProcName, Type ret, params Type[] args)
         {
             return bind<T>(procName(lpProcName, false), ret, args);
         }
 
-        /// <summary>
-        /// Alias `bind&lt;object&gt;(string func, Type ret, params Type[] args)`
-        /// Binds the exported C API Function.
-        /// </summary>
-        /// <param name="func">The name of exported C API function.</param>
-        /// <param name="ret">The type of return value.</param>
-        /// <param name="args">The type of arguments.</param>
-        /// <returns>Delegate of exported function.</returns>
         public Method bind(string func, Type ret, params Type[] args)
         {
             return bind<object>(func, ret, args);
         }
 
-        /// <summary>
-        /// Binds the exported C API Function.
-        /// </summary>
-        /// <typeparam name="T">The return type for new Delegate should be as T type.</typeparam>
-        /// <param name="func">The name of exported C API function.</param>
-        /// <param name="ret">The type of return value.</param>
-        /// <param name="args">The type of arguments.</param>
-        /// <returns>Delegate of exported function.</returns>
         public Method<T, object> bind<T>(string func, Type ret, params Type[] args)
         {
             return bind<T>(procName(func, true), ret, args);
         }
 
-        /// <summary>
-        /// Returns full lpProcName with main prefix etc.
-        /// </summary>
-        /// <param name="name">Exported function or variable name.</param>
         public virtual string procName(string name)
         {
             if(string.IsNullOrWhiteSpace(name)) {
@@ -303,20 +178,9 @@ namespace net.r_eg.Conari.Core
             return $"{Prefix}{name}";
         }
 
-        /// <summary>
-        /// Returns address of the specific item such streams std::cin etc.
-        /// Related: https://github.com/3F/Conari/issues/17
-        /// </summary>
         public IntPtr addr(LpProcName item) => Svc.getProcAddr(item);
 
-        /// <summary>
-        /// To free memory from the heap allocated from the unmanaged memory.
-        /// </summary>
-        /// <param name="ptr">The address of the memory to be freed.</param>
-        public void free(IntPtr ptr)
-        {
-            throw new NotImplementedException(Msg.NotYetImpl);
-        }
+        public void free(IntPtr ptr) => throw new NotImplementedException(Msg.not_yet_impl);
 
         protected Provider()
         {
@@ -346,8 +210,8 @@ namespace net.r_eg.Conari.Core
 
         protected IntPtr getProcAddress(IntPtr hModule, string lpProcName, bool mangling = true)
         {
-            if(String.IsNullOrWhiteSpace(lpProcName)) {
-                throw new ArgumentException($"lpProcName is empty or null.");
+            if(string.IsNullOrWhiteSpace(lpProcName)) {
+                throw new ArgumentException(Msg.arg_0_empty_or_null.Format(nameof(lpProcName)));
             }
 
             IntPtr pAddr = NativeMethods.GetProcAddress(hModule, lpProcName);
@@ -356,30 +220,31 @@ namespace net.r_eg.Conari.Core
                 return pAddr;
             }
 
-            string msgerr = $"The entry point '{lpProcName}' was not found.";
+            string msgerr = Msg.proc_not_found.Format(lpProcName);
             if(!mangling) {
                 throw new WinFuncFailException(msgerr, true);
             }
 
             // C-rules
 
-            LSender.Send(this, $"{msgerr} Trying to decorate with C rules.", Message.Level.Warn);
+            LSender.Send(this, $"{msgerr} {Msg.trying_decorate_with_0.Format(nameof(Conari.Mangling.C))}", Message.Level.Warn);
 
-            var func = CMangling.Decorate(lpProcName, ((ILoader)this).PE.Export.Names.ToArray());
-            if(func == null) {
+            var proc = Conari.Mangling.C.Decorate(lpProcName, ((ILoader)this).PE.Export.Names.ToArray());
+            if(proc == null)
+            {
                 throw new EntryPointNotFoundException(
-                    $"{msgerr} The `Mangling.C` does not help. Check a correct name manually. Related issue: https://github.com/3F/Conari/issues/3"
+                    $"{msgerr} {Msg.mangling_0_does_not_help.Format(nameof(Conari.Mangling.C))}"
                 );
             }
 
-            return getProcAddress(hModule, func, false);
+            return getProcAddress(hModule, proc, false);
         }
 
-        /// <typeparam name="T">The return type for new Delegate should be as T type.</typeparam>
+        /// <typeparam name="T">The return type for new Delegate must be as T type.</typeparam>
         /// <param name="lpProcName"></param>
-        /// <param name="ret">The type of return value.</param>
-        /// <param name="args">The type of arguments.</param>
-        /// <returns>Delegate of exported function.</returns>
+        /// <param name="ret">The type for return value.</param>
+        /// <param name="args">Argument types.</param>
+        /// <returns>Invokable delegate.</returns>
         protected Method<T, object> bind<T>(LpProcName lpProcName, Type ret, params Type[] args)
         {
             MethodInfo mi   = Dynamic.GetMethodInfo((string)lpProcName, ret, args);
@@ -412,16 +277,21 @@ namespace net.r_eg.Conari.Core
                 return getDelegateNoCache<T>(ptr, conv) as T;
             }
 
-            var key = new PAddrCache<Delegate>.Key(ptr, conv);
+            Type sig = typeof(T);
+
+            var key = xDelegates.k(ptr, conv, sig);
             if(!xDelegates.ContainsKey(key)) {
-                xDelegates[key] = getDelegateNoCache<T>(ptr, conv);
+                xDelegates[key] = getDelegateNoCache(sig, ptr, conv);
             }
             return xDelegates[key] as T;
         }
 
         protected Delegate getDelegateNoCache<T>(IntPtr ptr, CallingConvention conv) where T : class
+            => getDelegateNoCache(typeof(T), ptr, conv);
+
+        protected Delegate getDelegateNoCache(Type sig, IntPtr ptr, CallingConvention conv)
         {
-            MethodInfo m    = typeof(T).GetMethod("Invoke");
+            MethodInfo m    = sig.GetMethod("Invoke");
             TDyn type       = wire(m, ptr, conv);
 
             return type.dynamic.CreateDelegate(m.DeclaringType);
@@ -448,7 +318,7 @@ namespace net.r_eg.Conari.Core
                 return wireNoCache(mi, ptr, conv);
             }
 
-            var key = new PAddrCache<TDyn>.Key(ptr, conv);
+            var key = xTDyn.k(ptr, conv, mi.DeclaringType);
             if(!xTDyn.ContainsKey(key)) {
                 xTDyn[key] = wireNoCache(mi, ptr, conv);
             }
@@ -461,13 +331,14 @@ namespace net.r_eg.Conari.Core
                                .Select(p => p.ParameterType)
                                .ToArray();
 
-            DynamicMethod dyn = new DynamicMethod(
-                                                    mi.Name, 
-                                                    mi.ReturnType, 
-                                                    mParams, 
-                                                    typeof(Delegate), 
-                                                    skipVisibility: true
-                                                  );
+            DynamicMethod dyn = new
+            (
+                mi.Name, 
+                mi.ReturnType, 
+                mParams, 
+                typeof(Delegate), 
+                skipVisibility: true
+            );
 
             ILGenerator il = dyn.GetILGenerator();
             /*
@@ -486,10 +357,10 @@ namespace net.r_eg.Conari.Core
             }
 
             if(IntPtr.Size == sizeof(Int64)) {
-                il.Emit(OpCodes.Ldc_I8, ptr.ToInt64()); //64bit ptr
+                il.Emit(OpCodes.Ldc_I8, ptr.ToInt64());
             }
             else {
-                il.Emit(OpCodes.Ldc_I4, ptr.ToInt32()); //32bit ptr
+                il.Emit(OpCodes.Ldc_I4, ptr.ToInt32());
             }
 
             // https://github.com/3F/Conari/issues/6

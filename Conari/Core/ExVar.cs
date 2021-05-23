@@ -152,7 +152,7 @@ namespace net.r_eg.Conari.Core
         /// <returns></returns>
         public override bool TrySetMember(SetMemberBinder binder, object value)
         {
-            throw new NotImplementedException(Msg.NotYetImpl);
+            throw new NotImplementedException(Msg.not_yet_impl);
         }
 
         /// <summary>

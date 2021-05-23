@@ -262,7 +262,7 @@ namespace net.r_eg.Conari
             _dlrCdecl   = new Lazy<dynamic>(() => newDLR(CallingConvention.Cdecl));
             _dlrStd     = new Lazy<dynamic>(() => newDLR(CallingConvention.StdCall));
             _dlrFast    = new Lazy<dynamic>(() => newDLR(CallingConvention.FastCall));
-            _dlrVector  = new Lazy<dynamic>(() => throw new NotSupportedException(Msg.NotYetImpl));
+            _dlrVector  = new Lazy<dynamic>(() => throw new NotSupportedException(Msg.not_yet_impl));
         }
 
         protected override void Dispose(bool disposing)

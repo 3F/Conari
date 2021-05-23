@@ -61,11 +61,20 @@ namespace net.r_eg.Conari.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Argument `{0}` is empty or null..
+        /// </summary>
+        internal static string arg_0_empty_or_null {
+            get {
+                return ResourceManager.GetString("arg_0_empty_or_null", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Pointer must be a non-zero.
         /// </summary>
-        internal static string ArgPointerZero {
+        internal static string arg_pointer_zero {
             get {
-                return ResourceManager.GetString("ArgPointerZero", resourceCulture);
+                return ResourceManager.GetString("arg_pointer_zero", resourceCulture);
             }
         }
         
@@ -144,9 +153,9 @@ namespace net.r_eg.Conari.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Invalid or unavailable range at {0}..
         /// </summary>
-        internal static string Invalid_or_unavailable_range_at_0 {
+        internal static string invalid_or_unavailable_range_at_0 {
             get {
-                return ResourceManager.GetString("Invalid_or_unavailable_range_at_0", resourceCulture);
+                return ResourceManager.GetString("invalid_or_unavailable_range_at_0", resourceCulture);
             }
         }
         
@@ -156,6 +165,15 @@ namespace net.r_eg.Conari.Resources {
         internal static string invalid_pointer {
             get {
                 return ResourceManager.GetString("invalid_pointer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mangling `{0}` does not help. Check a correct name manually. Related issue: https://github.com/3F/Conari/issues/3.
+        /// </summary>
+        internal static string mangling_0_does_not_help {
+            get {
+                return ResourceManager.GetString("mangling_0_does_not_help", resourceCulture);
             }
         }
         
@@ -171,9 +189,9 @@ namespace net.r_eg.Conari.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Not yet implemented. https://github.com/3F/Conari.
         /// </summary>
-        internal static string NotYetImpl {
+        internal static string not_yet_impl {
             get {
-                return ResourceManager.GetString("NotYetImpl", resourceCulture);
+                return ResourceManager.GetString("not_yet_impl", resourceCulture);
             }
         }
         
@@ -183,6 +201,15 @@ namespace net.r_eg.Conari.Resources {
         internal static string only_0_supported_yet {
             get {
                 return ResourceManager.GetString("only_0_supported_yet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to lpProcName `{0}` is not found..
+        /// </summary>
+        internal static string proc_not_found {
+            get {
+                return ResourceManager.GetString("proc_not_found", resourceCulture);
             }
         }
         
@@ -207,18 +234,27 @@ namespace net.r_eg.Conari.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Sync wait limit reached: {0}.
         /// </summary>
-        internal static string SyncLimit_0 {
+        internal static string sync_limit_0 {
             get {
-                return ResourceManager.GetString("SyncLimit_0", resourceCulture);
+                return ResourceManager.GetString("sync_limit_0", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Trying to decorate with `{0}` rules..
+        /// </summary>
+        internal static string trying_decorate_with_0 {
+            get {
+                return ResourceManager.GetString("trying_decorate_with_0", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to https://github.com/3F/Conari.
         /// </summary>
-        internal static string UrlSrc {
+        internal static string url_src {
             get {
-                return ResourceManager.GetString("UrlSrc", resourceCulture);
+                return ResourceManager.GetString("url_src", resourceCulture);
             }
         }
     }

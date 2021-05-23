@@ -128,7 +128,7 @@ namespace net.r_eg.Conari.Core
                 {
                     if(!LLCfg.cts.IsCancellationRequested)
                     {
-                        LSender.Send(this, Msg.SyncLimit_0.Format($"{LLCfg.loaderSyncLimit}"), Message.Level.Warn);
+                        LSender.Send(this, Msg.sync_limit_0.Format($"{LLCfg.loaderSyncLimit}"), Message.Level.Warn);
                     }
 
                     l.cancelled = true;
@@ -294,7 +294,7 @@ namespace net.r_eg.Conari.Core
 
             if(!ewhSignal.WaitOne(LLCfg.loaderSyncLimit))
             {
-                LSender.Send(this, Msg.SyncLimit_0.Format($"{LLCfg.loaderSyncLimit}"), Message.Level.Warn);
+                LSender.Send(this, Msg.sync_limit_0.Format($"{LLCfg.loaderSyncLimit}"), Message.Level.Warn);
             }
 
             if(disposing) BeforeUnload(this, new DataArgs<Link>(Library));

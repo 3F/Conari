@@ -121,14 +121,9 @@ namespace ConariTest
             l.bind<ActionOut3<int, int, int>>("addRefVal")(10, 4, out int result1);
             Assert.Equal(14, result1);
 
-            // should be incorect signature due to caching
-            l.Cache = false; l.Cache = true; // TODO
-
             int result2 = 0;
             l.bind<ActionRef3<int, int, int>>("addRefVal")(5, 7, ref result2);
             Assert.Equal(12, result2);
-
-            l.Cache = false; l.Cache = true; // TODO
 
             l.bind<ActionOut3<int, int, int>>("addRefVal")(2, 2, out int result3);
             Assert.Equal(4, result3);
@@ -161,14 +156,9 @@ namespace ConariTest
             Assert.Equal(0, l.bind<FuncOut3<int, int, int, int>>("retAddRefVal")(10, 4, out int result1));
             Assert.Equal(14, result1);
 
-            // should be incorect signature due to caching
-            l.Cache = false; l.Cache = true; // TODO
-
             int result2 = 4;
             Assert.Equal(4, l.bind<FuncRef3<int, int, int, int>>("retAddRefVal")(5, 7, ref result2));
             Assert.Equal(12, result2);
-
-            l.Cache = false; l.Cache = true; // TODO
 
             Assert.Equal(0, l.bind<FuncOut3<int, int, int, int>>("retAddRefVal")(2, 2, out int result3));
             Assert.Equal(4, result3);
@@ -201,14 +191,9 @@ namespace ConariTest
             l.addRefVal(100, 40, out int result1);
             Assert.Equal(140, result1);
 
-            // should be incorect signature due to caching
-            l.Cache = false; l.Cache = true; // TODO
-
             int result2 = 5;
             l.addRefVal(50, 70, ref result2);
             Assert.Equal(120, result2);
-
-            l.Cache = false; l.Cache = true; // TODO
 
             l.addRefVal(20, 20, out int result3);
             Assert.Equal(40, result3);
@@ -241,14 +226,9 @@ namespace ConariTest
             Assert.Equal(0, l.retAddRefVal<int>(100, 40, out int result1));
             Assert.Equal(140, result1);
 
-            // should be incorect signature due to caching
-            l.Cache = false; l.Cache = true; // TODO
-
             int result2 = 5;
             Assert.Equal(5, l.retAddRefVal<int>(50, 70, ref result2));
             Assert.Equal(120, result2);
-
-            l.Cache = false; l.Cache = true; // TODO
 
             Assert.Equal(0, l.retAddRefVal<int>(20, 20, out int result3));
             Assert.Equal(40, result3);

@@ -21,6 +21,42 @@ namespace ConariTest
         private readonly IConfig gCfgUnlib = new Config(UNLIB_DLL, true);
 
         [Fact]
+        public void cdeclTest1()
+        {
+            using var x = ConariX.Make(new(UNLIB_DLL), out dynamic l);
+
+            l.vararg2(out int a, out int b, 4, 8);
+            Assert.Equal(4, a);
+            Assert.Equal(8, b);
+
+            l.vararg2(out int a2, out int b2, 5);
+            Assert.Equal(5, a2);
+            Assert.Equal(0, b2);
+
+            l.vararg2(out int a3, out int b3);
+            Assert.Equal(0, a3);
+            Assert.Equal(0, b3);
+        }
+
+        [Fact]
+        public void cdeclTest2()
+        {
+            using var x = ConariX.Make(new(UNLIB_DLL), out dynamic l);
+
+            Assert.Equal(12, l.vararg2ret<int>(out int a, out int b, 4, 8));
+            Assert.Equal(4, a);
+            Assert.Equal(8, b);
+
+            Assert.Equal(5, l.vararg2ret<int>(out int a2, out int b2, 5));
+            Assert.Equal(5, a2);
+            Assert.Equal(0, b2);
+
+            Assert.Equal(0, l.vararg2ret<int>(out int a3, out int b3));
+            Assert.Equal(0, a3);
+            Assert.Equal(0, b3);
+        }
+
+        [Fact]
         public void basicTest1()
         {
             using(dynamic l = new ConariX(gCfgUnlib))

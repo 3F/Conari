@@ -25,8 +25,6 @@ namespace ConariTest.Types
             Assert.True(l.replace<bool>((IntPtr)data, (IntPtr)filter, (IntPtr)replacement));
             Assert.Equal("Hello world!", (CharPtr)data);
 
-            ((ConariX)l).Cache = false; // TODO:
-
             Assert.True(l.replace<bool>(data2, filter, (CharPtr)replacement));
             Assert.Equal(data2, data);
         }

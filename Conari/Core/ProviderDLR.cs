@@ -55,12 +55,15 @@ namespace net.r_eg.Conari.Core
 
         public bool UseByRef { get; set; }
 
+        public object[] TrailingArgs { get; set; } = new object[] { (long)0, (long)0 };
+
         /// <summary>
         /// Magic method. Invoking.
         /// </summary>
         /// <remarks>`[result =] name&lt;return_type&gt;([{argument_types}])`</remarks>
-        public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
+        public override bool TryInvokeMember(InvokeMemberBinder binder, object[] input, out object result)
         {
+            object[] args = addTail(input);
             Type[] tArgs;
 
             try
@@ -97,7 +100,7 @@ namespace net.r_eg.Conari.Core
                 result = Dynamic.DCast(dyn.returnType, odv);
             }
 
-            Boxing(unboxed, args);
+            Boxing(unboxed, input);
             return true;
         }
 
@@ -115,7 +118,7 @@ namespace net.r_eg.Conari.Core
 
         private static void Boxing(object[] from, object[] to)
         {
-            if(from.Length != to.Length) {
+            if(from.Length < to.Length) {
                 throw new ArgumentException(Msg.incorrect_args_length_0_1.Format($"{from.Length}", $"{to.Length}"));
             }
 
@@ -161,6 +164,14 @@ namespace net.r_eg.Conari.Core
             );
         }
 
+        private object[] addTail(object[] args)
+        {
+            if(args == null) throw new ArgumentNullException(nameof(args));
+            if(TrailingArgs == null || Convention != CallingConvention.Cdecl || TrailingArgs.Length < 1) return args;
+
+            return args.Concat(TrailingArgs).ToArray();
+        }
+
         private Type[] getArgTypes(InvokeMemberBinder binder, object[] args)
         {
             var tArgs = args.Select(a =>
@@ -182,8 +193,8 @@ namespace net.r_eg.Conari.Core
             if(UseCallingContext)
             {
                 Type[] tContext = GetTypesFromCallingContext(binder).ToArray();
-                if(tContext.Length != ret.Length) {
-                    throw new ArgumentException(Msg.incorrect_args_length_0_1.Format($"{tContext.Length}", $"{ret.Length}"));
+                if(ret.Length < tContext.Length) {
+                    throw new ArgumentException(Msg.incorrect_args_length_0_1.Format($"{ret.Length}", $"{tContext.Length}"));
                 }
 
                 tContext.ForEach((c, i) => { if(c.IsByRef) { ret[i] = c; } });
@@ -191,8 +202,8 @@ namespace net.r_eg.Conari.Core
             }
 
             CSharpArgumentInfoFlags[] aflags = GetArgFlags(binder).ToArray();
-            if(aflags.Length != ret.Length) {
-                throw new ArgumentException(Msg.incorrect_args_length_0_1.Format($"{aflags.Length}", $"{ret.Length}"));
+            if(ret.Length < aflags.Length) {
+                throw new ArgumentException(Msg.incorrect_args_length_0_1.Format($"{ret.Length}", $"{aflags.Length}"));
             }
 
             CSharpArgumentInfoFlags fByRef = CSharpArgumentInfoFlags.IsRef | CSharpArgumentInfoFlags.IsOut;

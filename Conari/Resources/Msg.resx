@@ -117,7 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ArgPointerZero" xml:space="preserve">
+  <data name="arg_0_empty_or_null" xml:space="preserve">
+    <value>Argument `{0}` is empty or null.</value>
+  </data>
+  <data name="arg_pointer_zero" xml:space="preserve">
     <value>Pointer must be a non-zero</value>
   </data>
   <data name="cannot_realloc" xml:space="preserve">
@@ -144,13 +147,16 @@
   <data name="incorrect_args_length_0_1" xml:space="preserve">
     <value>Incorrectly processed arguments. Lengths are not equal. {0} != {1}</value>
   </data>
-  <data name="Invalid_or_unavailable_range_at_0" xml:space="preserve">
+  <data name="invalid_or_unavailable_range_at_0" xml:space="preserve">
     <value>Invalid or unavailable range at {0}.</value>
   </data>
   <data name="invalid_pointer" xml:space="preserve">
     <value>Invalid pointer</value>
   </data>
-  <data name="NotYetImpl" xml:space="preserve">
+  <data name="mangling_0_does_not_help" xml:space="preserve">
+    <value>Mangling `{0}` does not help. Check a correct name manually. Related issue: https://github.com/3F/Conari/issues/3</value>
+  </data>
+  <data name="not_yet_impl" xml:space="preserve">
     <value>Not yet implemented. https://github.com/3F/Conari</value>
   </data>
   <data name="no_support_null_cstr" xml:space="preserve">
@@ -159,16 +165,22 @@
   <data name="only_0_supported_yet" xml:space="preserve">
     <value>Only {0} are supported yet.</value>
   </data>
+  <data name="proc_not_found" xml:space="preserve">
+    <value>lpProcName `{0}` is not found.</value>
+  </data>
   <data name="stream_cant_write" xml:space="preserve">
     <value>Stream does not support writing.</value>
   </data>
   <data name="stream_disposed" xml:space="preserve">
     <value>The used stream was unexpectedly disposed and can no longer be used.</value>
   </data>
-  <data name="SyncLimit_0" xml:space="preserve">
+  <data name="sync_limit_0" xml:space="preserve">
     <value>Sync wait limit reached: {0}</value>
   </data>
-  <data name="UrlSrc" xml:space="preserve">
+  <data name="trying_decorate_with_0" xml:space="preserve">
+    <value>Trying to decorate with `{0}` rules.</value>
+  </data>
+  <data name="url_src" xml:space="preserve">
     <value>https://github.com/3F/Conari</value>
   </data>
 </root>

@@ -26,22 +26,32 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Runtime.Serialization;
+using net.r_eg.Conari.Extension;
 
 namespace net.r_eg.Conari.Core
 {
-    [Serializable]
     public sealed class PAddrCache<T>: Dictionary<PAddrCache<T>.Key, T>
     {
+        public T this[IntPtr addr, CallingConvention conv, Type sig]
+        {
+            get => this[k(addr, conv, sig)];
+            set => this[k(addr, conv, sig)] = value;
+        }
+
+        internal Key k(IntPtr addr, CallingConvention conv, Type sig)
+                => new(addr, conv, sig);
+
         public struct Key
         {
-            public readonly IntPtr addr;
+            public IntPtr addr;
             public CallingConvention convention;
+            public Type signature;
 
-            public Key(IntPtr ptr, CallingConvention conv)
+            public Key(IntPtr ptr, CallingConvention conv, Type signature)
             {
                 addr = ptr;
                 convention = conv;
+                this.signature = signature;
             }
         }
 
@@ -49,41 +59,23 @@ namespace net.r_eg.Conari.Core
         {
             public bool Equals(Key a, Key b)
             {
-                if(a.convention != b.convention) {
-                    return false;
-                }
-
-                if(a.addr != b.addr) {
-                    return false;
-                }
+                if(a.addr != b.addr) return false;
+                if(a.convention != b.convention) return false;
+                if(a.signature != b.signature) return false;
 
                 return true;
             }
 
-            public int GetHashCode(Key obj)
-            {
-                Func<int, int, int> polynom = delegate(int r, int x) {
-                    unchecked {
-                        return (r << 5) + r ^ x;
-                    }
-                };
-
-                int h = 0;
-                h = polynom(h, obj.addr.GetHashCode());
-                h = polynom(h, obj.convention.GetHashCode());
-
-                return h;
-            }
+            public int GetHashCode(Key obj) => 0.CalculateHashCode
+            (
+                obj.addr,
+                obj.convention,
+                obj.signature
+            );
         }
 
-        public PAddrCache()
+        internal PAddrCache()
             : base(new EqTypeArrayComparer())
-        {
-
-        }
-
-        private PAddrCache(SerializationInfo info, StreamingContext context)
-            : base(info, context)
         {
 
         }

@@ -20,6 +20,20 @@ namespace NS_UNLIB_API_
         return input;
     }
 
+    /* cdecl varargs */
+
+    LIBAPI void vararg2(int* a, int* b, int c, int d)
+    {
+        *a = c;
+        *b = d;
+    }
+
+    LIBAPI int vararg2ret(int* a, int* b, int c, int d)
+    {
+        vararg2(a, b, c, d);
+        return *a + *b;
+    }
+
     /* basic */
 
     LIBAPI bool get_True()
