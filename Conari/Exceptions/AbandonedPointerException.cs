@@ -34,7 +34,7 @@ namespace net.r_eg.Conari.Exceptions
     public class AbandonedPointerException: CommonException
     {
         public AbandonedPointerException(IntPtr ptr)
-            : base($"Abandoned pointer at 0x{ptr:x}. Dump (hex): {TryDump(ptr)}")
+            : base($"Abandoned pointer at 0x{ptr.ToString("x")}. Dump (hex): {TryDump(ptr)}")
         {
 
         }

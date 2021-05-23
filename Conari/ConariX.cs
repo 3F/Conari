@@ -43,23 +43,8 @@ namespace net.r_eg.Conari
     /// Conari engine [DLR version]. An unmanaged memory, modules, and raw data in one-touch.
     /// </summary>
     /// <remarks>https://github.com/3F/Conari</remarks>
-    public class ConariX: DynamicObject, IConari, ILoader, IProvider, IBinder, IDlrAccessor, INativeAccessor, IStringMaker, IDisposable
+    public class ConariX: ConariX<TCharPtr>, IConari
     {
-        private readonly ConariL __l_impl;
-
-        /// <summary>
-        /// Dynamic access to exported variables.
-        /// </summary>
-        public dynamic V => __l_impl.ExVar.DLR;
-
-        public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
-        {
-            return __l_impl.DLR.TryInvokeMember(binder, args, out result);
-        }
-
-        public static explicit operator IntPtr(ConariX l) => l.Library.handle;
-        public static explicit operator VPtr(ConariX l) => l.Library.handle;
-
         /// <summary>
         /// Wrapper to use both runtime dynamic and compile type <see cref="ConariX"/>.
         /// </summary>
@@ -72,57 +57,104 @@ namespace net.r_eg.Conari
             return x;
         }
 
-        /// <summary>
-        /// Initialize Conari with specific calling convention.
-        /// </summary>
-        /// <param name="cfg">The Conari configuration.</param>
-        /// <param name="conv">How should call methods.</param>
-        /// <param name="prefix">Optional prefix to use via `bind&lt;&gt;`</param>
+        /// <inheritdoc cref="ConariL(IConfig, CallingConvention, string)"/>
         public ConariX(IConfig cfg, CallingConvention conv, string prefix = null)
+            : base(cfg, conv, prefix)
         {
-            __l_impl = new ConariL(cfg, conv, prefix);
+
         }
 
+        /// <inheritdoc cref="ConariL(IConfig, string)"/>
+        public ConariX(IConfig cfg, string prefix = null)
+            : base(cfg, prefix)
+        {
+
+        }
+
+        /// <inheritdoc cref="ConariL(string, CallingConvention, string)"/>
+        public ConariX(string library, CallingConvention conv, string prefix = null)
+            : base(library, conv, prefix)
+        {
+
+        }
+
+        /// <inheritdoc cref="ConariL(string, string)"/>
+        public ConariX(string library, string prefix = null)
+            : base(library, prefix)
+        {
+
+        }
+
+        /// <inheritdoc cref="ConariL(string, bool, string)"/>
+        public ConariX(string library, bool isolate, string prefix = null)
+            : base(library, isolate, prefix)
+        {
+
+        }
+    }
+
+    /// <inheritdoc cref="ConariX"/>
+    public class ConariX<TCharIn>: DynamicObject, 
+                                    IConari<TCharIn>, 
+                                    ILoader, 
+                                    IProvider, 
+                                    IBinder, 
+                                    IDlrAccessor, 
+                                    INativeAccessor, 
+                                    IStringMaker<TCharIn>, 
+                                    IDisposable
+        where TCharIn: struct
+    {
+        protected readonly ConariL<TCharIn> __l_impl;
+
         /// <summary>
-        /// Initialize Conari with Cdecl - When the stack is cleaned up by the caller, it can do vararg functions.
+        /// Dynamic access to exported variables.
         /// </summary>
-        /// <param name="cfg">The Conari configuration.</param>
-        /// <param name="prefix">Optional prefix to use via `bind&lt;&gt;`</param>
+        public dynamic V => __l_impl.ExVar.DLR;
+
+        public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
+        {
+            return __l_impl.DLR.TryInvokeMember(binder, args, out result);
+        }
+
+        public static explicit operator IntPtr(ConariX<TCharIn> l) => l.Library.handle;
+        public static explicit operator VPtr(ConariX<TCharIn> l) => l.Library.handle;
+
+        /// <inheritdoc cref="ConariX.Make(ConariX, out dynamic)"/>
+        public static ConariX<TCharIn> Make(ConariX<TCharIn> x, out dynamic d)
+        {
+            d = x ?? throw new ArgumentNullException(nameof(x));
+            return x;
+        }
+
+        /// <inheritdoc cref="ConariX(IConfig, CallingConvention, string)"/>
+        public ConariX(IConfig cfg, CallingConvention conv, string prefix = null)
+        {
+            __l_impl = new ConariL<TCharIn>(cfg, conv, prefix);
+        }
+
+        /// <inheritdoc cref="ConariX(IConfig, string)"/>
         public ConariX(IConfig cfg, string prefix = null)
             : this(cfg, CallingConvention.Cdecl, prefix)
         {
 
         }
 
-        /// <summary>
-        /// Initialize Conari with specific calling convention.
-        /// </summary>
-        /// <param name="lib">The library.</param>
-        /// <param name="conv">How should call methods.</param>
-        /// <param name="prefix">Optional prefix to use via `bind&lt;&gt;`</param>
+        /// <inheritdoc cref="ConariX(string, CallingConvention, string)"/>
         public ConariX(string lib, CallingConvention conv, string prefix = null)
             : this((Config)lib, conv, prefix)
         {
 
         }
 
-        /// <summary>
-        /// Initialize Conari with the calling convention by default.
-        /// </summary>
-        /// <param name="lib">The library.</param>
-        /// <param name="prefix">Optional prefix to use via `bind&lt;&gt;`</param>
+        /// <inheritdoc cref="ConariX(string, string)"/>
         public ConariX(string lib, string prefix = null)
             : this((Config)lib, prefix)
         {
 
         }
 
-        /// <summary>
-        /// Initialize Conari with the calling convention by default.
-        /// </summary>
-        /// <param name="lib">The library.</param>
-        /// <param name="isolate">To isolate module for a real new loading when true. Details in {IConfig.IsolateLoadingOfModule}.</param>
-        /// <param name="prefix">Optional prefix to use via `bind&lt;&gt;`</param>
+        /// <inheritdoc cref="ConariX(string, bool, string)"/>
         public ConariX(string lib, bool isolate, string prefix = null)
             : this(new Config(lib, isolate), prefix)
         {
@@ -135,7 +167,7 @@ namespace net.r_eg.Conari
 
         public IAccessor Memory => __l_impl.Memory;
 
-        public INativeStringManager Strings => __l_impl.Strings;
+        public INativeStringManager<TCharIn> Strings => __l_impl.Strings;
 
         public IProviderDLR ConfigDLR => __l_impl.ConfigDLR;
 
@@ -231,12 +263,12 @@ namespace net.r_eg.Conari
             return __l_impl._T<Tin>(input);
         }
 
-        public IntPtr _T(string input, int extend, out TCharPtr access)
+        public IntPtr _T(string input, int extend, out TCharIn access)
         {
             return __l_impl._T(input, extend, out access);
         }
 
-        public IntPtr _T(string input, out TCharPtr access)
+        public IntPtr _T(string input, out TCharIn access)
         {
             return __l_impl._T(input, out access);
         }

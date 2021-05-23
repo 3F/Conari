@@ -1,0 +1,13 @@
+﻿<Project>
+  <Import Project=".\ConariTest.csproj" />
+
+  <PropertyGroup>
+    <EnableDefaultItems>false</EnableDefaultItems>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="_svc\TestHelper.cs" />
+    <Compile Include="Types\Sequential\*.cs" />
+  </ItemGroup>
+  
+</Project>

@@ -1,4 +1,5 @@
 ﻿using System;
+using ConariTest._svc;
 using net.r_eg.Conari.Native.Core;
 using Xunit;
 

@@ -1,6 +1,6 @@
-﻿namespace ConariTest
+﻿namespace ConariTest._svc
 {
-    struct TVer
+    internal struct TVer
     {
         public int major;
         public int minor;
@@ -13,9 +13,4 @@
             this.patch = patch;
         }
     }
-
-    //struct TVerTpl<T>
-    //{
-
-    //}
 }

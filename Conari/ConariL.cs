@@ -38,15 +38,93 @@ namespace net.r_eg.Conari
     /// Conari engine. An unmanaged memory, modules, and raw data in one-touch.
     /// </summary>
     /// <remarks>https://github.com/3F/Conari</remarks>
-    public class ConariL: Provider, IConari, ILoader, IProvider, IBinder, IDlrAccessor, INativeAccessor, IStringMaker, IDisposable
+    public class ConariL: ConariL<TCharPtr>, IConari
+    {
+        /// <summary>
+        /// Wrapper to use both runtime dynamic (using access to <see cref="ConariL{TCharIn}.DLR"/>) 
+        /// and compile type <see cref="ConariL"/>.
+        /// </summary>
+        /// <param name="l">Actual instance.</param>
+        /// <param name="d">Use runtime dynamic type.</param>
+        /// <returns>Use compile type instance.</returns>
+        public static ConariL Make(ConariL l, out dynamic d)
+        {
+            d = (l ?? throw new ArgumentNullException(nameof(l))).DLR;
+            return l;
+        }
+
+        /// <summary>
+        /// Initialize Conari engine using the Cdecl calling convention.
+        /// </summary>
+        /// <remarks>*Cdecl - When the stack is cleaned up by the caller, it can do vararg functions.</remarks>
+        /// <inheritdoc cref="ConariL(string, CallingConvention, string)"/>
+        public ConariL(string library, string prefix = null)
+            : base(library, prefix)
+        {
+
+        }
+
+        /// <summary>
+        /// Initialize Conari with specific calling convention.
+        /// </summary>
+        /// <param name="library">The library. Either full path or name with / without file extension.</param>
+        /// <param name="conv">Use the calling convention.</param>
+        /// <param name="prefix">Optional prefix to use via <see cref="Provider.bind{T}(string)"/> and related.</param>
+        public ConariL(string library, CallingConvention conv, string prefix = null)
+            : base(library, conv, prefix)
+        {
+
+        }
+
+        /// <param name="library">The library. Either full path or name with / without file extension.</param>
+        /// <param name="isolate">To isolate module for a real new loading when true. Details in <see cref="IConfig.IsolateLoadingOfModule"/>.</param>
+        /// <param name="prefix">Optional prefix to use via <see cref="Provider.bind{T}(string)"/> and related.</param>
+        /// <inheritdoc cref="ConariL(string, string)"/>
+        public ConariL(string library, bool isolate, string prefix = null)
+            : base(library, isolate, prefix)
+        {
+
+        }
+
+        /// <param name="cfg">Use <see cref="IConfig"/> configuration.</param>
+        /// <param name="prefix">Optional prefix to use via <see cref="Provider.bind{T}(string)"/> and related.</param>
+        /// <inheritdoc cref="ConariL(string, string)"/>
+        public ConariL(IConfig cfg, string prefix = null)
+            : base(cfg, prefix)
+        {
+
+        }
+
+        /// <param name="cfg">Use <see cref="IConfig"/> configuration.</param>
+        /// <param name="conv">Use the calling convention.</param>
+        /// <param name="prefix">Optional prefix to use via <see cref="Provider.bind{T}(string)"/> and related.</param>
+        /// <inheritdoc cref="ConariL(string, CallingConvention, string)"/>
+        public ConariL(IConfig cfg, CallingConvention conv, string prefix = null)
+            : base(cfg, conv, prefix)
+        {
+
+        }
+    }
+
+    /// <inheritdoc cref="ConariL"/>
+    public class ConariL<TCharIn>: Provider, 
+                                    IConari<TCharIn>, 
+                                    ILoader, 
+                                    IProvider, 
+                                    IBinder, 
+                                    IDlrAccessor, 
+                                    INativeAccessor, 
+                                    IStringMaker<TCharIn>, 
+                                    IDisposable
+        where TCharIn: struct
     {
         protected IConfig config;
 
-        protected readonly Lazy<NativeStringManager> strings = new(() => new NativeStringManager());
+        protected readonly Lazy<NativeStringManager<TCharIn>> strings = new(() => new());
 
         protected Lazy<dynamic> _dlrCdecl, _dlrStd, _dlrFast, _dlrVector;
 
-        public INativeStringManager Strings => strings.Value;
+        public INativeStringManager<TCharIn> Strings => strings.Value;
 
         public IProviderDLR ConfigDLR => (IProviderDLR)DLR;
 
@@ -96,14 +174,8 @@ namespace net.r_eg.Conari
         /// </summary>
         public dynamic __vectorcall => _dlrVector.Value;
 
-        /// <summary>
-        /// Wrapper to use both runtime dynamic (using access to <see cref="DLR"/>) 
-        /// and compile type <see cref="ConariL"/>.
-        /// </summary>
-        /// <param name="l">Actual instance.</param>
-        /// <param name="d">Use runtime dynamic type.</param>
-        /// <returns>Use compile type instance.</returns>
-        public static ConariL Make(ConariL l, out dynamic d)
+        /// <inheritdoc cref="ConariL.Make(ConariL, out dynamic)"/>
+        public static ConariL<TCharIn> Make(ConariL<TCharIn> l, out dynamic d)
         {
             d = (l ?? throw new ArgumentNullException(nameof(l))).DLR;
             return l;
@@ -119,10 +191,10 @@ namespace net.r_eg.Conari
         public IntPtr _T<Tin>(string input) where Tin : struct
             => Strings._T<Tin>(input);
 
-        public IntPtr _T(string input, int extend, out TCharPtr access)
+        public IntPtr _T(string input, int extend, out TCharIn access)
             => Strings._T(input, extend, out access);
 
-        public IntPtr _T(string input, out TCharPtr access)
+        public IntPtr _T(string input, out TCharIn access)
             => Strings._T(input, out access);
 
         public IntPtr _T<Tin>(string input, int extend, out Tin access) where Tin : struct
@@ -131,12 +203,7 @@ namespace net.r_eg.Conari
         public IntPtr _T<Tin>(string input, out Tin access) where Tin : struct
             => Strings._T<Tin>(input, out access);
 
-        /// <summary>
-        /// Initialize Conari with specific calling convention.
-        /// </summary>
-        /// <param name="cfg">The Conari configuration.</param>
-        /// <param name="conv">How should call methods.</param>
-        /// <param name="prefix">Optional prefix to use via `bind&lt;&gt;`</param>
+        /// <inheritdoc cref="ConariL(IConfig, CallingConvention, string)"/>
         public ConariL(IConfig cfg, CallingConvention conv, string prefix = null)
         {
             Prefix      = prefix;
@@ -146,48 +213,30 @@ namespace net.r_eg.Conari
             ConventionChanged += onConventionChanged;
         }
 
-        /// <summary>
-        /// Initialize Conari with Cdecl - When the stack is cleaned up by the caller, it can do vararg functions.
-        /// </summary>
-        /// <param name="cfg">The Conari configuration.</param>
-        /// <param name="prefix">Optional prefix to use via `bind&lt;&gt;`</param>
+        /// <inheritdoc cref="ConariL(IConfig, string)"/>
         public ConariL(IConfig cfg, string prefix = null)
             : this(cfg, CallingConvention.Cdecl, prefix)
         {
 
         }
 
-        /// <summary>
-        /// Initialize Conari with specific calling convention.
-        /// </summary>
-        /// <param name="lib">The library.</param>
-        /// <param name="conv">How should call methods.</param>
-        /// <param name="prefix">Optional prefix to use via `bind&lt;&gt;`</param>
-        public ConariL(string lib, CallingConvention conv, string prefix = null)
-            : this((Config)lib, conv, prefix)
+        /// <inheritdoc cref="ConariL(string, CallingConvention, string)"/>
+        public ConariL(string library, CallingConvention conv, string prefix = null)
+            : this((Config)library, conv, prefix)
         {
 
         }
 
-        /// <summary>
-        /// Initialize Conari with the calling convention by default.
-        /// </summary>
-        /// <param name="lib">The library.</param>
-        /// <param name="prefix">Optional prefix to use via `bind&lt;&gt;`</param>
-        public ConariL(string lib, string prefix = null)
-            : this((Config)lib, prefix)
+        /// <inheritdoc cref="ConariL(string, string)"/>
+        public ConariL(string library, string prefix = null)
+            : this((Config)library, prefix)
         {
 
         }
 
-        /// <summary>
-        /// Initialize Conari with the calling convention by default.
-        /// </summary>
-        /// <param name="lib">The library.</param>
-        /// <param name="isolate">To isolate module for a real new loading when true. Details in {IConfig.IsolateLoadingOfModule}.</param>
-        /// <param name="prefix">Optional prefix to use via `bind&lt;&gt;`</param>
-        public ConariL(string lib, bool isolate, string prefix = null)
-            : this(new Config(lib, isolate), prefix)
+        /// <inheritdoc cref="ConariL(string, bool, string)"/>
+        public ConariL(string library, bool isolate, string prefix = null)
+            : this(new Config(library, isolate), prefix)
         {
 
         }

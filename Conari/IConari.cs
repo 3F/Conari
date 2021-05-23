@@ -26,15 +26,22 @@
 using System;
 using net.r_eg.Conari.Core;
 using net.r_eg.Conari.Log;
+using net.r_eg.Conari.Types;
 
 namespace net.r_eg.Conari
 {
-    public interface IConari: IBinder, IProvider, ILoader, INativeAccessor, IStringMaker, IDisposable
+    public interface IConari: IConari<TCharPtr>
+    {
+
+    }
+
+    public interface IConari<TCharIn>: IBinder, IProvider, ILoader, INativeAccessor, IStringMaker<TCharIn>, IDisposable
+        where TCharIn: struct
     {
         /// <summary>
         /// Access to used string manager.
         /// </summary>
-        INativeStringManager Strings { get; }
+        INativeStringManager<TCharIn> Strings { get; }
 
         /// <summary>
         /// Access to available configuration data of dynamic DLR.

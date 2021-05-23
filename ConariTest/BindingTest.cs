@@ -1,4 +1,5 @@
 ﻿using System;
+using ConariTest._svc;
 using net.r_eg.Conari;
 using net.r_eg.Conari.Core;
 using net.r_eg.Conari.Exceptions;
@@ -9,8 +10,8 @@ using Xunit;
 
 namespace ConariTest
 {
-    using static net.r_eg.Conari.Static.Members;
     using static _svc.TestHelper;
+    using static net.r_eg.Conari.Static.Members;
 
     public class BindingTest
     {
@@ -19,7 +20,7 @@ namespace ConariTest
         [Fact]
         public void basicTest1()
         {
-            using(var l = new ConariL(UNLIB_DLL, true))
+            using(var l = new ConariL(gCfgUnlib))
             {
                 Assert.Equal(true, l.DLR.get_True<bool>());
                 Assert.Equal(true, l._.get_True<bool>());

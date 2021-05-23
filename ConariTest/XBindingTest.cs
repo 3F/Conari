@@ -1,4 +1,5 @@
 ﻿using System;
+using ConariTest._svc;
 using net.r_eg.Conari;
 using net.r_eg.Conari.Core;
 using net.r_eg.Conari.Exceptions;
@@ -9,8 +10,8 @@ using Xunit;
 
 namespace ConariTest
 {
-    using static net.r_eg.Conari.Static.Members;
     using static _svc.TestHelper;
+    using static net.r_eg.Conari.Static.Members;
 
     /// <summary>
     /// ConariX related tests
