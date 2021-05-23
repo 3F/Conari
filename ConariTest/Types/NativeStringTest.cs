@@ -13,7 +13,9 @@ namespace ConariTest.Types
         public void allocTest1()
         {
             using dynamic l = new ConariX(RXW_X);
-            using var data = new BufferedString<CharPtr>("Hello {p}!");
+
+            using BufferedString<CharPtr> data  = new("Hello {p}!");
+            using BufferedString<CharPtr> data2 = new(data.ToString());
 
             Assert.True(data.Owner);
 
@@ -22,6 +24,11 @@ namespace ConariTest.Types
 
             Assert.True(l.replace<bool>((IntPtr)data, (IntPtr)filter, (IntPtr)replacement));
             Assert.Equal("Hello world!", (CharPtr)data);
+
+            ((ConariX)l).Cache = false; // TODO:
+
+            Assert.True(l.replace<bool>(data2, filter, (CharPtr)replacement));
+            Assert.Equal(data2, data);
         }
 
         [Fact]

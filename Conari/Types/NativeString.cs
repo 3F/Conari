@@ -35,7 +35,7 @@ namespace net.r_eg.Conari.Types
 {
     [DebuggerDisplay("{DbgInfo}")]
     [Serializable]
-    public class NativeString<T>: ISerializable, IDisposable
+    public class NativeString<T>: IMarshalableGeneric, ISerializable, IDisposable
         where T : struct
     {
         protected IntPtr pointer;
@@ -45,6 +45,8 @@ namespace net.r_eg.Conari.Types
 
         private static readonly byte[] cNull        = { 0 };
         private static readonly byte[] cNullWide    = { 0, 0 };
+
+        public Type MarshalableType { get; } = typeof(T);
 
         /// <summary>
         /// Who is the owner. True indicates its own allocating.

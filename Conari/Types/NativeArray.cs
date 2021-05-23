@@ -39,7 +39,7 @@ namespace net.r_eg.Conari.Types
 {
     using static Static.Members;
 
-    public class NativeArray: NativeArray<int>, ISerializable, IEnumerable<int>, IEnumerable, IDisposable
+    public class NativeArray: NativeArray<int>, IMarshalableGeneric, ISerializable, IEnumerable<int>, IEnumerable, IDisposable
     {
         /// <inheritdoc cref="NativeArray{T}(int)"/>
         public NativeArray(int length)
@@ -65,10 +65,12 @@ namespace net.r_eg.Conari.Types
 
     [DebuggerDisplay("{DbgInfo}")]
     [Serializable]
-    public class NativeArray<T>: ISerializable, IEnumerable<T>, IEnumerable, IDisposable
+    public class NativeArray<T>: IMarshalableGeneric, ISerializable, IEnumerable<T>, IEnumerable, IDisposable
         where T : struct
     {
         protected Memory memory;
+
+        public Type MarshalableType { get; } = typeof(T);
 
         /// <summary>
         /// Length of array.

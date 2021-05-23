@@ -40,7 +40,7 @@ namespace net.r_eg.Conari.Types
     /// using <see cref="NativeData"/> chains.
     /// </summary>
     /// <remarks>Alternatively use <see cref="NativeStruct{T}"/> to specify some available declarations.</remarks>
-    public class NativeStruct: NativeStruct<NeutralStruct>
+    public class NativeStruct: NativeStruct<NeutralStruct>, IMarshalableGeneric, ISerializable, IDisposable
     {
         protected readonly NativeData chain;
 
@@ -88,12 +88,14 @@ namespace net.r_eg.Conari.Types
     /// <typeparam name="T"></typeparam>
     [DebuggerDisplay("{DbgInfo}")]
     [Serializable]
-    public class NativeStruct<T>: ISerializable, IDisposable
+    public class NativeStruct<T>: IMarshalableGeneric, ISerializable, IDisposable
         where T : struct
     {
         protected IntPtr pointer;
 
         private T? readed;
+
+        public Type MarshalableType { get; } = typeof(T);
 
         /// <summary>
         /// Construct a new structure data using <see cref="NativeData"/> chains.

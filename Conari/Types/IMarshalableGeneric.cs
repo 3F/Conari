@@ -23,38 +23,12 @@
  * THE SOFTWARE.
 */
 
-using System.Runtime.InteropServices;
+using System;
 
-namespace net.r_eg.Conari.Core
+namespace net.r_eg.Conari.Types
 {
-    public interface IProviderDLR
+    public interface IMarshalableGeneric
     {
-        /// <summary>
-        /// Access to used <see cref="IDynamic"/> object.
-        /// </summary>
-        IDynamic DynCfg { get; }
-
-        /// <summary>
-        /// To use cache for dynamic types etc.
-        /// </summary>
-        bool Cache { get; set; }
-
-        /// <summary>
-        /// Current Convention for all dynamic methods.
-        /// </summary>
-        CallingConvention Convention { get; }
-
-        /// <summary>
-        /// To use information about types from CallingContext if it's possible.
-        /// This should automatically:
-        ///     * Detect all ByRef&amp; types.
-        ///     * Bind all null-values for any reference-types that pushed with out/ref modifier.
-        /// </summary>
-        bool UseCallingContext { get; set; }
-
-        /// <summary>
-        /// Forced use ByRef&amp; (reference-types) for all sent types.
-        /// </summary>
-        bool UseByRef { get; set; }
+        Type MarshalableType { get; }
     }
 }

@@ -6,6 +6,11 @@ namespace NS_UNLIB_API_
 {
     using namespace std;
 
+    /* ref */
+
+    LIBAPI void addRefVal(int a, int b, int* result);
+    LIBAPI int retAddRefVal(int a, int b, int* result);
+
     /* basic */
 
     LIBAPI bool get_True();

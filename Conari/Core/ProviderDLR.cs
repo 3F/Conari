@@ -24,6 +24,7 @@
 */
 
 using System;
+using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Reflection;
@@ -31,6 +32,7 @@ using System.Runtime.InteropServices;
 using Microsoft.CSharp.RuntimeBinder;
 using net.r_eg.Conari.Extension;
 using net.r_eg.Conari.Log;
+using net.r_eg.Conari.Resources;
 using net.r_eg.Conari.Types;
 
 namespace net.r_eg.Conari.Core
@@ -39,60 +41,24 @@ namespace net.r_eg.Conari.Core
     {
         private readonly IProvider provider;
 
-        /// <summary>
-        /// Access to used IDynamic object.
-        /// </summary>
         public IDynamic DynCfg => new Dynamic();
 
-        /// <summary>
-        /// To use cache for dynamic types etc.
-        /// </summary>
         public bool Cache
         {
             get => DynCfg.UseCache;
             set => DynCfg.UseCache = value;
         }
 
-        /// <summary>
-        /// Current Convention for all dynamic methods.
-        /// </summary>
-        public CallingConvention Convention
-        {
-            get;
-            private set;
-        }
+        public CallingConvention Convention { get; private set; }
+
+        public bool UseCallingContext { get; set; } = true;
+
+        public bool UseByRef { get; set; }
 
         /// <summary>
-        /// To use information about types from CallingContext if it's possible.
-        /// This should automatically:
-        ///     * Detect all ByRef&amp; types.
-        ///     * Bind all null-values for any reference-types that pushed with out/ref modifier.
+        /// Magic method. Invoking.
         /// </summary>
-        public bool UseCallingContext
-        {
-            get;
-            set;
-        } = true;
-
-        /// <summary>
-        /// To use ByRef&amp; (reference-types) for all sent types.
-        /// </summary>
-        public bool UseByRef
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Magic methods. Invoking.
-        /// </summary>
-        /// <![CDATA[
-        ///     `[result =] name<return_type>([{argument_types}])`
-        /// ]]>
-        /// <param name="binder"></param>
-        /// <param name="args"></param>
-        /// <param name="result"></param>
-        /// <returns></returns>
+        /// <remarks>`[result =] name&lt;return_type&gt;([{argument_types}])`</remarks>
         public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
         {
             Type[] tArgs;
@@ -103,22 +69,22 @@ namespace net.r_eg.Conari.Core
             }
             catch(ArgumentException ex)
             {
-                LSender.Send(this, $"Problem with arguments. DLR for '{binder.Name}': {ex.Message}", Message.Level.Warn);
-                tArgs = args.Select(a => a.GetType()).ToArray();
+                LSender.Send(this, Msg.dlr_args_unknown_problems_0_1.Format($"{binder.Name}'", $"{ex.Message}"), Message.Level.Warn);
+                tArgs = args.Select(a => a?.GetType() ?? typeof(object)).ToArray();
             }
 
             Type[] tGeneric = binder.GetGenericArgTypes().ToArray();
 
             TDyn dyn = provider.bind
             (
-                getmi(binder.Name, tGeneric, tArgs),
+                Getmi(binder.Name, tGeneric, tArgs),
                 provider.Svc.tryAlias(binder.Name),
                 Convention
             );
 
             // Boxing types, for example: NullType -> null -> NullType
 
-            object[] unboxed = unbox(args);
+            object[] unboxed = Unboxing(args);
 
             object odv = dyn.dynamic.Invoke(null, unboxed);
 
@@ -131,8 +97,7 @@ namespace net.r_eg.Conari.Core
                 result = Dynamic.DCast(dyn.returnType, odv);
             }
 
-            boxing(unboxed, args);
-
+            Boxing(unboxed, args);
             return true;
         }
 
@@ -142,121 +107,103 @@ namespace net.r_eg.Conari.Core
             Convention      = conv;
         }
 
-        private object[] unbox(object[] args)
-        {
-            return args.Select(a => (a == null)
-                                    ? null
-                                    : (
-                                          a.GetType()
-                                              .GetInterface(typeof(IBoxed).FullName) != null
-                                      )
-                                      ? ((IBoxed)a).Data
-                                      : a
-                              )
-                              .ToArray();
-        }
+        private static object[] Unboxing(object[] args)
+            => args
+                .Select(a => a is IBoxed boxed ? boxed.Data : a)
+                .Select(a => a is IMarshalableGeneric mr ? Dynamic.DCast(mr.MarshalableType, a) : a)
+                .ToArray();
 
-        private void boxing(object[] from, object[] to)
+        private static void Boxing(object[] from, object[] to)
         {
             if(from.Length != to.Length) {
-                throw new ArgumentException($"boxing for types: length mismatch {from.Length} != {to.Length}");
+                throw new ArgumentException(Msg.incorrect_args_length_0_1.Format($"{from.Length}", $"{to.Length}"));
             }
 
             for(int i = 0; i < to.Length; ++i)
             {
-                if(to[i] == null) {
-                    to[i] = from[i];
-                    continue;
-                }
+                // update everything since ByRef& updated value is possible
 
-                if(to[i].GetType().GetInterface(typeof(IBoxed).FullName) != null) {
-                    ((IBoxed)to[i]).Data = from[i];
+                if(to[i] is IBoxed boxed)
+                {
+                    boxed.Data = from[i];
+                }
+                else
+                {
+                    to[i] = from[i];
                 }
             }
         }
 
-        private MethodInfo getmi(string name, Type[] generic, Type[] args)
+        private static IEnumerable<Type> GetTypesFromCallingContext(InvokeMemberBinder binder)
+            => binder
+                .GetCallingContext()?
+                .GetMethod("Invoke")?
+                .GetParameters()
+                .Skip(2) // service args
+                .Select(t => t.ParameterType);
+
+        private static IEnumerable<CSharpArgumentInfoFlags> GetArgFlags(InvokeMemberBinder binder)
+            => binder
+                .GetArgInfo()
+                .Select(i => (CSharpArgumentInfoFlags)i.GetPropertyValue("Flags", true))
+                .Skip(1); // service args
+
+        private static MethodInfo Getmi(string name, Type[] generic, Type[] args)
         {
-            if(generic?.Length > 1) {
-                throw new ArgumentException("Only one non-null type is allowed (as a return type) for this generic method.");
+            if(generic?.Length > 1) { //TODO: we can actually improve this but do we really need it?
+                throw new NotSupportedException(Msg.dlr_only_one_type_allowed);
             }
 
             return Dynamic.GetMethodInfo(
-                                name,
-                                (generic == null || generic.Length < 1) ? null : generic[0],
-                                args
-                           );
+                name,
+                (generic == null || generic.Length < 1) ? null : generic[0],
+                args
+            );
         }
 
         private Type[] getArgTypes(InvokeMemberBinder binder, object[] args)
         {
-            // NOTE: the args does not contain information about reference-types, that is IsByRef == false for any case
+            var tArgs = args.Select(a =>
+                (a == null)
+                    ? typeof(object)
+                    : a is IMarshalableGeneric mr 
+                        ? mr.MarshalableType 
+                        : a is INullType nt 
+                            ? nt.GenericType // null-value via NullType<IData> -> IData
+                            : a.GetType()
+            );
 
-            Type[] tArgs = null;
+            if(UseByRef) return tArgs.Select(a => a.MakeByRefType()).ToArray();
 
-            if(UseCallingContext) {
-                LSender.Send(this, "Trying to get types from CallingContext", Message.Level.Trace);
-                tArgs = getTypesFromCallingContext(binder);
-            }
+            // we're trying to resolve context because args may not provide info about reference-types (ByRef&)
 
-            if(tArgs == null)
+            Type[] ret = tArgs.ToArray();
+
+            if(UseCallingContext)
             {
-                LSender.Send(this, $"UseCallingContext == {UseCallingContext} && tArgs == null", Message.Level.Trace);
-                tArgs = args.Select((a, i) => 
-                                        (a == null) 
-                                            ? typeof(object)
-                                            : (a.GetType().GetInterface(typeof(INullType).FullName) != null)
-                                                    ? ((INullType)a).GenericType // null-value via NullType<IData> -> IData
-                                                                    //.E<Type>(() => { args[i] = null; })
-                                                    : a.GetType()
-                                   )
-                                   .ToArray();
-            }
-
-            if(!UseCallingContext)
-            {
-                CSharpArgumentInfoFlags[] aflags = getArgFlags(binder);
-                LSender.Send(this, $"CSharpArgumentInfoFlags: {aflags.Length} == {tArgs.Length}", Message.Level.Debug);
-
-                if(aflags.Length == tArgs.Length)
-                {
-                    tArgs = aflags.Select((f, i) =>
-                                             ((f & (CSharpArgumentInfoFlags.IsRef | CSharpArgumentInfoFlags.IsOut)) != 0)
-                                                   ? tArgs[i].MakeByRefType()
-                                                   : tArgs[i]
-                                         )
-                                         .ToArray();
+                Type[] tContext = GetTypesFromCallingContext(binder).ToArray();
+                if(tContext.Length != ret.Length) {
+                    throw new ArgumentException(Msg.incorrect_args_length_0_1.Format($"{tContext.Length}", $"{ret.Length}"));
                 }
+
+                tContext.ForEach((c, i) => { if(c.IsByRef) { ret[i] = c; } });
+                return ret;
             }
 
-            if(UseByRef) {
-                LSender.Send(this, $"Make ByRef& types for all arguments.", Message.Level.Trace);
-                tArgs = tArgs.Select(a => a.IsByRef ? a : a.MakeByRefType()).ToArray();
+            CSharpArgumentInfoFlags[] aflags = GetArgFlags(binder).ToArray();
+            if(aflags.Length != ret.Length) {
+                throw new ArgumentException(Msg.incorrect_args_length_0_1.Format($"{aflags.Length}", $"{ret.Length}"));
             }
 
-            if(args.Length != tArgs.Length) {
-                throw new ArgumentException($"getArgTypes: length mismatch ({args.Length} == {tArgs.Length})");
-            }
+            CSharpArgumentInfoFlags fByRef = CSharpArgumentInfoFlags.IsRef | CSharpArgumentInfoFlags.IsOut;
+            aflags.ForEach((f, i) =>
+            {
+                if((f & fByRef) != 0) {
+                    ret[i] = ret[i].MakeByRefType();
+                }
+            });
 
-            return tArgs;
-        }
-
-        private Type[] getTypesFromCallingContext(InvokeMemberBinder binder)
-        {
-            return binder.GetCallingContext()?
-                            .GetMethod("Invoke")?
-                            .GetParameters()
-                            .Skip(2) // service args
-                            .Select(t => t.ParameterType)
-                            .ToArray();
-        }
-
-        private CSharpArgumentInfoFlags[] getArgFlags(InvokeMemberBinder binder)
-        {
-            return binder.GetArgInfo()
-                    .Select(i => (CSharpArgumentInfoFlags)i.GetPropertyValue("Flags", true))
-                    .Skip(1) // service args
-                    .ToArray();
+            return ret;
         }
     }
 }

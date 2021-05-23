@@ -97,6 +97,24 @@ namespace net.r_eg.Conari.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Detected unknown problems for DLR arguments in `{0}`: {1}.
+        /// </summary>
+        internal static string dlr_args_unknown_problems_0_1 {
+            get {
+                return ResourceManager.GetString("dlr_args_unknown_problems_0_1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to For DLR methods only one type is allowed as a return type..
+        /// </summary>
+        internal static string dlr_only_one_type_allowed {
+            get {
+                return ResourceManager.GetString("dlr_only_one_type_allowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed check. The result is `{0}`..
         /// </summary>
         internal static string failed_check_result_0 {
@@ -111,6 +129,15 @@ namespace net.r_eg.Conari.Resources {
         internal static string field_0_defined_mode_1 {
             get {
                 return ResourceManager.GetString("field_0_defined_mode_1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Incorrectly processed arguments. Lengths are not equal. {0} != {1}.
+        /// </summary>
+        internal static string incorrect_args_length_0_1 {
+            get {
+                return ResourceManager.GetString("incorrect_args_length_0_1", resourceCulture);
             }
         }
         

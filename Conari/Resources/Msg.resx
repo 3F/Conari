@@ -129,11 +129,20 @@
   <data name="data_0_beyond_allocated_1" xml:space="preserve">
     <value>The new data ({0}) extend beyond the allocated space ({1})</value>
   </data>
+  <data name="dlr_args_unknown_problems_0_1" xml:space="preserve">
+    <value>Detected unknown problems for DLR arguments in `{0}`: {1}</value>
+  </data>
+  <data name="dlr_only_one_type_allowed" xml:space="preserve">
+    <value>For DLR methods only one type is allowed as a return type.</value>
+  </data>
   <data name="failed_check_result_0" xml:space="preserve">
     <value>Failed check. The result is `{0}`.</value>
   </data>
   <data name="field_0_defined_mode_1" xml:space="preserve">
     <value>Field `{0}` is already defined in the chain. Reset/renew/or use other mode instead of `{1}`.</value>
+  </data>
+  <data name="incorrect_args_length_0_1" xml:space="preserve">
+    <value>Incorrectly processed arguments. Lengths are not equal. {0} != {1}</value>
   </data>
   <data name="Invalid_or_unavailable_range_at_0" xml:space="preserve">
     <value>Invalid or unavailable range at {0}.</value>
