@@ -45,7 +45,7 @@ namespace net.r_eg.Conari.Extension
         {
             int h = r;
             foreach(var v in values) {
-                h.HashPolynom(v?.GetHashCode() ?? 0);
+                h = h.HashPolynom(v?.GetHashCode() ?? 0);
             }
             return h;
         }
