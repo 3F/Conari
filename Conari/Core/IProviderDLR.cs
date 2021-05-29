@@ -26,6 +26,7 @@
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
 using net.r_eg.Conari.Core.Runtime;
+using net.r_eg.Conari.Types;
 
 namespace net.r_eg.Conari.Core
 {
@@ -79,5 +80,22 @@ namespace net.r_eg.Conari.Core
         /// Otherwise use lightweight <see cref="NoDeclMethodInfo"/> wrapper.
         /// </summary>
         bool SignaturesViaTypeBuilder { get; set; }
+
+        /// <summary>
+        /// It can help better understand what are you trying to call without specified casting.
+        /// </summary>
+        /// <remarks>Affects performance.</remarks>
+        bool TryEvaluateContext { get; set; }
+
+        /// <summary>
+        /// Collect information about all input <see cref="INativeString"/> and delegate control.
+        /// </summary>
+        bool ManageNativeStrings { get; set; }
+
+        /// <summary>
+        /// Control of boxing for input data.
+        /// </summary>
+        /// <remarks>Affects performance.</remarks>
+        BoxingType BoxingControl { get; set; }
     }
 }

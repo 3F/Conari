@@ -31,7 +31,6 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using Microsoft.CSharp.RuntimeBinder;
 using net.r_eg.Conari.Extension;
-using net.r_eg.Conari.Log;
 using net.r_eg.Conari.Resources;
 using net.r_eg.Conari.Types;
 
@@ -85,26 +84,41 @@ namespace net.r_eg.Conari.Core
             }
         }
 
+        public bool TryEvaluateContext { get; set; } = true;
+
+        public bool ManageNativeStrings { get; set; } = true;
+
+        public BoxingType BoxingControl { get; set; } = BoxingType.UnboxingAndBoxing;
+
         private INativeStringManager<TCharIn> Strings => strings.Value;
 
         public override bool TryInvokeMember(InvokeMemberBinder binder, object[] input, out object result)
         {
-            collectNativeStrings(input);
+            object[] args;
+            if(TrailingArgs == null || Convention != CallingConvention.Cdecl || TrailingArgs.Length < 1)
+            {
+                args = input;
+            }
+            else
+            {
+                args = addTail(input);
+            }
 
-            IEnumerable<object> args = addTail(input);
+            if(ManageNativeStrings) collectNativeStrings(args);
 
             IEnumerable<Type> tArgs;
-            RefInfo refi = new(input.Length + /*bucket*/1);
-            try
+            RefInfo refi;
+
+            if(TryEvaluateContext)
             {
+                refi = new(args.Length + /*bucket*/1);
                 fillRefInfo(refi, binder);
                 tArgs = AdaptArgTypes(args, refi, UseByRef);
             }
-            catch(ArgumentException ex)
+            else
             {
-                LSender.Send(this, Msg.dlr_args_unknown_problems_0_1.Format($"{binder.Name}'", $"{ex.Message}"), Message.Level.Warn);
-                tArgs   = args.Select(a => a?.GetType() ?? tDefault);
-                refi    = null;
+                tArgs = AdaptArgTypes(args);
+                refi = null;
             }
 
             IEnumerable<Type> tGeneric = AdaptRetTypes(binder.GetGenericArgTypes());
@@ -116,22 +130,32 @@ namespace net.r_eg.Conari.Core
                 Convention
             );
 
-            // Boxing types, for example: NullType -> null -> NullType
+            object[] unboxed;
 
-            object[] unboxed = unboxing(args, refi).ToArray();
+            if((BoxingControl & BoxingType.Unboxing) != 0)
+            {
+                unboxed = unboxing(args, refi);
+            }
+            else
+            {
+                unboxed = args;
+            }
 
             object odv = dyn.dynamic.Invoke(null, unboxed);
 
             if(dyn.returnType == tVoid) // points to generic type in func<returnType>()
             {
-                result = odv; // return 'as is' due to unspecified behaviour from user space^
+                result = odv; // return 'as is' due to unspecified behavior from user space^
             }
             else
             {
                 result = Dynamic.DCast(dyn.returnType, odv);
             }
 
-            boxing(unboxed, input);
+            if((BoxingControl & BoxingType.Boxing) != 0)
+            {
+                boxing(unboxed, input);
+            }
             return true;
         }
 
@@ -145,7 +169,7 @@ namespace net.r_eg.Conari.Core
         private static IEnumerable<Type> AdaptRetTypes(IEnumerable<Type> input) 
             => input.Select(t => t == tString ? tCharIn : t);
 
-        private static IEnumerable<Type> AdaptArgTypes(IEnumerable<object> args, RefInfo refi, bool useByRef)
+        private static IEnumerable<Type> AdaptArgTypes(IEnumerable<object> args)
             => args.Select
             (a => (a == null) ? tDefault
                 : a is string
@@ -153,14 +177,15 @@ namespace net.r_eg.Conari.Core
                     : a is IMarshalableGeneric mr
                         ? RevealMarshalableGenericType(mr.MarshalableType)
                         : a is INullType nt
-                            ? nt.GenericType : a.GetType()
-            )
+                            ? nt.GenericType : a.GetType());
+
+        private static IEnumerable<Type> AdaptArgTypes(IEnumerable<object> args, RefInfo refi, bool useByRef)
+            => AdaptArgTypes(args)
             .Select
-            ((t, i) => refi.ContainsKey(i) 
+            ((t, i) => refi?.ContainsKey(i) == true
                         ? SetRef(t, refi[i]) 
                         : useByRef 
-                            ? SetRef(t, null) : t
-            );
+                            ? SetRef(t, null) : t);
 
         private static Type SetRef(Type input, Type refi)
         {
@@ -225,15 +250,23 @@ namespace net.r_eg.Conari.Core
             }
         }
 
-        private IEnumerable<object> unboxing(IEnumerable<object> args, RefInfo refi)
-            => args
-                .Select(a => a is IBoxed boxed ? boxed.Data : a)
-                .Select((a, i) => a is string str ? makeCstr(str, refi, i) : a)
-                .Select(a => a is IMarshalableGeneric mr ? RevealMarshalableValue(mr, a): a);
+        private object[] unboxing(object[] args, RefInfo refi)
+        {
+            object[] r = new object[args.Length];
+            for(int i = 0; i < args.Length; ++i)
+            {
+                r[i] = args[i];
+
+                if(r[i] is IBoxed boxed) r[i] = boxed.Data;
+                if(r[i] is string str) r[i] = makeCstr(str, refi, i);
+                if(r[i] is IMarshalableGeneric mr) r[i] = RevealMarshalableValue(mr, r[i]);
+            }
+            return r;
+        }
 
         private NativeString<TCharIn> makeCstr(string str, RefInfo refi, int idx)
         {
-            if(refi.ContainsKey(idx)) {
+            if(refi?.ContainsKey(idx) == true) {
                 return Strings.cstr(str, 0);
             }
             return Strings.cstr(str, str.RelativeLength(RefModifiableStringBuffer));
@@ -257,7 +290,7 @@ namespace net.r_eg.Conari.Core
 
                     // TODO: L-176. It seem may produce AccessViolationException in some tests,
                     // such as BindingContextTest (dlrStringTest3(), lambdaStringTest2()) ...
-                    // Strings.release(((IPtr)from[i]).AddressPtr);
+                    // Strings.release(((IPtr)src[i]).AddressPtr);
                 }
                 else
                 {
@@ -267,12 +300,13 @@ namespace net.r_eg.Conari.Core
             }
         }
 
-        private IEnumerable<object> addTail(object[] args)
+        private object[] addTail(object[] args)
         {
-            if(args == null) throw new ArgumentNullException(nameof(args));
-            if(TrailingArgs == null || Convention != CallingConvention.Cdecl || TrailingArgs.Length < 1) return args;
+            object[] ret = new object[args.Length + TrailingArgs.Length];
 
-            return args.Concat(TrailingArgs);
+            args.CopyTo(ret, 0);
+            TrailingArgs.CopyTo(ret, args.Length);
+            return ret;
         }
 
         private void fillRefInfo(RefInfo input, InvokeMemberBinder binder)
