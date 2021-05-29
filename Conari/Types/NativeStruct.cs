@@ -97,6 +97,8 @@ namespace net.r_eg.Conari.Types
 
         public Type MarshalableType { get; } = typeof(T);
 
+        public IntPtr AddressPtr => this;
+
         /// <summary>
         /// Construct a new structure data using <see cref="NativeData"/> chains.
         /// </summary>

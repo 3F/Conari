@@ -72,6 +72,8 @@ namespace net.r_eg.Conari.Types
 
         public Type MarshalableType { get; } = typeof(T);
 
+        public IntPtr AddressPtr => this;
+
         /// <summary>
         /// Length of array.
         /// </summary>

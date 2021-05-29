@@ -76,7 +76,7 @@ namespace net.r_eg.Conari.Types
         public byte[] Raw => Unicode ? wdata.Raw : data.Raw;
 
         [NativeType]
-        public static implicit operator IntPtr(TCharPtr v) => v.data;
+        public static implicit operator IntPtr(TCharPtr v) => Unicode ? v.wdata : v.data;
         public static implicit operator string(TCharPtr v) => Unicode ? v.wdata : v.data;
 
         public static implicit operator TCharPtr(IntPtr ptr) => new(ptr);

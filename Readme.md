@@ -351,7 +351,7 @@ using var u = new NativeStruct<MatchResult>();
 l.match<bool>(
     c._T("[system]"), c._T("Sys###"), 
     EngineOptions.F_ICASE | EngineOptions.F_MATCH_RESULT, 
-    (IntPtr)u
+    u
 );
 u.Data.start // 1
 u.Data.end   // 7

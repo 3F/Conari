@@ -118,11 +118,7 @@ namespace net.r_eg.Conari.Types
             );
         }
 
-        public override string ToString()
-        {
-            if(pointer == IntPtr.Zero) return null;
-            return Marshal.PtrToStringAnsi(pointer);
-        }
+        public override string ToString() => Marshal.PtrToStringAnsi(pointer);
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {

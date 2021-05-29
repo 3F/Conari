@@ -27,7 +27,7 @@ using System;
 
 namespace net.r_eg.Conari.Types
 {
-    public interface IMarshalableGeneric
+    public interface IMarshalableGeneric: IPtr
     {
         Type MarshalableType { get; }
     }

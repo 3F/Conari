@@ -40,10 +40,11 @@ namespace net.r_eg.Conari.Core
     public sealed class ProviderDLR<TCharIn>: DynamicObject, IProviderDLR
         where TCharIn : struct
     {
-        private static readonly Type TypeVoid       = typeof(void);
-        private static readonly Type TypeDefault    = typeof(object);
-        private static readonly Type TypeCharIn     = typeof(TCharIn);
-        private static readonly Type TypeString     = typeof(string);
+        private static readonly Type tVoid      = typeof(void);
+        private static readonly Type tDefault   = typeof(object);
+        private static readonly Type tCharIn    = typeof(TCharIn);
+        private static readonly Type tString    = typeof(string);
+        private static readonly Type tIntPtr    = typeof(IntPtr);
 
         private readonly IProvider provider;
         private readonly Lazy<NativeStringManager<TCharIn>> strings;
@@ -84,7 +85,7 @@ namespace net.r_eg.Conari.Core
             catch(ArgumentException ex)
             {
                 LSender.Send(this, Msg.dlr_args_unknown_problems_0_1.Format($"{binder.Name}'", $"{ex.Message}"), Message.Level.Warn);
-                tArgs   = args.Select(a => a?.GetType() ?? TypeDefault).ToArray();
+                tArgs   = args.Select(a => a?.GetType() ?? tDefault).ToArray();
                 refi    = null;
             }
 
@@ -103,7 +104,7 @@ namespace net.r_eg.Conari.Core
 
             object odv = dyn.dynamic.Invoke(null, unboxed);
 
-            if(dyn.returnType == TypeVoid) // points to generic type in func<returnType>()
+            if(dyn.returnType == tVoid) // points to generic type in func<returnType>()
             {
                 result = odv; // return 'as is' due to unspecified behaviour from user space^
             }
@@ -124,19 +125,35 @@ namespace net.r_eg.Conari.Core
         }
 
         private static IEnumerable<Type> AdaptRetTypes(IEnumerable<Type> input) 
-            => input.Select(t => t == TypeString ? TypeCharIn : t);
+            => input.Select(t => t == tString ? tCharIn : t);
 
         private static IEnumerable<Type> AdaptArgTypes(object[] args)
             => args.Select(a =>
                 (a == null)
-                    ? TypeDefault
+                    ? tDefault
                     : a is string
-                        ? TypeCharIn
+                        ? tCharIn
                         : a is IMarshalableGeneric mr
-                            ? mr.MarshalableType
+                            ? RevealMarshalableGenericType(mr.MarshalableType)
                             : a is INullType nt
                                 ? nt.GenericType
                                 : a.GetType());
+
+        private static Type RevealMarshalableGenericType(Type input)
+        {
+            if(input.GetInterface(typeof(IPtr).FullName) == null) {
+                return tIntPtr;
+            }
+            return input; // such as CharPtr, WCharPtr, etc.
+        }
+
+        private static object RevealMarshalableValue(IMarshalableGeneric mr, object input)
+        {
+            if(mr.MarshalableType.GetInterface(typeof(IPtr).FullName) == null) {
+                return mr.AddressPtr;
+            }
+            return Dynamic.DCast(mr.MarshalableType, input); // such as NativeString<T>, etc.
+        }
 
         private static IEnumerable<Type> GetTypesFromCallingContext(InvokeMemberBinder binder)
             => binder
@@ -171,7 +188,7 @@ namespace net.r_eg.Conari.Core
             {
                 if(a is INativeString ns && ns.UseManager)
                 {
-                    if(ns.Disposed || TypeCharIn != ns.MarshalableType) throw new NotSupportedException();
+                    if(ns.Disposed || tCharIn != ns.MarshalableType) throw new NotSupportedException();
                     Strings.add((NativeString<TCharIn>)a);
                 }
             }
@@ -181,7 +198,7 @@ namespace net.r_eg.Conari.Core
             => args
                 .Select(a => a is IBoxed boxed ? boxed.Data : a)
                 .Select((a, i) => a is string str ? makeCstr(str, refi, i) : a)
-                .Select(a => a is IMarshalableGeneric mr ? Dynamic.DCast(mr.MarshalableType, a) : a)
+                .Select(a => a is IMarshalableGeneric mr ? RevealMarshalableValue(mr, a): a)
                 .ToArray();
 
         private NativeString<TCharIn> makeCstr(string str, _RefInfo[] refi, int idx)
@@ -192,27 +209,30 @@ namespace net.r_eg.Conari.Core
             return Strings.cstr(str, str.RelativeLength(RefModifiableStringBuffer));
         }
 
-        private void boxing(object[] from, object[] to)
+        private void boxing(object[] src, object[] dst)
         {
-            if(from.Length < to.Length) {
-                throw new ArgumentException(Msg.incorrect_args_length_0_1.Format($"{from.Length}", $"{to.Length}"));
+            if(src.Length < dst.Length) {
+                throw new ArgumentException(Msg.incorrect_args_length_0_1.Format($"{src.Length}", $"{dst.Length}"));
             }
 
-            for(int i = 0; i < to.Length; ++i)
+            for(int i = 0; i < dst.Length; ++i)
             {
-                if(to[i] is IBoxed boxed)
+                if(dst[i] is IBoxed boxed)
                 {
-                    boxed.Data = from[i];
+                    boxed.Data = src[i];
                 }
-                else if(to[i] is string)
+                else if(dst[i] is string)
                 {
-                    to[i] = from[i].ToString();
-                    Strings.release(((IPtr)from[i]).AddressPtr);
+                    dst[i] = src[i].ToString(); // update since ByRef& is possible  
+
+                    // TODO: L-176. It seem may produce AccessViolationException in some tests,
+                    // such as BindingContextTest (dlrStringTest3(), lambdaStringTest2()) ...
+                    // Strings.release(((IPtr)from[i]).AddressPtr);
                 }
                 else
                 {
                     // update everything since ByRef& updated value is possible
-                    to[i] = from[i];
+                    dst[i] = src[i];
                 }
             }
         }
@@ -237,7 +257,7 @@ namespace net.r_eg.Conari.Core
 
             refi.ForEach((c, i) =>
             {
-                if((c.isRef || UseByRef) && ret[i] != TypeCharIn)
+                if((c.isRef || UseByRef) && ret[i] != tCharIn)
                 {
                     ret[i] = c.type ?? ret[i].MakeByRefType();
                     refi[i].isRef = true;

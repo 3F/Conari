@@ -18,7 +18,7 @@ namespace ConariTest.Types
 
             using var u = NativeStruct.Make.f<UIntPtr>("start", "end").Struct;
 
-            Assert.True(l.match<bool>(c._T("0123456"), c._T("234"), EngineOptions.F_MATCH_RESULT, (IntPtr)u));
+            Assert.True(l.match<bool>(c._T("0123456"), c._T("234"), EngineOptions.F_MATCH_RESULT, u));
 
             dynamic v = u.Access;
 
@@ -39,7 +39,7 @@ namespace ConariTest.Types
             using var c = ConariL.Make(new(gCfgIsolatedRxW), out dynamic l);
             using var u = new NativeStruct();
 
-            Assert.True(l.match<bool>(c._T("0123456"), c._T("234"), EngineOptions.F_MATCH_RESULT, (IntPtr)u));
+            Assert.True(l.match<bool>(c._T("0123456"), c._T("234"), EngineOptions.F_MATCH_RESULT, u));
 
             u.Native
                 .f<UIntPtr>("start", "end")
@@ -56,14 +56,14 @@ namespace ConariTest.Types
 
             using var u = new NativeStruct<MatchResult>();
 
-            Assert.True(l.match<bool>(c._T("system"), c._T("syStem"), EngineOptions.F_ICASE | EngineOptions.F_MATCH_RESULT, (IntPtr)u));
+            Assert.True(l.match<bool>(c._T("system"), c._T("syStem"), EngineOptions.F_ICASE | EngineOptions.F_MATCH_RESULT, u));
             Assert.Equal(n(0), u.Data.start);
             Assert.Equal(n(6), u.Data.end);
 
             Assert.False(l.match<bool>(c._T("system"), c._T("1"), EngineOptions.F_NONE, (IntPtr)u));
             Assert.Equal(MatchResult.npos, u.read().Data.start);
 
-            Assert.True(l.matchOfs<bool>(c._T("number_str = '+12'"), c._T("str"), n(5), EngineOptions.F_NONE, (IntPtr)u));
+            Assert.True(l.matchOfs<bool>(c._T("number_str = '+12'"), c._T("str"), n(5), EngineOptions.F_NONE, u));
             Assert.Equal(MatchResult.npos, u.read().Data.start);
 
             Assert.True(l.matchOfs<bool>(c._T("number_str = '+12'"), c._T("str"), n(5), EngineOptions.F_MATCH_RESULT, (IntPtr)u));
@@ -71,7 +71,7 @@ namespace ConariTest.Types
             Assert.Equal(n(7), u.Data.start);
             Assert.Equal(n(10), u.Data.end);
 
-            Assert.False(l.matchOfs<bool>(c._T("number_str = '+12'"), c._T("str"), n(8), EngineOptions.F_NONE, (IntPtr)u));
+            Assert.False(l.matchOfs<bool>(c._T("number_str = '+12'"), c._T("str"), n(8), EngineOptions.F_NONE, u));
             Assert.Equal(MatchResult.npos, u.read().Data.start);
 
         }

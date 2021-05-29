@@ -29,9 +29,9 @@ namespace ConariTest._svc
 
         internal static async Task MtaRun(Action act, IConfig cfg, int limit
 #if DEBUG
-            = 400
+            = 100
 #else
-            = 1000
+            = 300
 #endif
             )
         {
