@@ -61,6 +61,15 @@ namespace net.r_eg.Conari.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Activate PE impl first..
+        /// </summary>
+        internal static string activate_pe {
+            get {
+                return ResourceManager.GetString("activate_pe", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Argument `{0}` is empty or null..
         /// </summary>
         internal static string arg_0_empty_or_null {

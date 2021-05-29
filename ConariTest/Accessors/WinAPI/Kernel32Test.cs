@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using net.r_eg.Conari;
 using net.r_eg.Conari.Accessors.WinAPI;
-using net.r_eg.Conari.Core;
 using Xunit;
 
 #if !NETCORE

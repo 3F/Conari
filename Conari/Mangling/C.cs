@@ -23,6 +23,7 @@
  * THE SOFTWARE.
 */
 
+using System.Collections.Generic;
 using System.Linq;
 
 namespace net.r_eg.Conari.Mangling
@@ -50,12 +51,9 @@ namespace net.r_eg.Conari.Mangling
         /// <param name="function">Undecorated function name.</param>
         /// <param name="names">The exported function names. Use PE handler.</param>
         /// <returns>found decorated function or null.</returns>
-        public static string Decorate(string function, string[] names)
+        public static string Decorate(string function, IEnumerable<string> names)
         {
-            if(names == null) {
-                return null;
-            }
-            return names.Where(actual => Check(function, actual)).FirstOrDefault();
+            return names?.FirstOrDefault(actual => Check(function, actual));
         }
 
         /// <summary>

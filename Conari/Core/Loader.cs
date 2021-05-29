@@ -44,6 +44,8 @@ namespace net.r_eg.Conari.Core
 
         private readonly EventWaitHandle ewhSignal = new(true, EventResetMode.AutoReset, CLLI);
 
+        private IPE _pe;
+
         /// <summary>
         /// Before unloading a library.
         /// </summary>
@@ -69,7 +71,11 @@ namespace net.r_eg.Conari.Core
         /// <summary>
         /// PE32/PE32+ features.
         /// </summary>
-        public IPE PE { get; protected set; }
+        public IPE PE
+        {
+            get => LLCfg.peImplementation != PeImplType.Disabled ? _pe : throw new NotSupportedException(Msg.activate_pe);
+            set => _pe = value;
+        }
 
         internal static string TempDstPath => Path.Combine(Path.GetTempPath(), CLLI);
 
@@ -108,7 +114,7 @@ namespace net.r_eg.Conari.Core
                 throw new LoadLibException($"Failed loading '{Library}'. Possible incorrect architecture or missing file or its dependencies. https://github.com/3F/Conari/issues/4", true);
             }
             
-            PE = getPeInstance(LLCfg.peImplementation, Library);
+            PE = GetPeInstance(LLCfg.peImplementation, Library);
 
             AfterLoad(this, new DataArgs<Link>(Library));
             return true;
@@ -255,13 +261,14 @@ namespace net.r_eg.Conari.Core
             }
         }
 
-        protected IPE getPeInstance(PeImplType type, Link l)
+        protected static IPE GetPeInstance(PeImplType type, Link l)
         {
             switch(type)
             {
                 case PeImplType.Default: // 1.5+ Memory
                 case PeImplType.Memory: return new PEMem(l.handle);
                 case PeImplType.NativeStream: return new PEFile(l.module);
+                case PeImplType.Disabled: return null;
             }
             throw new NotImplementedException();
         }
@@ -319,9 +326,9 @@ namespace net.r_eg.Conari.Core
                     )
                 );
 
-                if(disposing && PE != null && PE is IDisposable pestream)
+                if(disposing && _pe != null && _pe is IDisposable pestream)
                 {
-                    LSender.Send(this, $"Dispose PE file `{PE.FileName}`", Message.Level.Trace);
+                    LSender.Send(this, $"Dispose PE file `{_pe.FileName}`", Message.Level.Trace);
                     pestream.Dispose();
                 }
 

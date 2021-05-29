@@ -37,6 +37,11 @@ namespace net.r_eg.Conari.Core
         /// <summary>
         /// Use <see cref="Native.Core.NativeStream"/> implementation.
         /// </summary>
-        NativeStream
+        NativeStream,
+
+        /// <summary>
+        /// It will disable all related to PE features such as mangling, list of exported proc, etc.
+        /// </summary>
+        Disabled,
     }
 }

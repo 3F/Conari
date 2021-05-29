@@ -243,9 +243,12 @@ namespace net.r_eg.Conari
 
         protected void init(IConfig cfg)
         {
-            config      = cfg ?? throw new ArgumentNullException(nameof(cfg));
-            Mangling    = cfg.Mangling;
-            LLCfg       = new(cfg);
+            config = cfg ?? throw new ArgumentNullException(nameof(cfg));
+
+            Mangling    = (cfg.PeImplementation != PeImplType.Disabled && cfg.Mangling);
+            Cache       = cfg.Cache;
+
+            LLCfg = new(cfg);
 
             if(cfg.LazyLoading) {
                 Library = new Link(cfg.Module);

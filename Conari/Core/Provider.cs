@@ -34,6 +34,7 @@ using net.r_eg.Conari.Exceptions;
 using net.r_eg.Conari.Extension;
 using net.r_eg.Conari.Log;
 using net.r_eg.Conari.Native;
+using net.r_eg.Conari.PE;
 using net.r_eg.Conari.Resources;
 using net.r_eg.Conari.Types.Methods;
 using net.r_eg.Conari.WinAPI;
@@ -58,6 +59,7 @@ namespace net.r_eg.Conari.Core
         protected IExVar exvar;
         private string _prefix;
         private CallingConvention _convention = CallingConvention.Cdecl;
+        private bool _mangling;
 
         private readonly AliasDict aliasDict;
 
@@ -94,7 +96,15 @@ namespace net.r_eg.Conari.Core
             }
         }
 
-        public bool Mangling { get; set; }
+        public bool Mangling
+        {
+            get => _mangling;
+            set
+            {
+                if(LLCfg?.peImplementation == PeImplType.Disabled) throw new NotSupportedException(Msg.activate_pe);
+                _mangling = value;
+            }
+        }
 
         public Dictionary<string, ProcAlias> Aliases => aliasDict?.Aliases;
 
@@ -229,7 +239,8 @@ namespace net.r_eg.Conari.Core
 
             LSender.Send(this, $"{msgerr} {Msg.trying_decorate_with_0.Format(nameof(Conari.Mangling.C))}", Message.Level.Warn);
 
-            var proc = Conari.Mangling.C.Decorate(lpProcName, ((ILoader)this).PE.Export.Names.ToArray());
+            IPE pe = ((ILoader)this).PE ?? throw new NotSupportedException(Msg.activate_pe);
+            var proc = Conari.Mangling.C.Decorate(lpProcName, pe.Export.Names);
             if(proc == null)
             {
                 throw new EntryPointNotFoundException(

@@ -24,8 +24,9 @@
 */
 
 using System.Threading;
+using net.r_eg.Conari.Core;
 
-namespace net.r_eg.Conari.Core
+namespace net.r_eg.Conari
 {
     public interface IConfig
     {
@@ -45,7 +46,12 @@ namespace net.r_eg.Conari.Core
         bool LazyLoading { get; set; }
 
         /// <summary>
-        /// To cache dynamic types.
+        /// To cache delegates, generated methods, etc.
+        /// </summary>
+        bool Cache { get; set; }
+
+        /// <summary>
+        /// To cache dynamic types when DLR requests.
         /// </summary>
         bool CacheDLR { get; set; }
 
