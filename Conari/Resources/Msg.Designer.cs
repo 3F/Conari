@@ -133,6 +133,15 @@ namespace net.r_eg.Conari.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Internal incorrect behaviour when accessing generic arg types. Please report: https://github.com/3F/Conari.
+        /// </summary>
+        internal static string failed_accessing_to_generic_types {
+            get {
+                return ResourceManager.GetString("failed_accessing_to_generic_types", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed check. The result is `{0}`..
         /// </summary>
         internal static string failed_check_result_0 {

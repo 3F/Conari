@@ -28,6 +28,7 @@ using System;
 namespace net.r_eg.Conari.Core
 {
     [Flags]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1069:Enums values should not be duplicated", Justification = "Due to aliases for the Default items")]
     public enum DynamicOptions
     {
         NoSet,

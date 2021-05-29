@@ -32,16 +32,12 @@ namespace net.r_eg.Conari.Aliases
 {
     internal sealed class AliasDict
     {
-        private Provider provider;
+        private readonly Provider provider;
 
         /// <summary>
         /// The aliases for exported-functions and variables.
         /// </summary>
-        public Dictionary<string, ProcAlias> Aliases
-        {
-            get;
-            private set;
-        } = new Dictionary<string, ProcAlias>();
+        public Dictionary<string, ProcAlias> Aliases { get; } = new();
 
         /// <summary>
         /// Try to use alias.
@@ -70,12 +66,9 @@ namespace net.r_eg.Conari.Aliases
             return ret;
         }
 
-        public AliasDict(Provider p)
+        public AliasDict(Provider provider)
         {
-            if(p == null) {
-                throw new ArgumentException("Provider cannot be null.");
-            }
-            provider = p;
+            this.provider = provider ?? throw new ArgumentNullException(nameof(provider));
         }
     }
 }

@@ -136,7 +136,7 @@ namespace net.r_eg.Conari.Native.Core
                 return fields;
             }
 
-            BReader br = new BReader(data, 0);
+            BReader br = new(data, 0);
 
             foreach(var f in fields)
             {

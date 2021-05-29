@@ -69,7 +69,7 @@ namespace net.r_eg.Conari.Types
             return Marshal.PtrToStringUni(pointer);
         }}
 
-        [Obsolete]
+        [Obsolete("Use pointer information instead.")]
         public static int PtrSize => IntPtr.Size;
 
         [NativeType]
@@ -122,7 +122,6 @@ namespace net.r_eg.Conari.Types
             info.AddValue(nameof(pointer), pointer);
         }
 
-        [Obsolete]
         public void free()
         {
             Marshal.FreeBSTR(pointer);

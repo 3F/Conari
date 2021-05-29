@@ -736,9 +736,9 @@ namespace ConariTest
 
                 // name
                 Assert.Equal("name", fields[2].name);
-#pragma warning disable CS0612 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
                 Assert.Equal(CharPtr.PtrSize, fields[2].tsize);
-#pragma warning restore CS0612 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete
                 Assert.Equal(typeof(CharPtr), fields[2].type);
                 Assert.Equal(expName, (CharPtr)fields[2].value);
 

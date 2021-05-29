@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using Microsoft.CSharp.RuntimeBinder;
+using net.r_eg.Conari.Resources;
 
 namespace net.r_eg.Conari.Extension
 {
@@ -37,8 +38,6 @@ namespace net.r_eg.Conari.Extension
     /// </summary>
     internal static class MemberBinderExtension
     {
-        internal const string UNS_MSG = "Internal incorrect behaviour when accessing generic arg types. Please report: https://github.com/3F/Conari";
-
         internal static IEnumerable<Type> GetGenericArgTypes(this InvokeMemberBinder binder)
         {
             if(binder == null) {
@@ -54,7 +53,7 @@ namespace net.r_eg.Conari.Extension
                 return types as IEnumerable<Type>;
             }
 
-            throw new ArgumentException(UNS_MSG);
+            throw new ArgumentException(Msg.failed_accessing_to_generic_types);
         }
 
         internal static IEnumerable<CSharpArgumentInfo> GetArgInfo(this InvokeMemberBinder binder)
@@ -72,7 +71,7 @@ namespace net.r_eg.Conari.Extension
                 return info as IEnumerable<CSharpArgumentInfo>;
             }
 
-            throw new ArgumentException(UNS_MSG);
+            throw new ArgumentException(Msg.failed_accessing_to_generic_types);
         }
 
         internal static Type GetCallingContext(this InvokeMemberBinder binder)
@@ -97,7 +96,7 @@ namespace net.r_eg.Conari.Extension
                 return context as Type;
             }
 
-            throw new ArgumentException(UNS_MSG);
+            throw new ArgumentException(Msg.failed_accessing_to_generic_types);
         }
     }
 }

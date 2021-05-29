@@ -141,6 +141,9 @@
   <data name="dlr_only_one_type_allowed" xml:space="preserve">
     <value>For DLR methods only one type is allowed as a return type.</value>
   </data>
+  <data name="failed_accessing_to_generic_types" xml:space="preserve">
+    <value>Internal incorrect behaviour when accessing generic arg types. Please report: https://github.com/3F/Conari</value>
+  </data>
   <data name="failed_check_result_0" xml:space="preserve">
     <value>Failed check. The result is `{0}`.</value>
   </data>

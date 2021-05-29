@@ -35,6 +35,7 @@ using ConariL l = new("...");
 
 Forget about the type conversions and memory management complexities. Because nothing easier than just use it,
 
+[`[⏯]`](https://github.com/3F/Conari/blob/bc74895c1592f9e8c15168eb543a0bdcd4fbe07b/ConariTest/BindingContextTest.cs#L20-L24)
 ```csharp
 using dynamic l = new ConariX("regXwild.dll");
 

@@ -53,21 +53,21 @@ namespace net.r_eg.Conari.PE.WinNT
         /// <summary>
         /// COFF line numbers have been removed. This flag is deprecated and should be zero.
         /// </summary>
-        [Obsolete]
+        [Obsolete("WinAPI")]
         IMAGE_FILE_LINE_NUMS_STRIPPED = 0x0004,
 
         /// <summary>
         /// COFF symbol table entries for local symbols have been removed.
         /// This flag is deprecated and should be zero.
         /// </summary>
-        [Obsolete]
+        [Obsolete("WinAPI")]
         IMAGE_FILE_LOCAL_SYMS_STRIPPED = 0x0008,
 
         /// <summary>
         /// Obsolete. Aggressively trim working set.
         /// This flag is deprecated for Windows 2000 and later and must be zero.
         /// </summary>
-        [Obsolete]
+        [Obsolete("WinAPI")]
         IMAGE_FILE_AGGRESSIVE_WS_TRIM = 0x0010,
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace net.r_eg.Conari.PE.WinNT
         /// Little endian: the least significant bit (LSB) precedes the most significant bit (MSB) in memory.
         /// This flag is deprecated and should be zero.
         /// </summary>
-        [Obsolete]
+        [Obsolete("WinAPI")]
         IMAGE_FILE_BYTES_REVERSED_LO = 0x0080,
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace net.r_eg.Conari.PE.WinNT
         /// <summary>
         /// Big endian: the MSB precedes the LSB in memory. This flag is deprecated and should be zero.
         /// </summary>
-        [Obsolete]
+        [Obsolete("WinAPI")]
         IMAGE_FILE_BYTES_REVERSED_HI = 0x8000,
     }
 }

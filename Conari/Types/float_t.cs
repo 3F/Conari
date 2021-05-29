@@ -37,7 +37,7 @@ namespace net.r_eg.Conari.Types
         public const Double MAX = Double.MaxValue;
         public const Double MIN = Double.MinValue;
 
-        private Double val;
+        private readonly Double val;
 
         public int ActualSize
         {

@@ -72,7 +72,7 @@ namespace net.r_eg.Conari.Types
 
         public IntPtr AddressPtr => this;
 
-        [Obsolete]
+        [Obsolete("Use pointer information instead.")]
         public static int PtrSize => IntPtr.Size;
 
         [NativeType]
