@@ -24,58 +24,22 @@
 */
 
 using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Runtime.Serialization;
 
 namespace net.r_eg.Conari.Core
 {
-    [Serializable]
-    public sealed class MICache: Dictionary<Type[], MethodInfo>
+    [Flags]
+    public enum DynamicOptions
     {
-        private class EqTypeArrayComparer: IEqualityComparer<Type[]>
-        {
-            public bool Equals(Type[] x, Type[] y)
-            {
-                if(x == null || y == null) {
-                    return false;
-                }
+        NoSet,
 
-                if(x.Length != y.Length) {
-                    return false;
-                }
+        DefaultNoCache = NoSet,
 
-                for(int i = 0; i < x.Length; ++i) {
-                    if(x[i] != y[i]) {
-                        return false;
-                    }
-                }
-                return true;
-            }
+        Default = DefaultWithCaching,
 
-            public int GetHashCode(Type[] obj)
-            {
-                int h = 0;
-                for(int i = 0; i < obj.Length; ++i) {
-                    unchecked {
-                        h = (h << 5) + h ^ obj[i].GetHashCode();
-                    }
-                }
+        DefaultWithCaching = DefaultNoCache | Cache,
 
-                return h;
-            }
-        }
+        Cache = 0x01,
 
-        public MICache()
-            : base(new EqTypeArrayComparer())
-        {
-
-        }
-
-        private MICache(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-
-        }
+        GenerateUsingBuilder = 0x02,
     }
 }

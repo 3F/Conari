@@ -25,21 +25,20 @@
 
 using System;
 using System.Reflection;
-using System.Reflection.Emit;
-using System.Runtime.InteropServices;
 
-namespace net.r_eg.Conari.Core
+namespace net.r_eg.Conari.Core.Runtime
 {
-    public struct TDyn
+    internal class ArgInfo: ParameterInfo
     {
-        public DynamicMethod dynamic;
+        protected readonly Type init;
 
-        public MethodInfo method;
+        public override Type ParameterType => init;
 
-        public Type[] args;
+        public override string Name => init.Name;
 
-        public Type returnType;
-
-        public CallingConvention convention;
+        public ArgInfo(Type type)
+        {
+            init = type ?? throw new ArgumentNullException(nameof(type));
+        }
     }
 }

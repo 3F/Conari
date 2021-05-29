@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Linq;
 using ConariTest._svc;
 using net.r_eg.Conari;
 using net.r_eg.Conari.Core;
+using net.r_eg.Conari.Core.Runtime;
 using net.r_eg.Conari.Exceptions;
 using net.r_eg.Conari.Native;
 using net.r_eg.Conari.Native.Core;

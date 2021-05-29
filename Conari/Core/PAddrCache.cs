@@ -24,52 +24,53 @@
 */
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using net.r_eg.Conari.Extension;
 
 namespace net.r_eg.Conari.Core
 {
-    public sealed class PAddrCache<T>: Dictionary<PAddrCache<T>.Key, T>
+    public sealed class PAddrCache<T>: ConcurrentDictionary<PAddrCache<T>.Key, T>
     {
-        public T this[IntPtr addr, CallingConvention conv, Type sig]
+        public T this[IntPtr addr, CallingConvention conv, Type sig, int hash = 0]
         {
-            get => this[k(addr, conv, sig)];
-            set => this[k(addr, conv, sig)] = value;
+            get => this[k(addr, conv, sig, hash)];
+            set => this[k(addr, conv, sig, hash)] = value;
         }
 
-        internal Key k(IntPtr addr, CallingConvention conv, Type sig)
-                => new(addr, conv, sig);
+        internal Key k(IntPtr addr, CallingConvention conv, Type sig, int hash = 0)
+                => new(addr, conv, sig, hash);
 
         public struct Key
         {
             public IntPtr addr;
             public CallingConvention convention;
             public Type signature;
+            public int hash;
 
-            public Key(IntPtr ptr, CallingConvention conv, Type signature)
+            public Key(IntPtr ptr, CallingConvention conv, Type signature, int hash = 0)
             {
                 addr = ptr;
                 convention = conv;
                 this.signature = signature;
+                this.hash = hash;
             }
         }
 
         private class EqTypeArrayComparer: IEqualityComparer<Key>
         {
             public bool Equals(Key a, Key b)
-            {
-                if(a.addr != b.addr) return false;
-                if(a.convention != b.convention) return false;
-                if(a.signature != b.signature) return false;
-
-                return true;
-            }
+                => (a.addr == b.addr)
+                    && (a.convention == b.convention)
+                    && (a.hash == b.hash)
+                    && (a.signature == b.signature);
 
             public int GetHashCode(Key obj) => 0.CalculateHashCode
             (
                 obj.addr,
                 obj.convention,
+                obj.hash,
                 obj.signature
             );
         }

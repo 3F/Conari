@@ -305,7 +305,7 @@ namespace net.r_eg.Conari.Core
             MethodInfo m    = sig.GetMethod("Invoke");
             TDyn type       = wire(m, ptr, conv);
 
-            return type.dynamic.CreateDelegate(m.DeclaringType);
+            return type.dynamic.CreateDelegate(m.DeclaringType ?? throw new NotSupportedException());
         }
 
         protected TDyn wire(MethodInfo mi, LpProcName lpProcName)
@@ -329,7 +329,7 @@ namespace net.r_eg.Conari.Core
                 return wireNoCache(mi, ptr, conv);
             }
 
-            var key = xTDyn.k(ptr, conv, mi.DeclaringType);
+            var key = xTDyn.k(ptr, conv, mi.DeclaringType, mi.DeclaringType == null ? Dynamic.Hash(mi) : 0);
             if(!xTDyn.ContainsKey(key)) {
                 xTDyn[key] = wireNoCache(mi, ptr, conv);
             }
@@ -387,7 +387,6 @@ namespace net.r_eg.Conari.Core
                 method          = mi,
                 args            = mParams,
                 returnType      = mi.ReturnType,
-                declaringType   = mi.DeclaringType,
                 convention      = conv
             };
         }

@@ -23,7 +23,9 @@
  * THE SOFTWARE.
 */
 
+using System.Reflection.Emit;
 using System.Runtime.InteropServices;
+using net.r_eg.Conari.Core.Runtime;
 
 namespace net.r_eg.Conari.Core
 {
@@ -71,5 +73,11 @@ namespace net.r_eg.Conari.Core
         /// </summary>
         /// <remarks>Eg. 0 - do not use buffer; 0.5 - half of input; 1 - same to input; 2 - twice...</remarks>
         float RefModifiableStringBuffer { get; set; }
+
+        /// <summary>
+        /// Use <see cref="AssemblyBuilder"/> + <see cref="TypeBuilder"/> + <see cref="MethodBuilder"/> to generate methods signatures.
+        /// Otherwise use lightweight <see cref="NoDeclMethodInfo"/> wrapper.
+        /// </summary>
+        bool SignaturesViaTypeBuilder { get; set; }
     }
 }

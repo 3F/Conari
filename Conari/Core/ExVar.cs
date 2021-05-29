@@ -39,154 +39,77 @@ namespace net.r_eg.Conari.Core
     {
         private readonly IProvider provider;
 
-        /// <summary>
-        /// Access to dynamic features like getting exported-variables at runtime.
-        /// </summary>
         public dynamic DLR => this;
 
         public dynamic _ => this;
 
-        /// <summary>
-        /// Gets value from exported Variable. Full name is required.
-        /// </summary>
-        /// <typeparam name="T">The type of variable.</typeparam>
-        /// <param name="lpProcName">The full name of exported variable.</param>
-        /// <returns>The value from exported variable.</returns>
         public T getVar<T>(string lpProcName)
         {
             return getField<T>(lpProcName).value;
         }
 
-        /// <summary>
-        /// Alias to <see cref="getVar{T}(string)"/>
-        /// Gets value from exported Variable. Full name is required.
-        /// </summary>
-        /// <param name="lpProcName">The full name of exported variable.</param>
-        /// <returns>The value from exported variable.</returns>
         public DefaultType getVar(string lpProcName)
         {
             return getVar<DefaultType>(lpProcName);
         }
 
-        /// <summary>
-        /// Gets value from exported Variable.
-        /// The main prefix will affects on this result.
-        /// </summary>
-        /// <typeparam name="T">The type of variable.</typeparam>
-        /// <param name="variable">The name of exported variable.</param>
-        /// <returns>The value from exported variable.</returns>
         public T get<T>(string variable)
         {
             return getField(typeof(T), provider.Svc.procName(variable, true)).value;
         }
 
-        /// <summary>
-        /// Alias to <see cref="get{T}(string)"/>
-        /// 
-        /// Gets value from exported Variable.
-        /// The main prefix will affects on this result.
-        /// </summary>
-        /// <param name="variable">The name of exported variable.</param>
-        /// <returns>The value from exported variable.</returns>
         public DefaultType get(string variable)
         {
             return get<DefaultType>(variable);
         }
 
-        /// <summary>
-        /// Get field with native data from export table.
-        /// Uses type for information about data.
-        /// </summary>
-        /// <param name="type">To consider it as this type.</param>
-        /// <param name="name">The name of record.</param>
-        /// <returns></returns>
         public Native.Core.Field getField(Type type, string name)
         {
             return getField(type, provider.Svc.procName(name, false));
         }
 
-        /// <summary>
-        /// Alias to `getField(Type type, string name)`
-        /// 
-        /// Get field with native data from export table.
-        /// Uses type for information about data.
-        /// </summary>
-        /// <typeparam name="T">To consider it as T type.</typeparam>
-        /// <param name="name">The name of record.</param>
-        /// <returns></returns>
         public Native.Core.Field getField<T>(string name)
         {
             return getField(typeof(T), name);
         }
 
-        /// <summary>
-        /// Get field with native data from export table.
-        /// Uses size of unspecified unmanaged type in bytes. 
-        /// To calculate it from managed types, see: `NativeData.SizeOf`
-        /// </summary>
-        /// <param name="size">The size of raw-data in bytes.</param>
-        /// <param name="name">The name of record.</param>
-        /// <returns></returns>
         public Native.Core.Field getField(int size, string name)
         {
             return getField(size, provider.Svc.procName(name, false));
         }
 
-        /// <summary>
-        /// Magic properties. Get.
-        /// </summary>
-        /// <param name="binder"></param>
-        /// <param name="result"></param>
-        /// <returns></returns>
         public override bool TryGetMember(GetMemberBinder binder, out object result)
         {
             result = getFieldDLR(typeof(DefaultType), binder.Name);
             return true;
         }
 
-        /// <summary>
-        /// Magic properties. Set.
-        /// </summary>
-        /// <param name="binder"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
         public override bool TrySetMember(SetMemberBinder binder, object value)
         {
             throw new NotImplementedException(Msg.not_yet_impl);
         }
 
-        /// <summary>
-        /// Magic methods. Invoking.
-        /// </summary>
-        /// <![CDATA[
-        ///     `name<return_type>()`
-        /// ]]>
-        /// <param name="binder"></param>
-        /// <param name="args"></param>
-        /// <param name="result"></param>
-        /// <returns></returns>
         public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
         {
             if(args?.Length > 0) {
                 throw new ArgumentException("Arguments are not allowed for this method.");
             }
-            Type[] generic = binder.GetGenericArgTypes().ToArray();
 
-            if(generic.Length > 1) {
-                throw new ArgumentException("No more than one type (as a return type) allowed for this method.");
+            IEnumerable<Type> generic = binder.GetGenericArgTypes();
+
+            if(generic?.ElementAtOrDefault(1) != null)
+            {
+                throw new NotSupportedException(Msg.dlr_only_one_type_allowed);
             }
 
-            result = getFieldDLR(
-                (generic.Length < 1) ? typeof(DefaultType) : generic[0],
+            result = getFieldDLR
+            (
+                generic.ElementAtOrDefault(0) ?? typeof(DefaultType),
                 binder.Name
             );
             return true;
         }
 
-        /// <summary>
-        /// List of magic properties.
-        /// </summary>
-        /// <returns></returns>
         public override IEnumerable<string> GetDynamicMemberNames()
         {
             // TODO: the exported variables are free from decorations but '@' still may be used if it's not a C linkage
@@ -202,11 +125,7 @@ namespace net.r_eg.Conari.Core
 
         protected dynamic getFieldDLR(Type type, string variable)
         {
-            return getField(
-                type,
-                provider.Svc.tryAlias(variable)
-            )
-            .value;
+            return getField(type, provider.Svc.tryAlias(variable)).value;
         }
 
         protected Native.Core.Field getField(string name, NativeData n)
@@ -219,21 +138,17 @@ namespace net.r_eg.Conari.Core
         }
 
         protected Native.Core.Field getField(Type type, LpProcName lpProcName)
-        {
-            return provider
-                    .Svc
-                    .native(lpProcName)
-                    .t(type)
-                    .Raw.Type.FirstField;
-        }
+            => provider
+                .Svc
+                .native(lpProcName)
+                .t(type)
+                .Raw.Type.FirstField;
 
         protected Native.Core.Field getField(int size, LpProcName lpProcName)
-        {
-            return provider
-                    .Svc
-                    .native(lpProcName)
-                    .t(size)
-                    .Raw.Type.FirstField;
-        }
+            => provider
+                .Svc
+                .native(lpProcName)
+                .t(size)
+                .Raw.Type.FirstField;
     }
 }

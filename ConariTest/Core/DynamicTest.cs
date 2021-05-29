@@ -59,7 +59,7 @@ namespace ConariTest.Core
         {
             var expRetType = typeof(void);
 
-            MethodInfo mi = Dynamic.GetMethodInfo(false, expRetType);
+            MethodInfo mi = Dynamic.GetMethodInfo(DynamicOptions.DefaultNoCache, expRetType);
 
             Assert.NotNull(mi);
             Assert.Equal(Dynamic.METHOD_NAME, mi.Name);
@@ -85,8 +85,8 @@ namespace ConariTest.Core
         [Fact]
         public void GetMethodInfoTest3()
         {
-            Assert.Equal(Dynamic.METHOD_NAME, Dynamic.GetMethodInfo((string)null, false, typeof(void)).Name);
-            Assert.Equal(Dynamic.METHOD_NAME, Dynamic.GetMethodInfo(" ", false, typeof(void)).Name);
+            Assert.Equal(Dynamic.METHOD_NAME, Dynamic.GetMethodInfo(DynamicOptions.DefaultNoCache, (string)null, typeof(void)).Name);
+            Assert.Equal(Dynamic.METHOD_NAME, Dynamic.GetMethodInfo(DynamicOptions.DefaultNoCache, " ", typeof(void)).Name);
         }
 
         [Fact]
@@ -109,13 +109,13 @@ namespace ConariTest.Core
                                      LazyLoading = true
                                  }))
             {
-                Dynamic._.UseCache = true;
+                Dynamic._.Options |= DynamicOptions.Cache;
 
-                Assert.Equal("m1", Dynamic.GetMethodInfo("m1", false, typeof(bool), typeof(int)).Name);
+                Assert.Equal("m1", Dynamic.GetMethodInfo(DynamicOptions.DefaultNoCache, "m1", typeof(bool), typeof(int)).Name);
                 Assert.Equal("m2", Dynamic.GetMethodInfo("m2", typeof(bool), typeof(int)).Name);
                 Assert.Equal("m2", Dynamic.GetMethodInfo("m3", typeof(bool), typeof(int)).Name);
                 Assert.Equal("m2", Dynamic.GetMethodInfo(typeof(bool), typeof(int)).Name);
-                Assert.Equal("m4", Dynamic.GetMethodInfo("m4", false, typeof(bool), typeof(int)).Name);
+                Assert.Equal("m4", Dynamic.GetMethodInfo(DynamicOptions.DefaultNoCache, "m4", typeof(bool), typeof(int)).Name);
             }
         }
     }
