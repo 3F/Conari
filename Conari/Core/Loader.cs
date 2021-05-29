@@ -44,6 +44,8 @@ namespace net.r_eg.Conari.Core
 
         private readonly EventWaitHandle ewhSignal = new(true, EventResetMode.AutoReset, CLLI);
 
+        private FileStream lockIsolatedModule;
+
         private IPE _pe;
 
         /// <summary>
@@ -113,7 +115,7 @@ namespace net.r_eg.Conari.Core
                 }
                 throw new LoadLibException($"Failed loading '{Library}'. Possible incorrect architecture or missing file or its dependencies. https://github.com/3F/Conari/issues/4", true);
             }
-            
+
             PE = GetPeInstance(LLCfg.peImplementation, Library);
 
             AfterLoad(this, new DataArgs<Link>(Library));
@@ -169,7 +171,8 @@ namespace net.r_eg.Conari.Core
                 l.module = lib;
 
                 // resolves full name of loaded module for the case when no file extension
-                if(!l.resolved && !Path.HasExtension(l.module) && GetModuleFileName(l, out string module))
+                if(l.handle != IntPtr.Zero && !l.resolved 
+                    && !Path.HasExtension(l.module) && GetModuleFileName(l, out string module))
                 {
                     l.module = module;
                 }
@@ -211,6 +214,9 @@ namespace net.r_eg.Conari.Core
                 var dst = Path.Combine(dstDir, Path.GetFileName(module));
                 File.Copy(module, dst, true);
 
+                // L-186
+                lockIsolatedModule = new FileStream(dst, FileMode.Open, FileAccess.Read, FileShare.Read);
+
                 module = dst;
                 return true;
             }
@@ -235,6 +241,8 @@ namespace net.r_eg.Conari.Core
                 {
                     return LLCfg.moduleIsolationRecipe.discard(l);
                 }
+
+                lockIsolatedModule?.Dispose();
 
                 string dir = Path.GetDirectoryName(l.module);
 
