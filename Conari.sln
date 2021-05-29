@@ -33,6 +33,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{22D2B796
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TCharPtrTest", "ConariTest\TCharPtrTest.csproj", "{B26A0865-3AAC-4855-ACEA-F92DABD8C2BF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CC2B5ECA-0D15-4BC8-A779-C6013FA0A11B} = {CC2B5ECA-0D15-4BC8-A779-C6013FA0A11B}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
