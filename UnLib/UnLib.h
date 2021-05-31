@@ -1,13 +1,13 @@
 #pragma once
 
 #include "stdafx.h"
-#include "UnLibConf.h"
+#include "conf.h"
+#include "typedefs.h"
 
 #include "TSpec.h"
 #include "TVer.h"
 
-namespace NS_UNLIB_
+namespace net::r_eg::Conari::UnLib
 {
 
 }
-_NS_UNLIB

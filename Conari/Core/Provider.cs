@@ -291,10 +291,16 @@ namespace net.r_eg.Conari.Core
             Type sig = typeof(T);
 
             var key = xDelegates.k(ptr, conv, sig);
-            if(!xDelegates.ContainsKey(key)) {
-                xDelegates[key] = getDelegateNoCache(sig, ptr, conv);
+
+            if(!xDelegates.TryGetValue(key, out Delegate del))
+            {
+                Delegate v = getDelegateNoCache(sig, ptr, conv);
+                xDelegates.TryAdd(key, v);
+                return v as T;
             }
-            return xDelegates[key] as T;
+
+            if(del is not T ret) throw new CommonException(Msg.unspecified_error_0.Format($"`{del.Method}` incompatible for T"));
+            return ret;
         }
 
         protected Delegate getDelegateNoCache<T>(IntPtr ptr, CallingConvention conv) where T : class
@@ -330,10 +336,15 @@ namespace net.r_eg.Conari.Core
             }
 
             var key = xTDyn.k(ptr, conv, mi.DeclaringType, mi.DeclaringType == null ? Dynamic.Hash(mi) : 0);
-            if(!xTDyn.ContainsKey(key)) {
-                xTDyn[key] = wireNoCache(mi, ptr, conv);
+
+            if(!xTDyn.TryGetValue(key, out TDyn dyn))
+            {
+                TDyn v = wireNoCache(mi, ptr, conv);
+                xTDyn.TryAdd(key, v);
+                return v;
             }
-            return xTDyn[key];
+
+            return dyn;
         }
 
         protected TDyn wireNoCache(MethodInfo mi, IntPtr ptr, CallingConvention conv)

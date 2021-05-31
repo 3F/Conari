@@ -21,11 +21,11 @@ namespace ConariTest
         public void aliasTest1()
         {
             // bool net::r_eg::Conari::UnLib::API::getD_True(void)
-            // ?getD_True@API@UnLib@Conari@r_eg@net@@YA_NXZ
+            // ?getD_True@common@UnLib@Conari@r_eg@net@@YA_NXZ
 
             using(dynamic l = new ConariX(UNLIB_DLL, true))
             {
-                l.Aliases["getD_True"] = new ProcAlias("?getD_True@API@UnLib@Conari@r_eg@net@@YA_NXZ");
+                l.Aliases["getD_True"] = new ProcAlias("?getD_True@common@UnLib@Conari@r_eg@net@@YA_NXZ");
 
                 Assert.Equal(true, l.getD_True<bool>());
                 Assert.True(l.bind<Func<bool>>("getD_True")());
@@ -39,11 +39,11 @@ namespace ConariTest
         public void aliasTest2()
         {
             // unsigned short net::r_eg::Conari::UnLib::API::getD_Seven(void)
-            // ?getD_Seven@API@UnLib@Conari@r_eg@net@@YAGXZ
+            // ?getD_Seven@common@UnLib@Conari@r_eg@net@@YAGXZ
 
             using(dynamic l = new ConariX(gCfgUnlib))
             {
-                l.Aliases["getD_Seven"] = new ProcAlias("?getD_Seven@API@UnLib@Conari@r_eg@net@@YAGXZ");
+                l.Aliases["getD_Seven"] = new ProcAlias("?getD_Seven@common@UnLib@Conari@r_eg@net@@YAGXZ");
 
                 Assert.Equal(7, l.getD_Seven<ushort>());
                 Assert.Equal(7, l.bind<Func<ushort>>("getD_Seven")());
@@ -57,16 +57,16 @@ namespace ConariTest
         public void aliasTest3()
         {
             // char const * net::r_eg::Conari::UnLib::API::getD_HelloWorld(void)
-            // x86: ?getD_HelloWorld@API@UnLib@Conari@r_eg@net@@YAPBDXZ
-            // x64: ?getD_HelloWorld@API@UnLib@Conari@r_eg@net@@YAPEBDXZ
+            // x86: ?getD_HelloWorld@common@UnLib@Conari@r_eg@net@@YAPBDXZ
+            // x64: ?getD_HelloWorld@common@UnLib@Conari@r_eg@net@@YAPEBDXZ
             using(dynamic l = new ConariX(gCfgUnlib))
             {
                 string xfun;
                 if(Is64bit) {
-                    xfun = "?getD_HelloWorld@API@UnLib@Conari@r_eg@net@@YAPEBDXZ";
+                    xfun = "?getD_HelloWorld@common@UnLib@Conari@r_eg@net@@YAPEBDXZ";
                 }
                 else {
-                    xfun = "?getD_HelloWorld@API@UnLib@Conari@r_eg@net@@YAPBDXZ";
+                    xfun = "?getD_HelloWorld@common@UnLib@Conari@r_eg@net@@YAPBDXZ";
                 }
 
                 string exp = "Hello World !";
@@ -174,10 +174,10 @@ namespace ConariTest
 
                 string xfun;
                 if(Is64bit) {
-                    xfun = "?getD_HelloWorld@API@UnLib@Conari@r_eg@net@@YAPEBDXZ";
+                    xfun = "?getD_HelloWorld@common@UnLib@Conari@r_eg@net@@YAPEBDXZ";
                 }
                 else {
-                    xfun = "?getD_HelloWorld@API@UnLib@Conari@r_eg@net@@YAPBDXZ";
+                    xfun = "?getD_HelloWorld@common@UnLib@Conari@r_eg@net@@YAPBDXZ";
                 }
 
                 l.Aliases["HelloWorld"] = new ProcAlias(
@@ -244,7 +244,7 @@ namespace ConariTest
         {
             using(dynamic l = new ConariX(gCfgUnlib))
             {
-                l.Aliases["getD_True"]  = "?getD_True@API@UnLib@Conari@r_eg@net@@YA_NXZ";
+                l.Aliases["getD_True"]  = "?getD_True@common@UnLib@Conari@r_eg@net@@YA_NXZ";
                 l.Aliases["getFlag"]    = l.Aliases["getD_True"];
 
                 Assert.Equal(true, l.getD_True<bool>());
@@ -261,7 +261,7 @@ namespace ConariTest
         {
             using(dynamic l = new ConariX(gCfgUnlib))
             {
-                l.Aliases["d"]  = "?getD_True@API@UnLib@Conari@r_eg@net@@YA_NXZ";
+                l.Aliases["d"]  = "?getD_True@common@UnLib@Conari@r_eg@net@@YA_NXZ";
                 l.Aliases["a"] = l.Aliases["b"] = l.Aliases["c"] = l.Aliases["d"];
 
                 Assert.Equal(true, l.a<bool>());

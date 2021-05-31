@@ -395,5 +395,16 @@ namespace ConariTest
             Assert.Equal(0, l.retAddRefVal<int>(20, 20, out int result3));
             Assert.Equal(40, result3);
         }
+
+        [Fact]
+        public void updateStringTest1()
+        {
+            using dynamic l = new ConariX(UNLIB_DLL);
+
+            Assert.True(l.updateTCharPtr<bool>("Hello !".Do(out TCharPtr str), "Conari!"));
+            Assert.Equal("Conari!", str);
+
+            Assert.False(l.updateTCharPtr<bool>("Hi!", "Conari!"));
+        }
     }
 }

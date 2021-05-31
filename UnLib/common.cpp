@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "UnLib.h"
-#include "UnLibAPI.h"
+#include "common.h"
 
-namespace NS_UNLIB_API_
+namespace net::r_eg::Conari::UnLib::common
 {
     using namespace std;
 
@@ -278,4 +278,3 @@ namespace NS_UNLIB_API_
         delete[] ptr;
     }
 }
-_NS_UNLIB_API

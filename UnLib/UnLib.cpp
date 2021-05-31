@@ -1,9 +1,8 @@
 #include "stdafx.h"
 #include "UnLib.h"
 
-namespace NS_UNLIB_
+namespace net::r_eg::Conari::UnLib
 {
 
 }
-_NS_UNLIB
 

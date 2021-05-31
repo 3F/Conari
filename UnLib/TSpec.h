@@ -2,7 +2,7 @@
 
 #include "UnLib.h"
 
-namespace NS_UNLIB_
+namespace net::r_eg::Conari::UnLib
 {
 
     struct TSpec
@@ -32,4 +32,3 @@ namespace NS_UNLIB_
 
 
 }
-_NS_UNLIB

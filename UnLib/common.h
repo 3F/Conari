@@ -2,7 +2,7 @@
 
 #include "UnLib.h"
 
-namespace NS_UNLIB_API_
+namespace net::r_eg::Conari::UnLib::common
 {
     using namespace std;
 
@@ -93,4 +93,3 @@ namespace NS_UNLIB_API_
     LIBSVC void svcFree(void* ptr);
     LIBSVC void svcFreeArr(void* ptr);
 }
-_NS_UNLIB_API

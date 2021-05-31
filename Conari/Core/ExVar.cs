@@ -114,7 +114,7 @@ namespace net.r_eg.Conari.Core
         {
             // TODO: the exported variables are free from decorations but '@' still may be used if it's not a C linkage
             // For example: LIBAPI_CPP const char* eVariableTest
-            //         ->   ?eVariableTest@API@UnLib@Conari@r_eg@net@@3PBDB
+            //         ->   ?eVariableTest@common@UnLib@Conari@r_eg@net@@3PBDB
             return ((ILoader)provider).PE?.Export.Names ?? throw new NotSupportedException(Msg.activate_pe);
         }
 

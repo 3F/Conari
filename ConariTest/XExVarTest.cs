@@ -72,10 +72,10 @@ namespace ConariTest
 
                 string fld;
                 if(Is64bit) {
-                    fld = "?eVariableTest@API@UnLib@Conari@r_eg@net@@3PEBDEB";
+                    fld = "?eVariableTest@common@UnLib@Conari@r_eg@net@@3PEBDEB";
                 }
                 else {
-                    fld = "?eVariableTest@API@UnLib@Conari@r_eg@net@@3PBDB";
+                    fld = "?eVariableTest@common@UnLib@Conari@r_eg@net@@3PBDB";
                 }
 
                 if(!Is64bit)

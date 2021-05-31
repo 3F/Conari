@@ -186,6 +186,9 @@
   <data name="trying_decorate_with_0" xml:space="preserve">
     <value>Trying to decorate with `{0}` rules.</value>
   </data>
+  <data name="unspecified_error_0" xml:space="preserve">
+    <value>Something went wrong, {0}</value>
+  </data>
   <data name="url_src" xml:space="preserve">
     <value>https://github.com/3F/Conari</value>
   </data>

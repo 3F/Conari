@@ -23,8 +23,8 @@ namespace ConariTest
 
                 Assert.Equal
                 (
-                    l.PE.Export.getAddressOf("?getD_True@API@UnLib@Conari@r_eg@net@@YA_N_N@Z", (IntPtr)l),
-                    l.addr("?getD_True@API@UnLib@Conari@r_eg@net@@YA_N_N@Z")
+                    l.PE.Export.getAddressOf("?getD_True@common@UnLib@Conari@r_eg@net@@YA_N_N@Z", (IntPtr)l),
+                    l.addr("?getD_True@common@UnLib@Conari@r_eg@net@@YA_N_N@Z")
                 );
             }
         }

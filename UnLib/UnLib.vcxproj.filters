@@ -21,7 +21,7 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UnLibConf.h">
+    <ClInclude Include="conf.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="declspec.h">
@@ -33,10 +33,16 @@
     <ClInclude Include="TSpec.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UnLibAPI.h">
+    <ClInclude Include="common.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TVer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="typedefs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -50,7 +56,10 @@
     <ClCompile Include="dllmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="UnLibAPI.cpp">
+    <ClCompile Include="common.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

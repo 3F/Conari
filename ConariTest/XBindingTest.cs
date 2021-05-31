@@ -368,12 +368,12 @@ namespace ConariTest
         public void manglingTest1()
         {
             // bool net::r_eg::Conari::UnLib::API::getD_True(void)
-            // ?getD_True@API@UnLib@Conari@r_eg@net@@YA_NXZ
+            // ?getD_True@common@UnLib@Conari@r_eg@net@@YA_NXZ
 
             using(dynamic l = new ConariX(gCfgUnlib))
             {
-                Assert.True(l.bind<Func<bool>>("?getD_True@API@UnLib@Conari@r_eg@net@@YA_NXZ")());
-                Assert.Equal(true, l.bind(Dynamic.GetMethodInfo(typeof(bool)), "?getD_True@API@UnLib@Conari@r_eg@net@@YA_NXZ")
+                Assert.True(l.bind<Func<bool>>("?getD_True@common@UnLib@Conari@r_eg@net@@YA_NXZ")());
+                Assert.Equal(true, l.bind(Dynamic.GetMethodInfo(typeof(bool)), "?getD_True@common@UnLib@Conari@r_eg@net@@YA_NXZ")
                                                     .dynamic
                                                     .Invoke(null, Array.Empty<object>()));
             }
@@ -383,11 +383,11 @@ namespace ConariTest
         public void manglingTest2()
         {
             // unsigned short net::r_eg::Conari::UnLib::API::getD_Seven(void)
-            // ?getD_Seven@API@UnLib@Conari@r_eg@net@@YAGXZ
+            // ?getD_Seven@common@UnLib@Conari@r_eg@net@@YAGXZ
             using(dynamic l = new ConariX(gCfgUnlib))
             {
-                Assert.Equal(7, l.bind<Func<ushort>>("?getD_Seven@API@UnLib@Conari@r_eg@net@@YAGXZ")());
-                Assert.Equal((ushort)7, l.bind(Dynamic.GetMethodInfo(typeof(ushort)), "?getD_Seven@API@UnLib@Conari@r_eg@net@@YAGXZ")
+                Assert.Equal(7, l.bind<Func<ushort>>("?getD_Seven@common@UnLib@Conari@r_eg@net@@YAGXZ")());
+                Assert.Equal((ushort)7, l.bind(Dynamic.GetMethodInfo(typeof(ushort)), "?getD_Seven@common@UnLib@Conari@r_eg@net@@YAGXZ")
                                                          .dynamic
                                                          .Invoke(null, Array.Empty<object>()));
             }
@@ -397,16 +397,16 @@ namespace ConariTest
         public void manglingTest3()
         {
             // char const * net::r_eg::Conari::UnLib::API::getD_HelloWorld(void)
-            // x86: ?getD_HelloWorld@API@UnLib@Conari@r_eg@net@@YAPBDXZ
-            // x64: ?getD_HelloWorld@API@UnLib@Conari@r_eg@net@@YAPEBDXZ
+            // x86: ?getD_HelloWorld@common@UnLib@Conari@r_eg@net@@YAPBDXZ
+            // x64: ?getD_HelloWorld@common@UnLib@Conari@r_eg@net@@YAPEBDXZ
             using(dynamic l = new ConariX(gCfgUnlib))
             {
                 string xfun;
                 if(Is64bit) {
-                    xfun = "?getD_HelloWorld@API@UnLib@Conari@r_eg@net@@YAPEBDXZ";
+                    xfun = "?getD_HelloWorld@common@UnLib@Conari@r_eg@net@@YAPEBDXZ";
                 }
                 else {
-                    xfun = "?getD_HelloWorld@API@UnLib@Conari@r_eg@net@@YAPBDXZ";
+                    xfun = "?getD_HelloWorld@common@UnLib@Conari@r_eg@net@@YAPBDXZ";
                 }
 
                 string exp = "Hello World !";

@@ -68,16 +68,7 @@ namespace net.r_eg.Conari.Core
 
         public void resetCache() => micache.Clear();
 
-        public bool cache(MethodInfo mi)
-        {
-            var key = Hash(mi);
-
-            if(!micache.ContainsKey(key)) {
-                micache[key] = mi;
-                return true;
-            }
-            return false;
-        }
+        public bool cache(MethodInfo mi) => micache.TryAdd(Hash(mi), mi);
 
         public MethodInfo getMethodInfo(DynamicOptions cfg, string name, Type ret = null, params Type[] args)
         {
@@ -92,11 +83,14 @@ namespace net.r_eg.Conari.Core
 
             var key = Hash(ret, args);
 
-            if(!micache.ContainsKey(key)) {
-                micache[key] = Getmi(cfg, name, ret, args);
+            if(!micache.TryGetValue(key, out MethodInfo mi))
+            {
+                MethodInfo v = Getmi(cfg, name, ret, args);
+                micache.TryAdd(key, v);
+                return v;
             }
 
-            return micache[key];
+            return mi;
         }
 
         public MethodInfo getMethodInfo(DynamicOptions cfg, Type ret = null, params Type[] args)

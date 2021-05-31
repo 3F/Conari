@@ -268,6 +268,15 @@ namespace net.r_eg.Conari.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Something went wrong, {0}.
+        /// </summary>
+        internal static string unspecified_error_0 {
+            get {
+                return ResourceManager.GetString("unspecified_error_0", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to https://github.com/3F/Conari.
         /// </summary>
         internal static string url_src {
