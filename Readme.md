@@ -33,7 +33,7 @@ using ConariL l = new("...");
 
 🧰 Powerful types
 
-Forget about the type conversions and memory management complexities. Because nothing easier than just use it,
+No more manual type conversions and memory management complexities. Because nothing easier than just use it,
 
 [`[⏯]`](https://github.com/3F/Conari/blob/4b17df2a4efd0a5fae4f3498dbe7327db5e43d22/ConariTest/BindingContextTest.cs#L20-L24)
 ```csharp
@@ -339,6 +339,10 @@ string myName += name; // 8 bit C-string and managed string (UTF-16)
 ```
 
 ```csharp
+using NativeArray<short> nr = new(pointer); // points to ~0x2674F89EDF0
+nr[0] = 1; nr[1] = 2;
+```
+```csharp
 using NativeArray<int> nr = new(1, 2, 3);
 nr[0] = -1;
 nr[1] = 0;
@@ -350,7 +354,7 @@ Assert.True(nr == new int[] { -1, 0, 1 });
 ```csharp
 using var u = new NativeStruct<MatchResult>();
 l.match<bool>(
-    c._T("[system]"), c._T("Sys###"), 
+    "[system]", "Sys###", 
     EngineOptions.F_ICASE | EngineOptions.F_MATCH_RESULT, 
     u
 );

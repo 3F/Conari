@@ -2,6 +2,336 @@
 Conari - https://github.com/3F/Conari
 - - - - - - - - - - - - - - - - - - -
 
+[1.5] 2021.05.31
+
+    * NEW: New modern NativeString<T> replaces UnmanagedString.
+    
+            * A complete support of CharPtr, WCharPtr, TCharPtr;
+            * Support optional buffers for receiving and updating values;
+            * Safe and fast reuse of the allocated memory regions;
+            * Non sealed, extendable for a new features;
+            
+            ```csharp
+            using NativeString<WCharPtr> data = new("Hello {p}!");
+            ```
+            
+    * NEW: New TCharPtr marshalable type which aggregates WCharPtr + CharPtr at runtime.
+
+    * NEW: New modern NativeStruct<T> replaces UnmanagedStructure.
+    
+            Two modes!
+            * NativeStruct - Fully automatic way of working with structures without declarations using NativeData chains;
+            * NativeStruct<T> - Semi-automatic way of working with structures using CLR types declarations;
+            
+            ```csharp
+            using var u = NativeStruct.Make.f<UIntPtr>("start", "end").Struct;
+            ```
+            ```csharp
+            using var u = new NativeStruct<MatchResult>();
+            ```
+            ```csharp
+            using NativeStruct u = new();
+            u.Native
+                .f<UIntPtr>("start", "end")
+                .build(out dynamic mres);
+            ```
+            
+    * NEW: Direct use "" dotnet strings including ref strings (ByRef&) in DLR.
+           ```csharp
+            string data = "number = 888;";
+            bool found = l.replace<bool>(ref data, "+??;", "2034;");
+           ```
+           
+    * NEW: New VPtr type - Variable long pointer. 
+           This type supports adding long numbers to IntPtr (IntPtr + long), 
+           a complete comparing >,<,>=,<=,==,!= between VPtr and int/long, and more.
+           
+    * NEW: Added support for optional arguments in DLR via IProviderDLR.TrailingArgs.
+           Can be applied only if varargs. Useful in avoiding any optional values. Eg. (1, 2, 3, [0, 0]).
+           
+           ```cpp
+            bool func(const TCHAR* input, flagcfg_t options = 0, MatchResult* result = nullptr);
+           ```
+           ```csharp
+           l.func<bool>(input); -> input, [+ 0, + nullptr]
+           ```
+           
+    * NEW: Added .build() and .build(out dynamic result) to build native chains in a Raw and NativeData objects.
+            ```csharp
+            Accessor.Native()
+                    .t<DWORD>("VirtualAddress")
+                    .t<DWORD>("Size")
+                    .build(out dynamic idd);
+            ```
+    
+    * NEW: PE32/PE32+ Memory and Streams implementations.
+           Configure it through IConfig.PeImplementation or use manually.
+           
+    * NEW: IMarshalableGeneric for marshaling generic types.
+    
+            Use or implement this to avoid possible:
+            - "Exception has been thrown by the target of an invocation"
+            - "System.Runtime.InteropServices.MarshalDirectiveException : 
+                Cannot marshal 'parameter ...': Generic types cannot be marshaled."
+            - (IntPtr)u -> u
+            etc.
+            
+            ```csharp
+            using NativeString<CharPtr> data = new("Hello {p}!");
+            l.replace<bool>(data, ...)
+            ```
+            
+    * NEW: Easy concatenation for an unmanaged c-strings.
+           ```
+           using var str = input + " " + "world";
+           ```
+           
+    * NEW: New lightweight way of generating Dynamic MethodInfo.
+    
+            As part of optimization,
+            * https://twitter.com/github3F/status/1396491762315808771
+            * https://twitter.com/github3F/status/1396492298972717057
+            
+            This is the default way for DLR starting with 1.5.
+            Use IProviderDLR.SignaturesViaTypeBuilder to configure it.
+           
+    * NEW: Native chains. Added support 8/16 bit characters via configurable .readChar() and writeChar().
+    
+    * NEW: Native chains. Added conditional .eq(), .or() that verifies input T is equal to T.
+           It can be checked via .check(), ifTrue(Action)/ifFalse(Action), and failed(bool when).
+           
+           ```csharp
+           l.Memory
+            .@goto(l.PE.Addresses.IMAGE_NT_HEADERS)
+            .eq('P', 'E', '\0', '\0')
+            .check()
+           ```
+            
+    * NEW: Added NativeArray<T> to work unmanaged arrays.
+            ```csharp
+            using NativeArray<short> nr = new(pointer); // points to ~0x2674F89EDF0
+            nr[0] = 1; nr[1] = 2;
+            ```
+            ```csharp
+            using NativeArray nr = new(2, -4, 6);
+            Memory memory = nr;
+            ```
+
+    * NEW: New modern Memory VPtr based implementation in native chains (serializable) 
+            to work with RAM related processes.
+    
+    * NEW: New modern NativeStream VPtr based implementation in native chains (serializable) 
+            to work with any supported stream related processes.
+    
+    * NEW: New modern LocalContent VPtr based implementation in native chains (serializable)
+            to work with any local allocated data.
+    
+    * NEW: Added generic IConari<TCharIn> for a specific char type by default in used instance.
+    
+    * NEW: Added Allocator for allocating any data in unmanaged memory.
+           `Allocator` based on `NativeArray<byte>`.
+           ```csharp
+            using Allocator alloc = new(0x70, 0xDE, 0x01, 0xAC, 
+                                        0x04, 0xCB, 0x70, 0xDE, 
+                                        0x93, 0x12, 0x74, 0x94);
+            alloc.Memory // access via native chains Memory implementation
+           ```
+           
+    * NEW: The fast way to update an unmanaged strings without allocating new in memory 
+            through modern NativeString<T> and BufferedString<T>.
+    
+    * NEW: New BufferedString<T> a specialized native strings for future possible changing with additional buffer.
+           `BufferedString<T>` is a type alias for `NativeString<T>` with the default buffer 
+           using factor 2.5f relative to the string;
+           
+    * NEW: Native chains. New working with a different positions
+    
+            Zone (Initial/Region/Current) and aliases (D/U/V)
+            +rewind(Zone) Rewind the chain to a specific region.
+            +@goto(VPtr) Go to a new address using absolute position.
+            +back<T>(int count = 1); - Move back on T type size from the current position. + T1, T2, T3 aliases.
+
+    * NEW: New `achar` and `wchar` type markers for a native chains.
+    
+    * NEW: Added extension methods:
+            +NativeSize() for objects - Get the size in bytes of the selected managed type to be treated as an unmanaged.
+            +IAccessor Access() - Accessing data via Memory or LocalContent implementation.
+           
+    * NEW: New for NativeData:
+            
+            * +assign<T>(string[]) - Assigns new fields for each presented name.
+              +f<T>(string[]) - alias
+
+            * +renew(SeekPosition) - An additional way to start the chain with specific SeekPosition
+              +renew(out VPtr, SeekPosition)
+
+            * +region() - Mark new region in the chain.
+              +region(out int)
+              +region(out VPtr)
+
+            * +ofs<T>(int, string[]) - Use offset to the data.
+
+            * +extend(byte[] bytes) - Extends local data using additional bytes.
+            * +mode(ChainMode) - to control chain and its new fields via ChainMode.
+            
+    * NEW: PeImplType.Disabled to disable all related to PE features
+           such as mangling, list of exported proc, etc.
+           
+    * NEW: Added IProviderDLR.TryEvaluateContext.
+           It can help better understand what are you trying to call without specified casting.
+           true value by default.
+           
+    * NEW: Added IProviderDLR.ManageNativeStrings.
+           Collect information about all input INativeString and delegate control.
+           true value by default.
+           
+    * NEW: Added IProviderDLR.BoxingControl.
+           Control of boxing for input data.
+           BoxingType.UnboxingAndBoxing value by default.
+    
+    * NEW: IProvider.addr() address of the specific item such streams std::cin etc.
+           Part of Issue #17.
+            ```
+            l.addr("get_GPtrVal")
+            ```
+            
+    * NEW: ConariL/X Make() wrapper to use both runtime dynamic and compile type objects.
+    
+    * NEW: Added manager NativeStringManager for a new modern NativeString<T> strings. 
+           Helps to manage c-strings easily.
+
+    * NEW: Added the following static Members:
+    
+          +Is64bit
+          +EmptyArray<T> for netfx 4
+          +SizeOf<T>()
+          +SizeOf<T>(int)
+          
+    * NEW: Added IProviderDLR.RefModifiableStringBuffer.
+           Allows configure additional buffer to process ref strings (ByRef&).
+
+    * NEW: Adds IModuleIsolationRecipe for configurable isolation handlers.
+    
+    * NEW: New IConfig option. LoaderSyncLimit.
+           Limit in milliseconds for how long to wait signals when synchronization of threads (processes).
+           
+    * NEW: INativeAccessor and IDlrAccessor unifies ConariL, ConariX objects, Native chains and various raw Memory accessing.
+    
+    * NEW: New IConfig option. CancelIfCantIsolate.
+           Cancel processing in loader if module can't be isolated.
+    
+    * NEW: New IConfig option. Cts.
+           Signals to cancel active operations as soon as possible.
+           
+    * NEW: New IConfig option. PeImplementation.
+           Use specific implementation around PE processing.
+           Affects loader, mangling, and other related core features.
+           
+    * NEW: New for IPE interface:
+            + Addresses - Known addresses of the tables.
+            + Characteristics
+            + Magic
+            + Machine
+            + Export reference to (addresses + names + ordinals)
+            
+    * NEW: IConari now extends IStringMaker to provide direct `_T()` accessing in implemented ConariX / ConariL objects.
+    
+                ```csharp
+                l.match<bool>(l._T("test"))
+                ```
+    
+    * NEW: IConari now specifies INativeStringManager Strings { get; } property for a quick accessing 
+            to used string manager in implemented objects.
+            
+    * FIXED: Fixed possible incorrect loading and resolving module in Loader.
+    
+    * FIXED: Fixed CalculateHashCode() affects comparing lot of Conari's types etc.
+    
+    * FIXED: Fixed clarifying the context when DLR.
+    
+    * FIXED: Fixed possible "Parameter count mismatch" when using caching and different signatures to the same pointer.
+             For 1.4 it can be avoided by resetting cache.
+             
+    * FIXED: Improved multiprocessing of requests to the same module. 
+             Part of Issue #15.
+
+    * CHANGED: Hack for .NET Standard now is under UnmanagedEmitCalli 1.1
+               * https://github.com/3F/UnmanagedEmitCalli
+               * See https://github.com/3F/Conari/issues/13
+               
+    * CHANGED: Adds aggressive finalization for ConariX/L objects to avoid possible abandoned pointers.
+    
+    * CHANGED: New ArchitectureMismatchException will help clarify the Issue #4.
+    
+    * CHANGED: Improved Native chains and Unmanaged Memory accessing:
+                
+                IAccessor + Reader/Writter/Updater ++ as a common interface 
+                for a modern native chains implementations such as Memory, NativeStream, LocalContent, etc.
+                All this implements also IPointer (VPtr based).
+                
+                ```csharp
+                memory.Native()
+                    .f<WORD>("Machine", "NumberOfSections") // IMAGE_FILE_HEADER (0xF4)
+                    .align<DWORD>(3)
+                    .t<WORD>("SizeOfOptionalHeader")
+                    .t<WORD>("Characteristics")
+                    .region()
+                    .t<WORD>("Magic") // IMAGE_OPTIONAL_HEADER (0x108)
+                    .build(out dynamic ifh);
+                ```
+                ```csharp
+                acs
+                .write(-4)
+                .update(6)
+                .rewind(Zone.Region)
+                .read<byte>(2, out byte[] r)
+                .next<short>(ref v)
+                ```
+                ...
+                
+    * CHANGED: Loader now uses PE Memory implementation by default.
+    
+    * CHANGED: IDynamic & Dynamic changes:
+    
+                +Dynamic.Hash() - Hash the following types using specified algorithm.
+
+                +IDynamic.Options - to configure generation globally.
+                +IDynamic.getMethodInfo(DynamicOptions, ...)
+                
+    * CHANGED: Updated a bit Config as a class with top namespace +IConfig.Cache.
+    
+    * CHANGED: Fully updated WCharPtr + CharPtr types:
+    
+            * +ISerializable
+            * Complete overloading an Equals logic between types and related conversion
+            * Added Null values and StrLength property in addition to Length.
+    
+    * CHANGED: Removed old `_` method aliases from NativeData due to modern IDlrAccessor.
+               Please use other available options (.ctor, Native extension, INativeAccessor, etc.)
+               
+    * CHANGED: Updated Microsoft.CSharp 4.7.0
+    
+    * CHANGED: Updated System.Reflection.Emit 4.7.0
+    
+    * CHANGED: Updated System.Reflection.Emit.Lightweight 4.7.0
+    
+    * OBSOLETE: UnmanagedStructure marked as obsolete.
+                
+    * OBSOLETE: Marked as Obsolete:
+    
+                !IDynamic.UseCache
+                !IDynamic.getKeyTypes(MethodInfo)
+                !Dynamic.GetMethodInfo(bool cache, ...)
+                
+    * OBSOLETE: IPE.ExportedProcNamesArray marked as Obsolete.
+     
+    * OBSOLETE: BSTR marked as obsolete.
+    
+    * OBSOLETE: PtrSize marked as obsolete in WCharPtr + CharPtr types.
+    
+    * OBSOLETE: UnmanagedString marked as obsolete.
+    
+    
 [1.4] 2019.11.30
 
     * NEW: Starting support of the .NET Core. PR #12
