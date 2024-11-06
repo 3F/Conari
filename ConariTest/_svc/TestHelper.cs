@@ -14,21 +14,23 @@ using net.r_eg.Conari;
 
 namespace ConariTest._svc
 {
+    using static net.r_eg.Conari.Static.Members;
+
     internal static class TestHelper
     {
         public const string UNLIB_DLL = @"..\UnLib.dll";
         public const string STUB_LIB_NAME = "__ThisIsNotRealUserLib";
 
-        public const string RXW_X32 = @".\x32\regXwild.dll";
-        public const string RXW_X64 = @".\x64\regXwild.dll";
+        public const string RXW_X32 = @"x32\regXwild.dll";
+        public const string RXW_X64 = @"x64\regXwild.dll";
 
-#if TEST_LIB_ARCH32
-        public const string RXW_X = RXW_X32;
-#else
-        public const string RXW_X = RXW_X64;
-#endif
+        public static readonly string regXwildDll = Path.GetFullPath(Path.Combine
+        (
+            AppDomain.CurrentDomain.BaseDirectory,
+            Is64bit ? RXW_X64 : RXW_X32
+        ));
 
-        public static readonly IConfig gCfgIsolatedRxW = new Config(RXW_X, isolate: true);
+        public static readonly IConfig gCfgIsolatedRxW = new Config(regXwildDll, isolate: true);
 
         public const string CLLI_TEST = "CLLI-TEST-2301F37A-5F7D-45B7-9AED-ABC3988D953F";
 

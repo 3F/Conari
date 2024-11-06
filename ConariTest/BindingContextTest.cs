@@ -24,7 +24,7 @@ namespace ConariTest
         [Fact]
         public void exTest1()
         {
-            using dynamic l = new ConariX(RXW_X);
+            using dynamic l = new ConariX(regXwildDll);
 
             string data = "number = 888;";
             Assert.True(l.replace<bool>(ref data, "+??;", "2034;"));
@@ -34,7 +34,7 @@ namespace ConariTest
         [Fact]
         public void dlrStringTest1()
         {
-            using dynamic l = new ConariX(RXW_X);
+            using dynamic l = new ConariX(regXwildDll);
 
             bool found = l.replace<bool>
             (
@@ -50,7 +50,7 @@ namespace ConariTest
         [Fact]
         public void dlrStringTest2()
         {
-            using dynamic l = new ConariX<CharPtr>(RXW_X);
+            using dynamic l = new ConariX<CharPtr>(regXwildDll);
 
             bool found = l.replace<bool>
             (
@@ -76,19 +76,19 @@ namespace ConariTest
         [Fact]
         public void dlrStringTest4()
         {
-            using(dynamic l = new ConariX<WCharPtr>(RXW_X))
+            using(dynamic l = new ConariX<WCharPtr>(regXwildDll))
             {
                 Assert.Throws<NotSupportedException>(() => l.replace<bool>("".Do(out CharPtr r), "", ""));
                 Assert.Throws<NotSupportedException>(() => l.replace<bool>("".Do(out TCharPtr r), "", ""));
             }
 
-            using(dynamic l = new ConariX<CharPtr>(RXW_X))
+            using(dynamic l = new ConariX<CharPtr>(regXwildDll))
             {
                 Assert.Throws<NotSupportedException>(() => l.replace<bool>("".Do(out WCharPtr r), "", ""));
                 Assert.Throws<NotSupportedException>(() => l.replace<bool>("".Do(out TCharPtr r), "", ""));
             }
 
-            using(dynamic l = new ConariX<TCharPtr>(RXW_X))
+            using(dynamic l = new ConariX<TCharPtr>(regXwildDll))
             {
                 Assert.Throws<NotSupportedException>(() => l.replace<bool>("".Do(out CharPtr r), "", ""));
                 Assert.Throws<NotSupportedException>(() => l.replace<bool>("".Do(out WCharPtr r), "", ""));
@@ -98,7 +98,7 @@ namespace ConariTest
         [Fact]
         public void dlrRefStringTest1()
         {
-            using dynamic l = new ConariX(RXW_X);
+            using dynamic l = new ConariX(regXwildDll);
 
             string str = "Hello {p}";
             bool found = l.replace<bool>
@@ -115,7 +115,7 @@ namespace ConariTest
         [Fact]
         public void lambdaStringTest1()
         {
-            using ConariL l = new(RXW_X);
+            using ConariL l = new(regXwildDll);
 
             Assert.True(l.bind<Func<TCharPtr, string, string, bool>>("replace")
             (
@@ -137,7 +137,7 @@ namespace ConariTest
         [Fact]
         public void lambdaStringTest2()
         {
-            using ConariL<CharPtr> l = new(RXW_X);
+            using ConariL<CharPtr> l = new(regXwildDll);
 
             bool found = l.bind<Func<IntPtr, string, string, bool>>("replace")
             (
@@ -185,7 +185,7 @@ namespace ConariTest
         [Fact]
         public void contextTest1()
         {
-            using ConariL l = new(RXW_X, true);
+            using ConariL l = new(regXwildDll, true);
             l._.replace<bool>
             (
                 l._T("Hello {p}", out CharPtr result1), 
@@ -194,7 +194,7 @@ namespace ConariTest
             );
             Assert.Equal("Hello world!", result1);
 
-            using dynamic x = new ConariX(RXW_X, true);
+            using dynamic x = new ConariX(regXwildDll, true);
             x.replace<bool>
             (
                 (IntPtr)l._T("Hello {p}", out CharPtr result2), 
@@ -203,7 +203,7 @@ namespace ConariTest
             );
             Assert.Equal(result1, result2);
 
-            using dynamic x2 = new ConariX(RXW_X, true);
+            using dynamic x2 = new ConariX(regXwildDll, true);
             x2.replace<bool>
             (
                 l._T("Hello {p}", out CharPtr result3), 
@@ -216,7 +216,7 @@ namespace ConariTest
         [Fact]
         public void contextTest2()
         {
-            using ConariX l = ConariX.Make(new ConariX(RXW_X, true), out dynamic x);
+            using ConariX l = ConariX.Make(new ConariX(regXwildDll, true), out dynamic x);
             x.replace<bool>
             (
                 l._T("Hello {p}", out CharPtr result), 
@@ -229,7 +229,7 @@ namespace ConariTest
         [Fact]
         public void contextTest3()
         {
-            using dynamic l = new ConariX(RXW_X);
+            using dynamic l = new ConariX(regXwildDll);
             l.replace<bool>
             (
                 l._T("Hello {p}", out CharPtr result),
@@ -242,7 +242,7 @@ namespace ConariTest
         [Fact]
         public void contextTest4()
         {
-            using dynamic l = new ConariX(RXW_X);
+            using dynamic l = new ConariX(regXwildDll);
 
             Assert.False(l.searchEssC<bool>((IntPtr)l._T("123"), (IntPtr)l._T("4"), true));
             Assert.True(l.searchEssC<bool>((IntPtr)l._T("123"), (IntPtr)l._T("2"), true));
@@ -254,7 +254,7 @@ namespace ConariTest
         [Fact]
         public void contextTest5()
         {
-            using dynamic l = new ConariX(RXW_X);
+            using dynamic l = new ConariX(regXwildDll);
 
             Assert.False(l.searchEssC<bool>(l._T("123"), l._T("4"), true));
             Assert.True(l.searchEssC<bool>(l._T("123"), l._T("2"), true));

@@ -22,7 +22,7 @@ namespace ConariTest
         [Fact]
         public void MakeTest1()
         {
-            using var l = ConariL.Make(new(RXW_X), out dynamic d);
+            using var l = ConariL.Make(new(regXwildDll), out dynamic d);
 
             Assert.NotEmpty(l.PE.Export.Names);
             Assert.Contains("versionString", l.PE.Export.Names);

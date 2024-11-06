@@ -22,7 +22,7 @@ namespace ConariTest.Types.Sequential
         {
             TCharPtr.__Unicode = false;
 
-            using dynamic l = new ConariX(RXW_X);
+            using dynamic l = new ConariX(regXwildDll);
             using var data = new NativeString<TCharPtr>("Hello {p}!", 2);
 
             using NativeString<TCharPtr> filter = new("{p}");
@@ -41,7 +41,7 @@ namespace ConariTest.Types.Sequential
         {
             TCharPtr.__Unicode = false;
 
-            using dynamic l = new ConariX(RXW_X);
+            using dynamic l = new ConariX(regXwildDll);
             using var data = new NativeString<TCharPtr>("Hello {p}!", 2);
 
             using NativeString<TCharPtr> filter = new("{p}");
@@ -56,7 +56,7 @@ namespace ConariTest.Types.Sequential
         {
             TCharPtr.__Unicode = false;
 
-            using var l = new ConariL(RXW_X);
+            using var l = new ConariL(regXwildDll);
             using var data = new NativeString<TCharPtr>("Hello {p}!", 2);
 
             using NativeString<TCharPtr> filter = new("{p}");
@@ -69,7 +69,7 @@ namespace ConariTest.Types.Sequential
         [Fact]
         public void strTest4()
         {
-            using dynamic l = new ConariX(RXW_X);
+            using dynamic l = new ConariX(regXwildDll);
             using var data = new NativeString<CharPtr>("Hello {p}!", 2);
 
             using NativeString<CharPtr> filter = new("{p}");
@@ -82,7 +82,7 @@ namespace ConariTest.Types.Sequential
         [Fact]
         public void strTest5()
         {
-            using var l = new ConariL(RXW_X);
+            using var l = new ConariL(regXwildDll);
             using var data = new NativeString<CharPtr>("Hello {p}!", 2);
 
             using NativeString<CharPtr> filter = new("{p}");

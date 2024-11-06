@@ -19,7 +19,7 @@ namespace ConariTest.Native.Core
         [Fact]
         public void charBitsTest1()
         {
-            using var stream = new NativeStream(new FileStream(RXW_X, FileMode.Open, FileAccess.Read, FileShare.Read));
+            using var stream = new NativeStream(new FileStream(regXwildDll, FileMode.Open, FileAccess.Read, FileShare.Read));
 
             stream
             .eq('M')
@@ -40,7 +40,7 @@ namespace ConariTest.Native.Core
         [Fact]
         public void charBitsTest2()
         {
-            using var stream = new NativeStream(new FileStream(RXW_X, FileMode.Open, FileAccess.Read, FileShare.Read));
+            using var stream = new NativeStream(new FileStream(regXwildDll, FileMode.Open, FileAccess.Read, FileShare.Read));
 
             Assert.Equal('婍', stream.readWChar());
             Assert.Equal('M', stream.rewind().readChar());
