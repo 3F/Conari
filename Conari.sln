@@ -10,7 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{F23EF90C-E
 		build.bat = build.bat
 		changelog.txt = changelog.txt
 		Conari.nuspec = Conari.nuspec
-		LICENSE = LICENSE
+		LICENSE.txt = LICENSE.txt
 		packages.config = packages.config
 		Readme.md = Readme.md
 	EndProjectSection

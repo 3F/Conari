@@ -3,7 +3,7 @@ Conari - https://github.com/3F/Conari
 
 # Third-party software components
 
-## Conari and its various packages may include or reference
+## Conari project may include or reference:
 
     * UnmanagedEmitCalli
         https://github.com/3F/UnmanagedEmitCalli
@@ -13,21 +13,15 @@ Conari - https://github.com/3F/Conari
         
     * GetNuTool
         https://github.com/3F/GetNuTool
-        
-    
-## Dev Dependencies includes the following tools
     
     * vsSolutionBuildEvent
         https://github.com/3F/vsSolutionBuildEvent
         
     * xUnit.net
         https://github.com/xunit/xunit
-        
-    * hMSBuild
-        https://github.com/3F/hMSBuild
-        
-    * GetNuTool
-        https://github.com/3F/GetNuTool
+
+    * netfx4sdk
+        https://github.com/3F/netfx4sdk
 
 
 ## Notices for informational purposes only
@@ -61,8 +55,8 @@ THE SOFTWARE.
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2020  Denis Kuzmin < x-3F@outlook.com > GitHub/3F
-Copyright (c) hMSBuild contributors: https://github.com/3F/hMSBuild/graphs/contributors
+Copyright (c) 2017-2024  Denis Kuzmin <x-3F@outlook.com> github/3F
+Copyright (c) hMSBuild contributors https://github.com/3F/hMSBuild/graphs/contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -86,7 +80,8 @@ THE SOFTWARE.
 
 The MIT License (MIT)
 
-Copyright (c) 2015-2018,2020  Denis Kuzmin < x-3F@outlook.com > GitHub/3F
+Copyright (c) 2015-2024  Denis Kuzmin <x-3F@outlook.com> github/3F
+Copyright (c) GetNuTool contributors https://github.com/3F/GetNuTool/graphs/contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -108,11 +103,8 @@ THE SOFTWARE.
 
 ### Notice for vsSolutionBuildEvent
 
-vsSolutionBuildEvent (vsSBE) is licensed under GNU LGPLv3
-
-Copyright (c) 2013-2016,2019-2020  Denis Kuzmin < x-3F@outlook.com > GitHub/3F
+Copyright (c) 2013-2024  Denis Kuzmin <x-3F@outlook.com> github/3F
 Copyright (c) vsSolutionBuildEvent contributors https://github.com/3F/vsSolutionBuildEvent
-
 
                    GNU LESSER GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
@@ -280,20 +272,74 @@ apply, that proxy's public statement of acceptance of any version is
 permanent authorization for you to choose that version for the
 Library.
 
-### Notice for xUnit.net
+### Notice for xUnit
 
-Copyright (c) .NET Foundation and Contributors
-All Rights Reserved
+Unless otherwise noted, the source code here is covered by the following license:
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+    Copyright (c) .NET Foundation and Contributors
+    All Rights Reserved
 
-    http://www.apache.org/licenses/LICENSE-2.0
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+        http://www.apache.org/licenses/LICENSE-2.0
 
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+The source in src/xunit.v3.runner.common/Utility/ConsoleHelper.cs was adapted from code
+that is covered the following license (copied from
+https://github.com/Microsoft/msbuild/blob/ab090d1255caa87e742cbdbc6d7fe904ecebd975/LICENSE):
+
+    MSBuild
+
+    The MIT License (MIT)
+
+    Copyright (c) .NET Foundation and contributors
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+
+### Notice for netfx4sdk
+
+The MIT License (MIT)
+
+Copyright (c) 2021-2024  Denis Kuzmin <x-3F@outlook.com> github/3F
+Copyright (c) netfx4sdk contributors https://github.com/3F/netfx4sdk/graphs/contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.

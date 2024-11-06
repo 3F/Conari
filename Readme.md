@@ -6,22 +6,27 @@
 
 Conari engine represents most flexible platform for working with unmanaged memory, modules, related P/Invoke features, and more around libraries, executable modules, runtime dynamic use of the unmanaged native C/C++ in .NET world and other raw data just in a few easy steps without configuring something, and... Even accessing to complex types like structures without their declaration at all.
 
+```
+Copyright (c) 2016-2024  Denis Kuzmin <x-3F@outlook.com> github/3F
+```
+
+[ 「 ❤ 」 ](https://3F.github.io/fund) [![License](https://img.shields.io/badge/License-MIT-74A5C2.svg)](https://github.com/3F/Conari/blob/master/LICENSE.txt)
+
+[*Conari*](https://github.com/3F/Conari) is waiting for your awesome contributions! https://github.com/3F/Conari/graphs/contributors
+
 [![Build status](https://ci.appveyor.com/api/projects/status/xbb5imyn9lr8dxbb/branch/master?svg=true)](https://ci.appveyor.com/project/3Fs/conari-wkygr/branch/master)
-[![release-src](https://img.shields.io/github/release/3F/Conari.svg)](https://github.com/3F/Conari/releases/latest)
-[![License](https://img.shields.io/badge/License-MIT-74A5C2.svg)](https://github.com/3F/Conari/blob/master/LICENSE)
-[![NuGet package](https://img.shields.io/nuget/v/Conari.svg)](https://www.nuget.org/packages/Conari/) 
+[![GHR](https://img.shields.io/github/release/3F/Conari.svg)](https://github.com/3F/Conari/releases/latest)
+[![NuGet](https://img.shields.io/nuget/v/Conari.svg)](https://www.nuget.org/packages/Conari/) 
 [![Tests](https://img.shields.io/appveyor/tests/3Fs/conari-wkygr/master.svg)](https://ci.appveyor.com/project/3Fs/conari-wkygr/build/tests)
 
-[![Build history](https://buildstats.info/appveyor/chart/3Fs/conari-wkygr?buildCount=15&includeBuildsFromPullRequest=true&showStats=true)](https://ci.appveyor.com/project/3Fs/conari-wkygr/history)
+[**`gnt`**](https://3F.github.io/GetNuTool/releases/latest/gnt/)` Conari` [[?](https://github.com/3F/GetNuTool)]
 
-> [ ***[Quick start](https://github.com/3F/Conari/wiki/Quick-start)*** ] [ [Complex types and strings](https://www.youtube.com/watch?v=QXMj9-8XJnY) ]
-> -> { **[Wiki](https://github.com/3F/Conari/wiki)** }
+## Why Conari
 
+> [ ***[Quick start (Wiki)](https://github.com/3F/Conari/wiki/Quick-start)*** ] [ [Complex types and strings](https://www.youtube.com/watch?v=QXMj9-8XJnY) ]
 
 [![](https://raw.githubusercontent.com/3F/Conari/master/Conari/Resources/screencast_Complex_types.jpg)](https://www.youtube.com/watch?v=QXMj9-8XJnY)
 
-
-## Why Conari ?
 
 It was designed to be loyal to your needs on the fly!
 
@@ -81,6 +86,36 @@ if(l.match<bool>("n = '888';", "'*'", 2/*MATCH_RESULT*/, u))
     // v.start == 4; v.end == 9;
 }
 // Yes, a 4 lines and your task is done; Free memory, Free hands.
+```
+
+[`[⏯]`](https://github.com/3F/DllExport/blob/master/src/DllExport/assets/NetfxAsset/Basic.cs) DllExport + Conari
+
+```csharp
+[DllExport] // DllExportModifiedClassLibrary.dll
+public static IntPtr callme(TCharPtr str, IntPtr structure)
+{
+    if(str != "Hello world!") return IntPtr.Zero;
+
+    structure.Native().f<int>("x", "y").build(out dynamic v);
+    if(v.x > v.y)
+    {
+        structure.Access().write<int>(8);
+    }
+    return new NativeArray<int>(-1, v.x, 1, v.y);
+}
+```
+
+[`[⏯]`](https://github.com/3F/DllExport/blob/master/src/DllExport/UnitedTest/NetfxAssetBasicTest.cs)
+
+```csharp
+... // host side via C/C++, Java, Rust, Python, ... or even same dotnet C#
+using NativeString<TCharPtr> ns = new("Hello world!");
+using NativeStruct<Arg> nstruct = new(new Arg() { x = 7, y = 5 });
+
+using dynamic l = new ConariX("DllExportModifiedClassLibrary.dll");
+IntPtr ptr = l.callme<IntPtr>(ns, nstruct);
+
+using NativeArray<int> nr = new(4, ptr); // (nstruct.Data.x == 8) != (nr[1] == 7)
 ```
 
 🚀 Awesome speed
@@ -158,21 +193,7 @@ Open Source project; MIT License; *Fork! Star! Contribute! Share! Enjoy!*
 
 Conari is available for everyone from 2016 🎉
 
-## 🗸 License
-
-The [MIT License (MIT)](https://github.com/3F/Conari/blob/master/LICENSE)
-
-```
-Copyright (c) 2016-2021  Denis Kuzmin <x-3F@outlook.com> github/3F
-```
-
-[ [ ☕ Make a donation ](https://3F.github.io/Donation/) ]
-
-Conari contributors https://github.com/3F/Conari/graphs/contributors
-
-We're waiting for your awesome contributions!
-
-## Take a look closer
+## [Take a look closer](https://github.com/3F/Conari/wiki/Quick-start)
 
 Conari generally provides two mode,
 
@@ -325,6 +346,7 @@ l._.getFlag<bool>();
 * NativeStruct - Fully automatic way of working with structures without declarations using NativeData chains;
 * NativeStruct\<T\> - Semi-automatic way of working with structures using CLR types declarations;
 * NativeArray\<T\>
+* ._T("...") - NativeString\<TCharPtr\> via NativeStringManager\<TCharPtr\>
 * ...
 
 ```csharp
@@ -407,11 +429,3 @@ REGXWILD_API_L bool match
     EssRxW::MatchResult* result = nullptr
 );
 ```
-
-## How to get Conari
-
-* NuGet: [![NuGet package](https://img.shields.io/nuget/v/Conari.svg)](https://www.nuget.org/packages/Conari/)
-* [**`gnt`**](https://3f.github.io/GetNuTool/releases/latest/gnt/)` /p:ngpackages="Conari"` [[?](https://github.com/3F/GetNuTool)]
-* [GitHub Releases](https://github.com/3F/Conari/releases) [ [latest](https://github.com/3F/Conari/releases/latest) ]
-* CI builds at your own risk. Find latest binaries in [`/artifacts`](https://ci.appveyor.com/project/3Fs/conari-wkygr/history) page.
-

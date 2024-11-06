@@ -59,7 +59,7 @@
     <PackageReleaseNotes> changelog: https://github.com/3F/Conari/blob/master/changelog.txt </PackageReleaseNotes>
     <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
     <NeutralLanguage>en</NeutralLanguage>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <AnalysisLevel>latest</AnalysisLevel>
     <AnalysisMode>Default</AnalysisMode>
@@ -72,9 +72,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\LICENSE" Pack="true" PackagePath="" />
+    <None Include="..\LICENSE.txt" Pack="true" PackagePath="" />
     <None Include="..\Readme.md" Pack="true" PackagePath="" />
-    <None Include="..\3rd-party-notices.txt" Pack="true" PackagePath="" />
+    <None Include="..\3rd-party-NOTICES.txt" Pack="true" PackagePath="" />
     <None Include="..\changelog.txt" Pack="true" PackagePath="" />
     <None Include="..\.version" Pack="true" PackagePath="" />
     <None Include="..\$(RootObjDir)\build-info.txt" Condition="Exists('..\$(RootObjDir)\build-info.txt')" Pack="true" PackagePath="" />
