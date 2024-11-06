@@ -179,7 +179,7 @@ namespace net.r_eg.Conari.Core
         /// <param name="arguments">Optional types for arguments.</param>
         public static int Hash(Type ret = null, params Type[] arguments)
         {
-            return 0.CalculateHashCode(ret).CalculateHashCode(arguments);
+            return 0.CalculateHashCode(ret).CalculateHashCode(arguments.GetEnumerable());
         }
 
         /// <summary>
@@ -190,7 +190,7 @@ namespace net.r_eg.Conari.Core
         {
             if(mi == null) throw new ArgumentNullException(nameof(mi));
             return 0.CalculateHashCode(mi.ReturnType)
-                    .CalculateHashCode(mi.GetParameters().Select(a => a.ParameterType).ToArray());
+                    .CalculateHashCode(mi.GetParameters().Select(a => a.ParameterType));
         }
 
         public static dynamic DCast(Type type, dynamic obj)

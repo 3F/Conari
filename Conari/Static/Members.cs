@@ -15,7 +15,7 @@ namespace net.r_eg.Conari.Static
         /// <summary>
         /// 32-bit or 64-bit addressing in the current process?
         /// </summary>
-        public static bool Is64bit => IntPtr.Size == sizeof(Int64);
+        public static bool Is64bit => IntPtr.Size == sizeof(long);
 
         /// <inheritdoc cref="NativeExtension.NativeSize(Type)"/>
         public static int SizeOf<T>() => typeof(T).NativeSize();
@@ -29,7 +29,7 @@ namespace net.r_eg.Conari.Static
 
         private static class _EmptyArray<T>
         {
-            public static readonly T[] value = new T[0];
+            public static readonly T[] value = [];
         }
 
 #else

@@ -7,9 +7,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace net.r_eg.Conari.Extension
 {
+    using static net.r_eg.Conari.Static.Members;
+
     public static class CollectionExtension
     {
         /// <summary>
@@ -41,5 +44,8 @@ namespace net.r_eg.Conari.Extension
             }
             return items;
         }
+
+        public static IEnumerable<T> GetEnumerable<T>(this T[] values)
+            => values?.AsEnumerable() ?? EmptyArray<T>();
     }
 }

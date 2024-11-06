@@ -55,5 +55,21 @@ namespace ConariTest.Extensions
 
             Assert.Equal(2, data.Length);
         }
+
+        [Fact]
+        public void GetEnumerableTest1()
+        {
+            object[] values = null;
+            Assert.Empty(values.GetEnumerable());
+
+            values = [ 5, 6, 7 ];
+
+            IEnumerable<object> integers = values.GetEnumerable();
+            object[] array = integers.ToArray();
+            Assert.Equal(3, array.Length);
+            Assert.Equal(5, array[0]);
+            Assert.Equal(6, array[1]);
+            Assert.Equal(7, array[2]);
+        }
     }
 }

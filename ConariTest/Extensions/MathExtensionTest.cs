@@ -5,6 +5,7 @@
  * See accompanying LICENSE.txt file or visit https://github.com/3F/Conari
 */
 
+using System.Collections.Generic;
 using net.r_eg.Conari.Extension;
 using Xunit;
 
@@ -37,6 +38,23 @@ namespace ConariTest.Extensions
 
             Assert.Equal(0.CalculateHashCode(12).CalculateHashCode(24), hash);
             Assert.NotEqual(0.CalculateHashCode(24).CalculateHashCode(12), hash);
+        }
+
+        [Fact]
+        public void CalculateHashCodeTest3()
+        {
+            int initial = 1274;
+            List<int> a = [7, 15, 3, 0, 9461];
+
+            Assert.Equal(initial, initial.CalculateHashCode(null));
+            Assert.Equal(initial, initial.CalculateHashCode());
+
+            Assert.Equal(initial.CalculateHashCode(a), initial.CalculateHashCode(new int[] { 7, 15, 3, 0, 9461 }));
+            Assert.Equal(initial.CalculateHashCode(a), initial.CalculateHashCode(7, 15, 3, 0, 9461));
+
+            List<int> b = [7, 15, 4, 0, 9461];
+            Assert.NotEqual(initial.CalculateHashCode(a), initial.CalculateHashCode(b));
+            Assert.NotEqual(initial.CalculateHashCode(a), 1273.CalculateHashCode(a));
         }
     }
 }

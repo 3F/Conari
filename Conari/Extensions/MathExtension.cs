@@ -5,6 +5,9 @@
  * See accompanying LICENSE.txt file or visit https://github.com/3F/Conari
 */
 
+using System.Collections.Generic;
+using System.Text;
+
 namespace net.r_eg.Conari.Extension
 {
     public static class MathExtension
@@ -25,8 +28,15 @@ namespace net.r_eg.Conari.Extension
         /// <returns></returns>
         public static int CalculateHashCode(this int r, params object[] values)
         {
+            return r.CalculateHashCode(values.GetEnumerable());
+        }
+
+        /// <inheritdoc cref="CalculateHashCode(int, object[])"/>
+        public static int CalculateHashCode<T>(this int r, IEnumerable<T> values)
+        {
             int h = r;
-            foreach(var v in values) {
+            foreach(T v in values)
+            {
                 h = h.HashPolynom(v?.GetHashCode() ?? 0);
             }
             return h;
