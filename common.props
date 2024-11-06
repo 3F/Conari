@@ -67,8 +67,23 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <!-- Compare c-strings using fully allocated space -->
-    <!-- <DefineConstants>F_NATIVE_STRING_CMP_STRICT;$(DefineConstants)</DefineConstants> -->
+    <ConariFeaturePredefinedActP5 Condition="'$(ConariFeaturePredefinedActP5)'==''">true</ConariFeaturePredefinedActP5>
+    <ConariFeaturePredefinedFuncP5 Condition="'$(ConariFeaturePredefinedFuncP5)'==''">true</ConariFeaturePredefinedFuncP5>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DefineConstants Condition="'$(ConariFeatureNativeStringCmpStrict)'=='true'">F_NATIVE_STRING_CMP_STRICT;$(DefineConstants)</DefineConstants> <!-- Compare c-strings using fully allocated space -->
+    <DefineConstants Condition="'$(ConariFeaturePredefinedFuncP7)'=='true'">F_PREDEFINED_FUNC_P7;F_PREDEFINED_FUNC_P6;F_PREDEFINED_FUNC_P5;F_PREDEFINED_FUNC_P4;F_PREDEFINED_FUNC_P3;$(DefineConstants)</DefineConstants>
+    <DefineConstants Condition="'$(ConariFeaturePredefinedActP7)'=='true'">F_PREDEFINED_ACT_P7;F_PREDEFINED_ACT_P6;F_PREDEFINED_ACT_P5;F_PREDEFINED_ACT_P4;F_PREDEFINED_ACT_P3;$(DefineConstants)</DefineConstants>
+    <DefineConstants Condition="'$(ConariFeaturePredefinedFuncP6)'=='true'">F_PREDEFINED_FUNC_P6;F_PREDEFINED_FUNC_P5;F_PREDEFINED_FUNC_P4;F_PREDEFINED_FUNC_P3;$(DefineConstants)</DefineConstants>
+    <DefineConstants Condition="'$(ConariFeaturePredefinedActP6)'=='true'">F_PREDEFINED_ACT_P6;F_PREDEFINED_ACT_P5;F_PREDEFINED_ACT_P4;F_PREDEFINED_ACT_P3;$(DefineConstants)</DefineConstants>
+    <DefineConstants Condition="'$(ConariFeaturePredefinedFuncP5)'=='true'">F_PREDEFINED_FUNC_P5;F_PREDEFINED_FUNC_P4;F_PREDEFINED_FUNC_P3;$(DefineConstants)</DefineConstants>
+    <DefineConstants Condition="'$(ConariFeaturePredefinedActP5)'=='true'">F_PREDEFINED_ACT_P5;F_PREDEFINED_ACT_P4;F_PREDEFINED_ACT_P3;$(DefineConstants)</DefineConstants>
+    <DefineConstants Condition="'$(ConariFeaturePredefinedFuncP4)'=='true'">F_PREDEFINED_FUNC_P4;F_PREDEFINED_FUNC_P3;$(DefineConstants)</DefineConstants>
+    <DefineConstants Condition="'$(ConariFeaturePredefinedActP4)'=='true'">F_PREDEFINED_ACT_P4;F_PREDEFINED_ACT_P3;$(DefineConstants)</DefineConstants>
+    <DefineConstants Condition="'$(ConariFeaturePredefinedFuncP3)'=='true'">F_PREDEFINED_FUNC_P3;$(DefineConstants)</DefineConstants>
+    <DefineConstants Condition="'$(ConariFeaturePredefinedActP3)'=='true'">F_PREDEFINED_ACT_P3;$(DefineConstants)</DefineConstants>
+    <DefineConstants Condition="'$(ConariFeaturePredefinedNativeDataT32)'=='true'">F_PREDEFINED_NATIVEDATA_T32;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">

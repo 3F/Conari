@@ -24,7 +24,8 @@ namespace net.r_eg.Conari.Types.Action.Out
     public delegate void ActionOut<T1, T2>(out T1 p1, out T2 p2);
 
 
-    /* 3 param-group */
+/* 3 param-group */
+#if F_PREDEFINED_ACT_P3
 
     public delegate void ActionOut1<T1, in T2, in T3>(out T1 p1, T2 p2, T3 p3);
 
@@ -40,8 +41,10 @@ namespace net.r_eg.Conari.Types.Action.Out
 
     public delegate void ActionOut<T1, T2, T3>(out T1 p1, out T2 p2, out T3 p3);
 
+#endif
 
-    /* 4 param-group */
+/* 4 param-group */
+#if F_PREDEFINED_ACT_P4
 
     public delegate void ActionOut1<T1, in T2, in T3, in T4>(out T1 p1, T2 p2, T3 p3, T4 p4);
 
@@ -73,8 +76,10 @@ namespace net.r_eg.Conari.Types.Action.Out
 
     public delegate void ActionOut<T1, T2, T3, T4>(out T1 p1, out T2 p2, out T3 p3, out T4 p4);
 
+#endif
 
-    /* 5 param-group */
+/* 5 param-group */
+#if F_PREDEFINED_ACT_P5
 
     public delegate void ActionOut1<T1, in T2, in T3, in T4, in T5>(out T1 p1, T2 p2, T3 p3, T4 p4, T5 p5);
 
@@ -138,8 +143,10 @@ namespace net.r_eg.Conari.Types.Action.Out
 
     public delegate void ActionOut<T1, T2, T3, T4, T5>(out T1 p1, out T2 p2, out T3 p3, out T4 p4, out T5 p5);
 
+#endif
 
-    /* 6 param-group */
+/* 6 param-group */
+#if F_PREDEFINED_ACT_P6
 
     public delegate void ActionOut1<T1, in T2, in T3, in T4, in T5, in T6>(out T1 p1, T2 p2, T3 p3, T4 p4, T5 p5, T6 p6);
 
@@ -267,8 +274,10 @@ namespace net.r_eg.Conari.Types.Action.Out
 
     public delegate void ActionOut<T1, T2, T3, T4, T5, T6>(out T1 p1, out T2 p2, out T3 p3, out T4 p4, out T5 p5, out T6 p6);
 
+#endif
 
-    /* 7 param-group */
+/* 7 param-group */
+#if F_PREDEFINED_ACT_P7
 
     public delegate void ActionOut1<T1, in T2, in T3, in T4, in T5, in T6, in T7>(out T1 p1, T2 p2, T3 p3, T4 p4, T5 p5, T6 p6, T7 p7);
 
@@ -524,5 +533,6 @@ namespace net.r_eg.Conari.Types.Action.Out
 
     public delegate void ActionOut<T1, T2, T3, T4, T5, T6, T7>(out T1 p1, out T2 p2, out T3 p3, out T4 p4, out T5 p5, out T6 p6, out T7 p7);
 
-    /* end-of-group */
+#endif
+
 }

@@ -263,6 +263,8 @@ namespace ConariTest
             Assert.True(l.searchEssC<bool>((IntPtr)l._T("123"), (IntPtr)l._T("2"), true));
         }
 
+#if F_PREDEFINED_ACT_P3
+
         [Fact]
         public void refTest1()
         {
@@ -298,6 +300,10 @@ namespace ConariTest
             Assert.Equal(4, result3);
         }
 
+#endif
+
+#if F_PREDEFINED_FUNC_P3
+
         [Fact]
         public void retRefTest1()
         {
@@ -332,6 +338,8 @@ namespace ConariTest
             Assert.Equal(0, l.bind<FuncOut3<int, int, int, int>>("retAddRefVal")(2, 2, out int result3));
             Assert.Equal(4, result3);
         }
+
+#endif
 
         [Fact]
         public void refDlrTest1()
