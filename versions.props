@@ -1,0 +1,15 @@
+﻿<Project>
+
+  <PropertyGroup>
+    <MicrosoftCSharpVersion>4.7.0</MicrosoftCSharpVersion>
+    <SystemReflectionEmitVersion>4.7.0</SystemReflectionEmitVersion>
+    <SystemReflectionEmitLightweightVersion>4.7.0</SystemReflectionEmitLightweightVersion>
+    <regXwildVersion>1.4.0</regXwildVersion>
+    <xunitVersion>2.5.3</xunitVersion>
+    <xunitVersionNet40>1.9.2</xunitVersionNet40>
+    <xunitRunnerVisualstudioVersion>2.4.3</xunitRunnerVisualstudioVersion>
+    <MicrosoftNETTestSdkVersion>17.0.0</MicrosoftNETTestSdkVersion>
+    <coverletCollectorVersion>6.0.0</coverletCollectorVersion>
+  </PropertyGroup>
+
+</Project>

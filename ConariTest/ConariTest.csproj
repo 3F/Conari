@@ -4,23 +4,12 @@
   <PropertyGroup>
     <TargetFrameworks>$(ConariTestTFM)</TargetFrameworks>
     <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\com.github.3F.test.snk</AssemblyOriginatorKeyFile>
     <RootNamespace>ConariTest</RootNamespace>
     <NoWarn>IDE0063,IDE1006</NoWarn>
     <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>latest</LangVersion>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <IsNetCoreFamilyTarget>true</IsNetCoreFamilyTarget>
-    <IsNetCoreFamilyTarget Condition="$(TargetFramework.StartsWith('net4')) == 'true'">false</IsNetCoreFamilyTarget>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <DefineConstants Condition="'$(IsNetCoreFamilyTarget)' == 'true'">NETCORE;$(DefineConstants)</DefineConstants>
-    <DefineConstants Condition="'$(TargetFramework)' == 'netstandard2.0'">NETSTD20;NETSTD;$(DefineConstants)</DefineConstants>
-    <DefineConstants Condition="'$(TargetFramework)' == 'net40'">NET40;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -28,17 +17,21 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.10.0" />
-    <PackageReference Include="regXwild" Version="1.4.0" />
-    <PackageReference Include="xunit" Version="2.4.1" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+    <PackageReference Include="xunit" Version="$(xunitVersion)" Condition="'$(TargetFramework)'!='net40'" />
+    <PackageReference Include="xunit" Version="$(xunitVersionNet40)" Condition="'$(TargetFramework)'=='net40'" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)'!='net40'">
+    <PackageReference Include="coverlet.collector" Version="$(coverletCollectorVersion)" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftNETTestSdkVersion)" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="$(xunitRunnerVisualstudioVersion)">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="coverlet.collector" Version="3.0.3">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="regXwild" Version="$(regXwildVersion)" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(IsNetCoreFamilyTarget)' != 'true'">
@@ -46,9 +39,9 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(IsNetCoreFamilyTarget)' == 'true'">
-    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
-    <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.7.0" />
+    <PackageReference Include="Microsoft.CSharp" Version="$(MicrosoftCSharpVersion)" />
+    <PackageReference Include="System.Reflection.Emit" Version="$(SystemReflectionEmitVersion)" />
+    <PackageReference Include="System.Reflection.Emit.Lightweight" Version="$(SystemReflectionEmitLightweightVersion)" />
   </ItemGroup>
 
   <ItemGroup>

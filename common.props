@@ -1,39 +1,104 @@
 ﻿<Project>
+  <Import Project="versions.props" />
+
+  <!-- redefine.props helps to override properties when it used as a submodule etc. -->
+  <Import Project="..\redefine.props" Condition="Exists('..\redefine.props')" />
+  <Import Project="..\..\redefine.props" Condition="Exists('..\..\redefine.props')" />
 
   <PropertyGroup>
     <RootOutDir>bin\prj\</RootOutDir>
     <RootObjDir>bin\obj\</RootObjDir>
-
     <PathToUnmanagedEmitCalli>..\UnmanagedEmitCalli\src\</PathToUnmanagedEmitCalli>
 
     <OsUnixLike>false</OsUnixLike>
     <OsUnixLike Condition="$([MSBuild]::IsOsUnixLike())">true</OsUnixLike>
 
+    <LangVersion>latest</LangVersion>
+    <TargetLatestRuntimePatch Condition="'$(TargetLatestRuntimePatch)'==''">true</TargetLatestRuntimePatch>
+    <ConariGeneratePackageOnBuild Condition="'$(ConariGeneratePackageOnBuild)'==''">true</ConariGeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Supported TFMs">
+    <NetfxTFM>net40;net472</NetfxTFM>
+    <NetfxTFM Condition="'$(SuppressNetfxTFM)'=='true'"></NetfxTFM>
+
     <NetStdTFM>netstandard2.0;netstandard2.1</NetStdTFM> <!-- 2.0 is most minimal and hacked -->
-    <NetStdTFM Condition="$(SuppressNetStdTFM) == 'true'"></NetStdTFM>
+    <NetStdTFM Condition="'$(SuppressNetStdTFM)'=='true'"></NetStdTFM>
 
-    <NetCoreTFM>netcoreapp2.1;net5</NetCoreTFM>
+    <NetCoreTFM>netcoreapp2.1</NetCoreTFM>
+    <NetCoreTFM Condition="'$(SuppressNetCoreTFM)'=='true'"></NetCoreTFM>
 
-    <ConariTFM>net40;net472;$(NetCoreTFM);$(NetStdTFM)</ConariTFM>
-    <ConariTFM Condition="$(OsUnixLike) == 'true'">$(NetCoreTFM);$(NetStdTFM)</ConariTFM>
+    <DotNetTFM>net5.0</DotNetTFM>
+    <DotNetTFM Condition="'$(SuppressDotNetTFM)'=='true'"></DotNetTFM>
+  </PropertyGroup>
 
-    <ConariTestTFM>net472;$(NetCoreTFM)</ConariTestTFM>
-    <ConariTestTFM Condition="$(OsUnixLike)=='true'">$(NetCoreTFM)</ConariTestTFM>
+  <PropertyGroup>
+    <ConariTFM>$(NetfxTFM);$(DotNetTFM);$(NetCoreTFM);$(NetStdTFM)</ConariTFM>
+    <ConariTFM Condition="'$(OsUnixLike)'=='true'">$(DotNetTFM);$(NetCoreTFM);$(NetStdTFM)</ConariTFM>
+    <ConariTFM Condition="'$(BuildAndTestUsing)'!=''">$(BuildAndTestUsing)</ConariTFM>
+    <ConariTFM Condition="'$(OverrideConariTFM)'!=''">$(OverrideConariTFM)</ConariTFM>
 
+    <ConariTestTFM>net472;$(DotNetTFM);$(NetCoreTFM)</ConariTestTFM>
+    <ConariTestTFM Condition="'$(OsUnixLike)'=='true'">$(DotNetTFM);$(NetCoreTFM)</ConariTestTFM>
+    <ConariTestTFM Condition="'$(BuildAndTestUsing)'!=''">$(BuildAndTestUsing)</ConariTestTFM>
+    <ConariTestTFM Condition="'$(OverrideConariTestTFM)'!=''">$(OverrideConariTestTFM)</ConariTestTFM>
+
+    <OverridedTFM Condition="$(ConariTFM.Contains('$(TargetFramework)'))=='false'">true</OverridedTFM>
   </PropertyGroup>
 
   <PropertyGroup>
     <OutPrjDir>$(RootOutDir)$(MSBuildProjectName)\$(Configuration)\$(TargetFramework)\</OutPrjDir>
-    <IntermediateOutputPath>..\$(RootObjDir)$(MSBuildProjectName)\$(Configuration)\</IntermediateOutputPath>
+    <ObjPrjDir>$(RootObjDir)$(MSBuildProjectName)\$(Configuration)\$(TargetFramework)\</ObjPrjDir>
 
-    <OutputPath>..\$(OutPrjDir)\</OutputPath>
     <OutDir>$([MSBuild]::Escape($([System.IO.Path]::GetFullPath(`$([System.IO.Path]::Combine(`$(SolutionDir)`, `$(OutPrjDir)`))`))))</OutDir>
+    <OutputPath>$(OutDir)</OutputPath>
+    <IntermediateOutputPath>$([MSBuild]::Escape($([System.IO.Path]::GetFullPath(`$([System.IO.Path]::Combine(`$(SolutionDir)`, `$(ObjPrjDir)`))`))))</IntermediateOutputPath>
   </PropertyGroup>
 
-  <!-- Additional compilation features -->
+  <PropertyGroup>
+    <IsNetCoreFamilyTarget>true</IsNetCoreFamilyTarget>
+    <IsNetCoreFamilyTarget Condition="$(TargetFramework.StartsWith('net4')) == 'true'">false</IsNetCoreFamilyTarget>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DefineConstants Condition="'$(IsNetCoreFamilyTarget)'=='true'">NETCORE;$(DefineConstants)</DefineConstants>
+    <DefineConstants Condition="'$(TargetFramework)'=='netstandard2.0'">NETSTD20;NETSTD;$(DefineConstants)</DefineConstants>
+    <DefineConstants Condition="'$(TargetFramework)'=='net40'">NET40;$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
+
   <PropertyGroup>
     <!-- Compare c-strings using fully allocated space -->
     <!-- <DefineConstants>F_NATIVE_STRING_CMP_STRICT;$(DefineConstants)</DefineConstants> -->
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <DefineConstants>DEBUG;TRACE;$(DefineConstants)</DefineConstants>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='PublicRelease'">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Title>Conari</Title>
+    <Product>github.com/3F/Conari</Product>
+    <Authors>$(Product)</Authors>
+    <Copyright>$(Product)</Copyright>
+
+    <PackageOwners>reg</PackageOwners>
+    <PackageProjectUrl>https://github.com/3F/Conari</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/3F/Conari</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Appveyor.TestLogger.2.0.0\**" />
+    <EmbeddedResource Remove="Appveyor.TestLogger.2.0.0\**" />
+    <None Remove="Appveyor.TestLogger.2.0.0\**" />
+  </ItemGroup>
 
 </Project>

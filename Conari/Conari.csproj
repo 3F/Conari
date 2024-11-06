@@ -12,20 +12,17 @@
     <AssemblyName>Conari</AssemblyName>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\com.github.3F.snk</AssemblyOriginatorKeyFile>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>$(ConariGeneratePackageOnBuild)</GeneratePackageOnBuild>
     <PackageId>Conari</PackageId>
-    <Copyright>Copyright (c) 2016-2021  Denis Kuzmin &lt;x-3F@outlook.com&gt; github/3F</Copyright>
-    <Title>[ Conari ] 🧬 One-touch unmanaged memory, runtime dynamic use of the unmanaged native C/C++ in .NET world, and ...</Title>
+    <Copyright>Copyright (c) 2016-2024  Denis Kuzmin &lt;x-3F@outlook.com&gt; github/3F</Copyright>
     <PackageIcon>Conari_v1.png</PackageIcon>
     <IconUrl>https://raw.githubusercontent.com/3F/Conari/master/Conari/Resources/Conari_v1.png</IconUrl>
-    <Description>🧬 One-touch unmanaged memory, libraries, executable modules, runtime dynamic use of the unmanaged native C/C++ in .NET world, related P/Invoke features,
-            and ... Even accessing to complex types like structures without their declaration at all.
-
-        ## Why Conari ?
+    <Description>🧬 An unmanaged memory, modules, and raw data in one-touch.
 
         It was designed to be loyal to your needs on the fly!
 
-        🧰 Powerful types
+        Conari engine represents most flexible platform for working with unmanaged memory, modules, related P/Invoke features, and more around libraries, executable modules, runtime dynamic use of the unmanaged native C/C++ in .NET world and other raw data just in a few easy steps without configuring something, and...
+        Even accessing to complex types like structures without their declaration at all.
 
         ```
         using dynamic l = new ConariX("regXwild.dll");
@@ -35,11 +32,7 @@
         // found: true; data: number = 2034;
         ```
 
-        🔨 Its amazing DLR features
-
-        Conari will generate and adapt everything at runtime! Specially for you!
-
-        🔧 The easiest (most ever) access to any data in unmanaged memory
+        Conari will generate and adapt everything at runtime.
 
         ```
         ptr.Native().f&lt;int&gt;("x", "y").build(out dynamic l);
@@ -47,42 +40,23 @@
         l.y // -23
         ```
 
-        🏄 Most powerful PInvoke and even most convenient use of WinAPI without preparing something
-
-        For example, below we don't provide neither *user32.ShowWindow()* nor *user32.MessageBoxA(),* even no *kernel32.GetModuleHandleA/W()*
-
-        ```
-        dynamic user32 = new User32();
-
-            user32.ShowWindow(0x000A0A28, 3);
-            user32.MessageBoxA(0, "Conari in action", "Hello!", 0);
-        ```
-
-        🚀 Awesome speed
-
-        test of regXwild's algorithms [[340x10000 Unicode](https://github.com/3F/regXwild#speed)]
+        💡 https://github.com/3F/Conari/wiki/Quick-start
 
         🍰 MIT License! Enjoy.
 
-        . . . Read more: https://github.com/3F/Conari
-
-        _ _ _ _ _ _
+        . . . https://github.com/3F/Conari
         
         
-    =======================================
-    gnt /p:ngpackages="Conari/$(Version)"
-    ================== https://github.com/3F/GetNuTool
+    ===
+    gnt Conari/$(Version)
+    https://github.com/3F/GetNuTool
 
 
     $(BuildInfoVSSBE)
     </Description>
-    <PackageOwners>reg</PackageOwners>
-    <PackageProjectUrl>https://github.com/3F/Conari</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/3F/Conari</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
+
     <PackageTags>memory unmanaged-memory runtime libraries exported-functions DllExport unmanaged exports native pinvoke DllImport exported-variables pinvoke-wrapper dynamic-runtime unmanaged-code binder binary-data binding unmanaged-function export import API dll cpp hack dotnet dotnetcore pe32 pe32-plus pe64 Lua 7z 7zip Conari</PackageTags>
     <PackageReleaseNotes> changelog: https://github.com/3F/Conari/blob/master/changelog.txt </PackageReleaseNotes>
-    <Authors>github.com/3F/Conari</Authors>
     <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
     <NeutralLanguage>en</NeutralLanguage>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
@@ -90,31 +64,7 @@
     <AnalysisLevel>latest</AnalysisLevel>
     <AnalysisMode>Default</AnalysisMode>
     <NoWarn>1701;1702;CS1591;IDE1006</NoWarn>
-    <LangVersion>latest</LangVersion>
     <PackageIconUrl>https://raw.githubusercontent.com/3F/Conari/master/Conari/Resources/Conari_v1.png</PackageIconUrl>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <IsNetCoreFamilyTarget>true</IsNetCoreFamilyTarget>
-    <IsNetCoreFamilyTarget Condition="$(TargetFramework.StartsWith('net4')) == 'true'">false</IsNetCoreFamilyTarget>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <DefineConstants>DEBUG;TRACE;$(DefineConstants)</DefineConstants>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' Or '$(Configuration)' == 'PublicRelease' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <DefineConstants Condition="'$(IsNetCoreFamilyTarget)' == 'true'">NETCORE;$(DefineConstants)</DefineConstants>
-    <DefineConstants Condition="'$(TargetFramework)' == 'netstandard2.0'">NETSTD20;NETSTD;$(DefineConstants)</DefineConstants>
-    <DefineConstants Condition="'$(TargetFramework)' == 'net40'">NET40;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -132,8 +82,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\tools\hMSBuild.bat" Pack="true" PackagePath="tools\" />
-    <None Include="..\tools\gnt.bat" Pack="true" PackagePath="tools\" />
+    <None Include="..\.tools\hMSBuild.bat" Pack="true" PackagePath="tools\" />
+    <None Include="..\.tools\gnt.bat" Pack="true" PackagePath="tools\" />
+    <None Include="..\.tools\netfx4sdk.cmd" Pack="true" PackagePath="tools\" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(IsNetCoreFamilyTarget)' != 'true'">

@@ -1,15 +1,20 @@
-@echo off
+:: build [[configuration] | [# [option [keys]]]
+:: https://github.com/3F/Conari
+@echo off & if "%~1"=="#" (
+    if /I "%~2"=="CI" (
+        shift & shift & setlocal
+            cd .tools & call netfx4sdk -mode sys || call netfx4sdk -mode pkg
+        endlocal
 
-set cim=packages\vsSolutionBuildEvent\cim.cmd
+    ) else if "%~2"=="" ( call .tools\hMSBuild ~x -GetNuTool & exit /B0 ) else goto err
+)
 
 set reltype=%~1
 if not defined reltype set reltype=Release
 
-call tools/gnt /p:wpath="%cd%" /p:ngconfig="packages.config" /nologo /v:m /m:6 || goto err
-call %cim% /v:m /m:4 /p:Configuration="%reltype%" || goto err
-
+call .tools\gnt & call packages\vsSolutionBuildEvent\cim.cmd ~x ~c %reltype% || goto err
 exit /B 0
 
 :err
-echo. Build failed. 1>&2
+    echo Failed build>&2
 exit /B 1
