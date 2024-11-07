@@ -1,5 +1,5 @@
 ﻿<Project>
-  <Import Project=".\ConariTest.csproj" />
+  <Import Project="..\ConariTest\ConariTest.csproj" />
 
   <PropertyGroup>
     <EnableDefaultItems>false</EnableDefaultItems>
@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="_svc\TestHelper.cs" />
-    <Compile Include="Types\Sequential\*.cs" />
+    <Compile Include="..\ConariTest\_svc\TestHelper.cs" />
+    <Compile Include="..\ConariTest\Types\Sequential\*.cs" />
   </ItemGroup>
   
 </Project>

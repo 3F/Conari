@@ -26,7 +26,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GenDelegates", "GenDelegate
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnLib", "UnLib\UnLib.vcxproj", "{CC2B5ECA-0D15-4BC8-A779-C6013FA0A11B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TCharPtrTest", "ConariTest\TCharPtrTest.csproj", "{B26A0865-3AAC-4855-ACEA-F92DABD8C2BF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TCharPtrTest", "TCharPtrTest\TCharPtrTest.csproj", "{B26A0865-3AAC-4855-ACEA-F92DABD8C2BF}"
 	ProjectSection(ProjectDependencies) = postProject
 		{CC2B5ECA-0D15-4BC8-A779-C6013FA0A11B} = {CC2B5ECA-0D15-4BC8-A779-C6013FA0A11B}
 	EndProjectSection
